@@ -1,4 +1,6 @@
-# Chinese Dictionary JavaScript Module - UNDER DEVELOPMENT
+# Chinese Dictionary JavaScript Module
+Status: early prototype
+
 This project contains a client JavaScript module for showing keywords in a
 static Chinese web page. The JavaScript module should work on any web page.
 It does not require a web frameworks, like Material or React. It is designed
@@ -6,7 +8,7 @@ and built using plain ES6 JavaScript and compiled into a bundle to be compatible
 with multiple browsers.
 
 ## Prerequisities
-Install [Nodejs](https://nodejs.org/en/).
+Install [Nodejs](https://nodejs.org).
 
 ## Install
 Get the chinesedict-js module with this command:
@@ -37,7 +39,12 @@ docker run -itd --rm -p 8080:80 --name demo_app  \
   httpd:2.4
 ```
 Open the index.html file in a web browser at http://localhost/index.html
- 
+Click on one of the highlighted words. If everything is ok you should see a
+dialog like on the included screenshot.png. To do: make a nicer dialog.
+
+## Customize
+You can customize the module with your own dictionary, HTML content, and styles.
+
 ## Unit Tests
 ```
 npm test

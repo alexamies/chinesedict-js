@@ -46,7 +46,7 @@ class ChineseDict {
             console.log(`ChineseDict traditional: ${traditional}`);
             headwords.set(traditional, word);
   	      }
-  	      dict.findwords_(selector);
+  	      dict.highlight_words_(selector);
   	    });
     }
   }
@@ -54,21 +54,26 @@ class ChineseDict {
   /**
    * Decorate the segments of text
    * @private
-   * @param {Array.<string>} The segmented text array of terms
-   * @return {string} text - The decorate text
+   * @param {!Element} elem - The DOM element to add the segments to
+   * @param {!Array.<string>} terms - The segmented text array of terms
    */
-  decorate_segments_(terms) {
-  	let decorated = '';
+  decorate_segments_(elem, terms) {
+  	elem.innerHTML = "";
   	for (let i = 0; i < terms.length; i++) {
   	  const term = terms[i];
   	  let chinese = term.get_chinese();
   	  if (term.get_headword_id()) {
-  		decorated += `<a href='#' class='headword'>${chinese}</a>`;
+  	  	var link = document.createElement('a');
+  	  	link.textContent = chinese;
+  	  	link.href = '#';
+  	  	link.addEventListener('click', (event) => {
+  	  		this.showdialog_(event, term)});
+  	  	elem.appendChild(link);
   	  } else {
-        decorated += chinese;
+        var text = document.createTextNode(chinese);
+        elem.appendChild(text);
   	  }
   	}
-  	return decorated
   }
 
   /**
@@ -79,7 +84,7 @@ class ChineseDict {
    * @private
    * @param {string} selector - A DOM selector used to find the page elements
    */
-  findwords_(selector) {
+  highlight_words_(selector) {
   	if (!selector) {
       console.log('findwords: selector empty');
       return;
@@ -93,9 +98,8 @@ class ChineseDict {
     for (let i = 0; i < elems.length; i++) {
       const el = elems[i];
       const text = el.textContent;
-      let segments = this.segment_text_(text);
-      let replacement = this.decorate_segments_(segments);
-      elems[i].innerHTML = replacement;
+      let terms = this.segment_text_(text);
+      this.decorate_segments_(el, terms);
     }
   }
 
@@ -131,6 +135,21 @@ class ChineseDict {
     }
     return segments;
   }
+
+  /**
+   * Show a dialog with the dictionary definition
+   * @private
+   * @param {MouseEvent} event - An event triggered by a user
+   * @param {Term} term - Encapsulates the Chinese and the English equivalent
+   */
+  showdialog_(event, term) {
+  	console.log(`showdialog_ this: ${this}`);
+  	const chinese = event.target.textContent;
+  	const english = term.get_english()[0];
+  	const id = term.get_headword_id();
+  	alert(`chinese: ${chinese} english: ${english}, id: ${id}`);
+  }
+
 }
 
 /** 
@@ -177,8 +196,6 @@ class Term {
   get_english() {
   	return this.english;
   }
-
 }
-
 
 module.exports = ChineseDict;
