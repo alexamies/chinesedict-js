@@ -1,2 +1,0 @@
-const wordArray = [{"headword_id": "43052", "simplified": "目揵连", "traditional": "目揵連", "pinyin": "Mùjiànlián", "english": "Maudgalyayana"}, {"headword_id": "43661", "simplified": "罗阅城", "traditional": "羅閱城", "pinyin": "Luóyuèchéng", "english": "Rajagraha"}];
-module.exports = words => wordArray;

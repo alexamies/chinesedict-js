@@ -1,3 +1,3 @@
+// Application JavaScript demonstrating use of the ChineseDict module
 const ChineseDict = require('./chinesedict.js');
-const dict = new ChineseDict();
-dict.findwords('.textbody');
+new ChineseDict('words.json', '.textbody');
