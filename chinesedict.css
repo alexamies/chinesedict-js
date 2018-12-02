@@ -1,0 +1,6 @@
+@import 'dist/dialog-polyfill.css';
+
+dialog {
+  width: 400px;
+  height: 200px;
+}

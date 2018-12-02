@@ -1,17 +1,29 @@
+const path = require('path');
+const webpack = require('webpack');
+
 module.exports = [
   {
-    entry: "./demo_app.js",
+    entry: {
+      polyfills: './polyfills.js',
+      demo_app: './demo_app.js',
+    },
     output: {
-      filename: "./dist/demo_app_compiled.js",
+      path: path.resolve(__dirname, 'dist'),
+      filename: '[name].bundle.js',
     },
     module: {
       loaders: [{
         test: /\.js$/,
-        loader: "babel-loader",
+        loader: 'babel-loader',
         query: {
-          presets: ["@babel/preset-env"],
+          presets: ['@babel/preset-env'],
         },
       }],
     },
+    plugins: [
+      new webpack.ProvidePlugin({
+        join: ['dialog-polyfill', 'dialogPolyfill']
+      })
+    ]
   },
 ];

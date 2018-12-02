@@ -30,6 +30,11 @@ npm install
 npm run build
 ```
 
+The dialog-polyfill.css file needs to be copied manually at the moment:
+```
+cp node_modules/dialog-polyfill/dialog-polyfill.css dist/.
+```
+
 ## Use
 Serve index.html as a static file on a web server. For example, using a Docker
 Apache 2 image:

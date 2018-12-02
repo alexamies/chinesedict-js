@@ -8,8 +8,7 @@
     <meta name="description" 
           content="Chinese-English Dictionary JavaScript Demo">
     <title>Chinese-English Dictionary JavaScript Demo</title>
-    <link rel="stylesheet" type="text/css" href="cedict.css">
-    </script>
+    <link rel="stylesheet" type="text/css" href="demo_app.css"/>
   </head>
   <body>
     <h1>Chinese-English Dictionary JavaScript Demo</h1>
@@ -23,6 +22,16 @@
        <div id='textbody2' class='textbody'>羅閱城在哪裡？</div>
      </p>
     </main>
-    <script src="dist/demo_app_compiled.js"></script>
+    <dialog id='dict-dialog'>
+      <!--
+        The dialog field ids follow the pattern dict-dialog + _headword, etc
+      -->
+      <p id='dict-dialog_headword'></p>
+      <p id='dict-dialog_english'></p>
+      <p id='dict-dialog_headword_id'></p>
+      <p><button id='dict-dialog_ok'>OK</button></p>
+    </dialog>
+    <script src="dist/polyfills.bundle.js"></script>
+    <script src="dist/demo_app.bundle.js"></script>
   </body>
 </html>

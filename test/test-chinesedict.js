@@ -1,5 +1,12 @@
+// Mocha tests
+
 const assert = require('assert');
+const jsdom = require("jsdom");
 const ChineseDict = require('../chinesedict.js');
+
+const { JSDOM } = jsdom;
+const dom = new JSDOM(`<!DOCTYPE html><p>Title</p>`);
+global.document = dom.window.document;
 
 describe('ChineseDict', function() {
   describe('#new()', function() {

@@ -18,6 +18,8 @@
  * A JavaScript module that finds words in a string of Chinese text
  */
 
+const dialogPolyfill = require('dialog-polyfill');
+
 /** 
  * A class for finding Chinese words and segmenting blocks of text with a
  * Chinese-English dictionary.
@@ -28,8 +30,9 @@ class ChineseDict {
    * Create a ChineseDict object, loads the dictionary
    * @param {string} filename - Name of the dictionary file
    * @param {string} selector - A DOM selector used to find the page elements
+   * @param {string} dialog_id - A DOM id used to find the dialog
    */
-  constructor(filename, selector) {
+  constructor(filename, selector, dialog_id) {
   	const headwords = new Map();
   	this.headwords = headwords;
   	const dict = this;
@@ -46,9 +49,10 @@ class ChineseDict {
             console.log(`ChineseDict traditional: ${traditional}`);
             headwords.set(traditional, word);
   	      }
-  	      dict.highlight_words_(selector);
+  	      dict.highlight_words_(selector, dialog_id);
   	    });
     }
+    this.setup_dialog_(dialog_id);
   }
 
   /**
@@ -56,8 +60,9 @@ class ChineseDict {
    * @private
    * @param {!Element} elem - The DOM element to add the segments to
    * @param {!Array.<string>} terms - The segmented text array of terms
+   * @param {string} dialog_id - A DOM id used to find the dialog
    */
-  decorate_segments_(elem, terms) {
+  decorate_segments_(elem, terms, dialog_id) {
   	elem.innerHTML = "";
   	for (let i = 0; i < terms.length; i++) {
   	  const term = terms[i];
@@ -67,7 +72,7 @@ class ChineseDict {
   	  	link.textContent = chinese;
   	  	link.href = '#';
   	  	link.addEventListener('click', (event) => {
-  	  		this.showdialog_(event, term)});
+  	  		this.showdialog_(event, term, dialog_id)});
   	  	elem.appendChild(link);
   	  } else {
         var text = document.createTextNode(chinese);
@@ -83,8 +88,9 @@ class ChineseDict {
    *
    * @private
    * @param {string} selector - A DOM selector used to find the page elements
+   * @param {string} dialog_id - A DOM id used to find the dialog
    */
-  highlight_words_(selector) {
+  highlight_words_(selector, dialog_id) {
   	if (!selector) {
       console.log('findwords: selector empty');
       return;
@@ -99,7 +105,7 @@ class ChineseDict {
       const el = elems[i];
       const text = el.textContent;
       let terms = this.segment_text_(text);
-      this.decorate_segments_(el, terms);
+      this.decorate_segments_(el, terms, dialog_id);
     }
   }
 
@@ -137,17 +143,58 @@ class ChineseDict {
   }
 
   /**
+   * Add a listener to the dialog OK button. The OK button should have the ID
+   * of the dialog with '_ok' appended.
+   * @private
+   * @param {string} dialog_id - The DOM id of the dialog HTML element
+   */
+  setup_dialog_(dialog_id) {
+  	const dialog = document.getElementById(dialog_id);
+  	dialogPolyfill.registerDialog(dialog);
+  	const dialog_ok_id = dialog_id + '_ok';
+  	const dialog_ok = document.getElementById(dialog_ok_id);
+  	if (dialog && dialog_ok) {
+  	  dialog_ok.addEventListener('click', () => {
+  	    dialog.close();
+  	  });
+ 	}
+  }
+
+  /**
    * Show a dialog with the dictionary definition
    * @private
    * @param {MouseEvent} event - An event triggered by a user
    * @param {Term} term - Encapsulates the Chinese and the English equivalent
+   * @param {string} dialog_id - A DOM id used to find the dialog
    */
-  showdialog_(event, term) {
+  showdialog_(event, term, dialog_id) {
   	console.log(`showdialog_ this: ${this}`);
   	const chinese = event.target.textContent;
   	const english = term.get_english()[0];
   	const id = term.get_headword_id();
-  	alert(`chinese: ${chinese} english: ${english}, id: ${id}`);
+  	const dialog = document.getElementById(dialog_id);
+  	if (dialog) {
+  	  const headword_div_id = dialog_id + '_headword';
+  	  const headword_div = document.getElementById(headword_div_id);
+  	  if (headword_div) {
+  	    headword_div.innerHTML = chinese;
+  	  }
+  	  const english_div_id = dialog_id + '_english';
+  	  const english_div = document.getElementById(english_div_id);
+  	  if (english_div) {
+  	    english_div.innerHTML = english;
+  	  }
+  	  const headword_id_div_id = dialog_id + '_headword_id';
+  	  const headword_id_div = document.getElementById(headword_id_div_id);
+  	  if (headword_id_div) {
+  	    headword_id_div.innerHTML = id;
+  	  }
+  	  console.log('showdialog_ showing dialog');
+  	  dialog.showModal();
+  	} else {
+  	  console.log(`showdialog_ ${dialog_id} not found`);
+  	  alert(`chinese: ${chinese} english: ${english}, id: ${id}`);
+  	}
   }
 
 }
