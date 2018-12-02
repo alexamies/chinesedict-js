@@ -170,7 +170,7 @@ class ChineseDict {
   showdialog_(event, term, dialog_id) {
   	console.log(`showdialog_ this: ${this}`);
   	const chinese = event.target.textContent;
-  	const english = term.get_english()[0];
+  	const english = term.get_english();
   	const id = term.get_headword_id();
   	const dialog = document.getElementById(dialog_id);
   	if (dialog) {

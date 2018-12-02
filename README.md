@@ -8,20 +8,40 @@ and built using plain ES6 JavaScript and compiled into a bundle to be compatible
 with multiple browsers.
 
 ## Prerequisities
-Install [Nodejs](https://nodejs.org).
+Install [Nodejs](https://nodejs.org). Set it up with the command
+
+```
+npm init -y
+```
 
 ## Install
-Get the chinesedict-js module with this command:
+Get the chinesedict-js JavaScript module with the command:
 ```
-npm install @alexamies/chinesedict-js
+npm install git+https://github.com/alexamies/chinesedict-js.git
+```
+
+The files from the GitHub project will be located in the directory
+```
+node_modules/@alexamies/chinesedict-js
+```
+
+If you want to build examples using the templates here then it may be more
+convenient to clone it from GitHub:
+```
+git clone https://github.com/alexamies/chinesedict-js.git
+cd chinesedict-js.git
 ```
 
 Add JavaScript code to import the Common JavaScrope module in your web
 application browser code and use it:
 ```
-const findwords = require('./chinesedict');
+const findwords = require('chinesedict');
 findwords('div_id');
 ```
+
+Any DOM selector is ok,
+
+See the file index.html for example use and a template for your project.
 
 where 'div_id' is select for the HTML elements containing the Chinese text.
 See the example client_app.js. Then compile the chinesedict-js into your code:
@@ -45,12 +65,41 @@ docker run -itd --rm -p 8080:80 --name demo_app  \
 ```
 Open the index.html file in a web browser at http://localhost/index.html
 Click on one of the highlighted words. If everything is ok you should see a
-dialog like on the included screenshot.png. To do: make a nicer dialog.
+dialog like this (on Chrome):
+
+<img
+src='https://github.com/alexamies/chinesedict-js/blob/master/screenshot.png'/>
+
 
 ## Customize
 You can customize the module with your own dictionary, HTML content, and styles.
+The dictionary should be structured the same as the example words.json file
+provided.
 
-## Unit Tests
+## Testing
+### Cross Browser Support
+Cross browser support is provided for the HTML
+[dialog](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dialog)
+using [dialog-polyfill](https://github.com/GoogleChrome/dialog-polyfill) since
+the dialog element is not yet supported by Edge or Safari. See the screenshot
+for Safari:
+
+<img
+src='https://github.com/alexamies/chinesedict-js/blob/master/safari.png'/>
+
+Cross compatibility of the ES6 style JavaScript and Common JS modules with the
+[Babel presets](https://babeljs.io/docs/en/presets) used in Webpack compilation.
+See the screenshot below for Firefox 63 on Mac:
+
+<img
+src='https://github.com/alexamies/chinesedict-js/blob/master/firefox.png'/>
+
+### Unit Testing
+Run unit tests in Mocha with the command
 ```
 npm test
 ```
+
+### Mobile Support
+Browser testing on mobile devices is a TODO. You may need to add your own
+styles. 
