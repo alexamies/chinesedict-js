@@ -35,11 +35,15 @@ cd chinesedict-js.git
 Add JavaScript code to import the Common JavaScrope module in your web
 application browser code and use it:
 ```
-const findwords = require('chinesedict');
-findwords('div_id');
+const ChineseDict = require('./chinesedict.js');
+new ChineseDict('words.json', '.textbody', 'dict-dialog');
 ```
 
-Any DOM selector is ok,
+The parameters to the constructor of ChineseDict are
+
+1. filename - Name of the dictionary file
+2. selector - A DOM selector for the Chinese text to be segmented
+3. dialog_id - A DOM id used to find the dialog
 
 See the file index.html for example use and a template for your project.
 
@@ -75,6 +79,10 @@ src='https://github.com/alexamies/chinesedict-js/blob/master/screenshot.png'/>
 You can customize the module with your own dictionary, HTML content, and styles.
 The dictionary should be structured the same as the example words.json file
 provided.
+
+TODO: Write a tool to convert a dictionary like 
+[words.txt](https://github.com/alexamies/chinesenotes.com/tree/master/data/words.txt)
+from tab separated variable format to the format required here.
 
 ## Testing
 ### Cross Browser Support
