@@ -1,0 +1,26 @@
+/*
+ * Schema for the dictionary file
+ */
+syntax = "proto3";
+
+message Dictionary {
+  message Entry {
+    int32 headword_id = 1;
+    string simplified = 2;
+    string traditional = 3;
+    string pinyin = 4;
+    string english = 5;
+    string pos = 6;
+    string concept_cn = 7;
+    string concept_en = 8;
+    string topic_cn = 9;
+    string topic_en = 10;
+    string parent_cn = 11;
+    string parent_en = 12;
+    string image = 13;
+    string mp3 = 14;
+    string notes = 15;
+    int32 luid = 16;
+  }
+  repeated Entry entries = 1;
+}

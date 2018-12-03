@@ -1,0 +1,16 @@
+{
+  "name": "@alexamies/chinesedict-js",
+  "version": "0.0.1",
+  "description": "A command line utility to generate a dictionary in protobuf3 format.",
+  "main": "gen_dictionary.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "alexamies",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "csv-parse": "^4.0.1",
+    "google-protobuf": "^3.6.1"
+  }
+}

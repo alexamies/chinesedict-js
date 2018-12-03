@@ -11,15 +11,7 @@ module.exports = [
       path: path.resolve(__dirname, 'dist'),
       filename: '[name].bundle.js',
     },
-    module: {
-      loaders: [{
-        test: /\.js$/,
-        loader: 'babel-loader',
-        query: {
-          presets: ['@babel/preset-env'],
-        },
-      }],
-    },
+    mode: 'production',
     plugins: [
       new webpack.ProvidePlugin({
         join: ['dialog-polyfill', 'dialogPolyfill']

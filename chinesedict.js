@@ -15,10 +15,12 @@
  */
 
 /**
+ * @fileoverview
  * A JavaScript module that finds words in a string of Chinese text
  */
 
 const dialogPolyfill = require('dialog-polyfill');
+const chinesedict_pb = require('./chinesedict_pb.js');
 
 /** 
  * A class for finding Chinese words and segmenting blocks of text with a
@@ -39,15 +41,27 @@ class ChineseDict {
   	if (filename) {
       fetch(filename)
         .then(function(response) {
-          return response.json();
+          console.log(`ChineseDict response.status: ${response.status}`);
+          if(response.ok) {
+            return response.arrayBuffer();
+          }
+          throw new Error('Error fetching dictionary');
         })
-        .then(function(words) {
-  	      console.log(`ChineseDict words.length: ${words.length}`);
-  	      for (let i = 0; i < words.length; i++) {
-  	  	    const word = words[i];
-  	        const traditional = word['traditional'];
+        .then(function(arrayBuffer) {
+          let byteArray = new Uint8Array(arrayBuffer);
+          return dict.load_dictionary_(byteArray.buffer);
+        })
+        .then(function(dictionary) {
+          const entries = dictionary.getEntriesList();
+          if (entries.length == 0) {
+            console.log(`No dictionary entries`);
+          }
+          console.log(`read ${entries.length} dictionary entries`);
+  	      for (let i = 0; i < entries.length; i++) {
+  	  	    const entry = entries[i];
+  	        const traditional = entry.getTraditional();
             console.log(`ChineseDict traditional: ${traditional}`);
-            headwords.set(traditional, word);
+            headwords.set(traditional, entry);
   	      }
   	      dict.highlight_words_(selector, dialog_id);
   	    });
@@ -63,6 +77,7 @@ class ChineseDict {
    * @param {string} dialog_id - A DOM id used to find the dialog
    */
   decorate_segments_(elem, terms, dialog_id) {
+    console.log(`decorate_segments_ dialog_id: ${dialog_id}`);
   	elem.innerHTML = "";
   	for (let i = 0; i < terms.length; i++) {
   	  const term = terms[i];
@@ -110,6 +125,17 @@ class ChineseDict {
   }
 
   /**
+   * Deserializes the dictionary from protobuf format.
+   *
+   * @private
+   * @param {!Uint8Array} buffer - The bytes to load
+   * @return {chinesedict_pb.Dictionary} The segmented text as an array of terms
+   */
+  load_dictionary_(buffer) {
+    return new chinesedict_pb.Dictionary.deserializeBinary(buffer);
+  }
+
+  /**
    * Segments the text into an array of individual words
    * @private
    * @param {string} text - The text string to be segmented
@@ -128,7 +154,9 @@ class ChineseDict {
         if (this.headwords.has(chars)) {
           console.log(`findwords found: ${chars}`);
           const entry = this.headwords.get(chars);
-          const term = new Term(chars, entry['headword_id'], entry['english']);
+          const term = new Term(chars,
+                                entry.getHeadwordId(),
+                                entry.getEnglish());
           segments.push(term);
           j += chars.length;
           break;

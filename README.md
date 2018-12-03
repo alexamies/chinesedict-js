@@ -9,7 +9,6 @@ with multiple browsers.
 
 ## Prerequisities
 Install [Nodejs](https://nodejs.org). Set it up with the command
-
 ```
 npm init -y
 ```
@@ -74,33 +73,50 @@ dialog like this (on Chrome):
 <img
 src='https://github.com/alexamies/chinesedict-js/blob/master/screenshot.png'/>
 
-
 ## Customize
 You can customize the module with your own dictionary, HTML content, and styles.
-The dictionary should be structured the same as the example words.json file
-provided.
+The dictionary should be structured the same as the example words.pb file
+provided, which may be reused under the [Creative Commons Attribution-Share
+Alike 3.0 License - CCASE 3.0](https://creativecommons.org/licenses/by-sa/3.0/).
 
-TODO: Write a tool to convert a dictionary like 
+The build/gen_dictionary.js file is Nodejs command line utility to generate
+the dictionary file. To generate the dictionary use the command
+
+```
+cd build
+npm install
+node gen_dictionary.js 
+```
+
+The dictionary file is stored and read with
+[Protobuf](https://developers.google.com/protocol-buffers/) in 
+[proto3](https://developers.google.com/protocol-buffers/docs/proto3) format.
+You can use your own dictionary or you can convert a dictionary like 
 [words.txt](https://github.com/alexamies/chinesenotes.com/tree/master/data/words.txt)
 from tab separated variable format to the format required here.
 
-## Testing
+## Develop
+To modify the dictionary format, edit the .proto file and use the protoc
+compiler to generate JavaScript libraries:
+```
+protoc --js_out=import_style=commonjs,binary:. chinesedict.proto
+```
+
+The generated code is in the file chinesedict_pb.js. See the [JavaScript
+Generated
+Code](https://developers.google.com/protocol-buffers/docs/reference/javascript-generated)
+guide for details on the generation of the protobuf JavaScript files in
+CommonJS import style.
+
+## Test
 ### Cross Browser Support
 Cross browser support is provided for the HTML
 [dialog](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dialog)
 using [dialog-polyfill](https://github.com/GoogleChrome/dialog-polyfill) since
-the dialog element is not yet supported by Edge or Safari. See the screenshot
-for Safari:
-
-<img
-src='https://github.com/alexamies/chinesedict-js/blob/master/safari.png'/>
+the dialog element is not yet supported natively by Edge or Safari.
 
 Cross compatibility of the ES6 style JavaScript and Common JS modules with the
 [Babel presets](https://babeljs.io/docs/en/presets) used in Webpack compilation.
-See the screenshot below for Firefox 63 on Mac:
-
-<img
-src='https://github.com/alexamies/chinesedict-js/blob/master/firefox.png'/>
 
 ### Unit Testing
 Run unit tests in Mocha with the command
