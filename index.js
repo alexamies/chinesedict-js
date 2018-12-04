@@ -60,7 +60,7 @@ class ChineseDict {
   	      for (let i = 0; i < entries.length; i++) {
   	  	    const entry = entries[i];
   	        const traditional = entry.getTraditional();
-            console.log(`ChineseDict traditional: ${traditional}`);
+            //console.log(`ChineseDict traditional: ${traditional}`);
             headwords.set(traditional, entry);
   	      }
   	      dict.highlight_words_(selector, dialog_id);
