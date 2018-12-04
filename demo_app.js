@@ -1,3 +1,3 @@
 // Application JavaScript demonstrating use of the ChineseDict module
-const ChineseDict = require('./index.js');
+import ChineseDict from './index.js';
 new ChineseDict('words.pb', '.textbody', 'dict-dialog');

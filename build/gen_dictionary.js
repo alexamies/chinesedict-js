@@ -84,24 +84,26 @@ function write_proto(data) {
       traditional = simplified;
     }
     //console.log(`simplified: ${simplified}, traditional ${traditional}`);
-    const entry = new chinesedict_pb.Dictionary.Entry();
-    entry.setHeadwordId(headword);
-    entry.setSimplified(simplified);
-    entry.setTraditional(traditional);
-    entry.setPinyin(pinyin);
-    entry.setEnglish(english);
-    entry.setPos(pos);
-    entry.setConceptCn(concept_cn);
-    entry.setConceptEn(concept_en);
-    entry.setTopicCn(topic_cn);
-    entry.setTopicEn(topic_en);
-    entry.setParentCn(parent_cn);
-    entry.setParentEn(parent_en);
-    entry.setImage(image);
-    entry.setMp3(mp3);
-    entry.setNotes(notes);
-    entry.setLuid(luid);
-    entries.push(entry);
+    if (topic_en == 'Buddhism') {
+      const entry = new chinesedict_pb.Dictionary.Entry();
+      entry.setHeadwordId(headword);
+      entry.setSimplified(simplified);
+      entry.setTraditional(traditional);
+      entry.setPinyin(pinyin);
+      entry.setEnglish(english);
+      //entry.setPos(pos);
+      //entry.setConceptCn(concept_cn);
+      //entry.setConceptEn(concept_en);
+      //entry.setTopicCn(topic_cn);
+      //entry.setTopicEn(topic_en);
+      //entry.setParentCn(parent_cn);
+      //entry.setParentEn(parent_en);
+      //entry.setImage(image);
+      //entry.setMp3(mp3);
+      //entry.setNotes(notes);
+      //entry.setLuid(luid);
+      entries.push(entry);
+    }
   }
   const dict = new chinesedict_pb.Dictionary();
   dict.setEntriesList(entries);

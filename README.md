@@ -1,10 +1,10 @@
 # Chinese Dictionary JavaScript Module
 Status: early prototype
 
-This project contains a client JavaScript module for showing keywords in a
+This project contains an ES6 JavaScript browser module for showing keywords in a
 static Chinese web page. The JavaScript module should work on any web page.
-It does not require a web frameworks, like Material or React. It is designed
-and built using plain ES6 JavaScript and compiled into a bundle to be compatible
+It does not require a web framework, like Material or React. It is designed
+and built using plain JavaScript and compiled into a bundle to be compatible
 with multiple browsers.
 
 ## Prerequisities
@@ -34,8 +34,8 @@ cd chinesedict-js.git
 Add JavaScript code to import the Common JavaScrope module in your web
 application browser code and use it:
 ```
-const ChineseDict = require('@alexamies/chinesedict-js');
-new ChineseDict('words.json', '.textbody', 'dict-dialog');
+import ChineseDict from '@alexamies/chinesedict-js';
+new ChineseDict('words.pb', '.textbody', 'dict-dialog');
 ```
 
 The parameters to the constructor of ChineseDict are

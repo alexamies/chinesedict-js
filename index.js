@@ -35,6 +35,7 @@ class ChineseDict {
    * @param {string} dialog_id - A DOM id used to find the dialog
    */
   constructor(filename, selector, dialog_id) {
+    console.log('ChineseDict constructor');
   	const headwords = new Map();
   	this.headwords = headwords;
   	const dict = this;
@@ -273,4 +274,4 @@ class Term {
   }
 }
 
-module.exports = ChineseDict;
+export default ChineseDict;
