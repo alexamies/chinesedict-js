@@ -50,7 +50,7 @@ npm run build
 This creates a dist directory and writes the bundled JavaScript files there.
 Copy the dictionary file to the dist directory:
 ```
-cp $CDICT_HOME/build/words.pb $CDICT_HOME/demo/static/dist/.
+cp $CDICT_HOME/build/words.pb $CDICT_HOME/demo/static/.
 ```
 
 Manually copy the style sheets:
