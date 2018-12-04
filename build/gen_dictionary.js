@@ -20,26 +20,42 @@
  * save as protobuf3.
  */
 
+'use strict';
+
 const assert = require('assert');
 const fs = require('fs');
 const parse = require('csv-parse');
 const chinesedict_pb = require('../chinesedict_pb.js');
 
-parse_dict()
+let tsvfile = 'words.tsv';
+if (process.argv.length > 2) {
+  tsvfile = process.argv[2];
+}
+gen_dict(tsvfile)
 
 /**
- * Parse the dictionary tab separated variable file
+ * Parse the dictionary tab separated variable file and generate the protobuf
+ * file.
+ * @param {!string} tsvfile - The name of the TSV file to parse
  */
-function parse_dict() {
-  console.log('Parsing tsv dictionary file');
-  const parser = parse({delimiter: '\t'}, function(err, data){
+function gen_dict(tsvfile) {
+  console.log(`Parsing tsv dictionary file ${tsvfile}`);
+  const parser = parse({
+    delimiter: '\t',
+    comment: '#'
+    }, function(err, data){
+    if (err) {
+      console.log(`Error parsing TSV file: ${err}`);
+      return;
+    }
     write_proto(data);
   });
-  fs.createReadStream('words.tsv').pipe(parser);
+  fs.createReadStream(tsvfile).pipe(parser);
 }
 
 /**
  * Write to protobuf
+ * @param {!Array.<Array.<string>>} data - The parsed TSV data
  */
 function write_proto(data) {
   console.log('Generating dictionary file');
@@ -67,7 +83,7 @@ function write_proto(data) {
     if (traditional == '\\N') {
       traditional = simplified;
     }
-    console.log(`simplified: ${simplified}, traditional ${traditional}`);
+    //console.log(`simplified: ${simplified}, traditional ${traditional}`);
     const entry = new chinesedict_pb.Dictionary.Entry();
     entry.setHeadwordId(headword);
     entry.setSimplified(simplified);

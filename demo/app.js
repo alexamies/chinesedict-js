@@ -15,7 +15,17 @@
  */
 
 /**
- * A Nodejs command line utility to read a 
+ * @fileoverview
+ * A JavaScript module that finds words in a string of Chinese text
  */
 
-const chinesedict_pb = require('./chinesedict_pb.js');
+'use strict';
+
+const express = require('express');
+
+const app = express();
+app.use(express.static('static'))
+const PORT = process.env.PORT || 8080;
+app.listen(PORT, () => {
+  console.log(`Listening on port ${PORT}`);
+});

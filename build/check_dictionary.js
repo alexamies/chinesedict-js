@@ -19,6 +19,8 @@
  * Check that the protobuf dictionary file was saved correctly.
  */
 
+ 'use strict';
+
 const fs = require('fs');
 const chinesedict_pb = require('../chinesedict_pb.js');
 

@@ -34,7 +34,7 @@ cd chinesedict-js.git
 Add JavaScript code to import the Common JavaScrope module in your web
 application browser code and use it:
 ```
-const ChineseDict = require('./chinesedict.js');
+const ChineseDict = require('@alexamies/chinesedict-js');
 new ChineseDict('words.json', '.textbody', 'dict-dialog');
 ```
 
@@ -94,6 +94,8 @@ The dictionary file is stored and read with
 You can use your own dictionary or you can convert a dictionary like 
 [words.txt](https://github.com/alexamies/chinesenotes.com/tree/master/data/words.txt)
 from tab separated variable format to the format required here.
+
+A more complex example is given in the [demo](demo/) directory.
 
 ## Develop
 To modify the dictionary format, edit the .proto file and use the protoc
