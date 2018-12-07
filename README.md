@@ -50,22 +50,18 @@ git clone https://github.com/alexamies/chinesedict-js.git
 cd chinesedict-js.git
 ```
 
-Create a dist directory to contain files served to browsers and copy the
-module files there:
-```
-mkdir -p dist
-cp node_modules/@alexamies/chinesedict-js/index.js dist/@alexamies/chinesedict-js/.
-cp node_modules/@alexamies/chinesedict-js/chinesedict.css dist/@alexamies/chinesedict-js/.
-```
+You may want to create a dist directory to bundle files served but these
+instructions simply serve from the node_modules/@alexamies/chinesedict-js/
+directory.
 
 Create a JavaScript module for your own code and import it into your HTML page:
 ```
-&lt;script src="demo_app.js type="module""&gt;&lt;/script&gt;
+&lt;script src="demo_app.js" type="module"&gt;&lt;/script&gt;
 ```
 
 In demo_app.js, add JavaScript code to import the ES6 module:
 ```
-import ChineseDict from 'dist/@alexamies/chinesedict-js/index.js';
+import ChineseDict from '/node_modules/@alexamies/chinesedict-js/index.js';
 new ChineseDict('words.json', '.textbody', 'dict-dialog');
 ```
 
@@ -76,19 +72,29 @@ The parameters to the constructor of ChineseDict are
 3. dialog_id - A DOM id used to find the dialog
 
 where 'div_id' is select for the HTML elements containing the Chinese text.
-See the example client_app.js. Then compile the chinesedict-js into your code:
+
+Also, in your CSS file import the stylesheet:
 ```
-npm install
+@import '/node_modules/@alexamies/chinesedict-js/chinesedict.css';
 ```
+
 The [dialog-polyfill](https://github.com/GoogleChrome/dialog-polyfill) is used
 for cross-browser compatibility. The dialog-polyfill files needs to be copied
-manually at the moment:
+manually at the moment. On the command line:
 ```
-cp node_modules/dialog-polyfill/dialog-polyfill.js dist/.
+npm install dialog-polyfill
 cp node_modules/dialog-polyfill/dialog-polyfill.css dist/.
 ```
 
-These are not used as modules.
+The dialog-polyfill is not used as a module. Import it into your HTML page:
+```
+&lt;script src="/node_modules/dialog-polyfill/dialog-polyfill.js"&gt;&lt;/script&gt;
+```
+
+Also, import the stylesheet:
+```
+@import '/node_modules/dialog-polyfill/dialog-polyfill.css';
+```
 
 ## Customize
 You can customize the module with your own dictionary, HTML content, and styles.

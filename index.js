@@ -166,6 +166,9 @@ export default class ChineseDict {
    */
   setup_dialog_(dialog_id) {
   	const dialog = document.getElementById(dialog_id);
+    if (typeof dialogPolyfill !== 'undefined') {
+      dialogPolyfill.registerDialog(dialog);
+    }
   	const dialog_ok_id = dialog_id + '_ok';
   	const dialog_ok = document.getElementById(dialog_ok_id);
   	if (dialog && dialog_ok) {
