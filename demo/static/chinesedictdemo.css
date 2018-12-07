@@ -1,4 +1,5 @@
-@import 'chinesedict.css';
+@import '/node_modules/@alexamies/chinesedict-js/chinesedict.css';
+@import '/node_modules/dialog-polyfill/dialog-polyfill.css';
 
 html, body {
   max-width: 800px;

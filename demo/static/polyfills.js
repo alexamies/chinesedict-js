@@ -1,1 +1,0 @@
-require('dialog-polyfill');

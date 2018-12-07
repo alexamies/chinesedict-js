@@ -9,6 +9,7 @@
           content="Chinese-English Dictionary JavaScript Demo">
     <title>Chinese-English Dictionary JavaScript Demo</title>
     <link rel="stylesheet" type="text/css" href="demo_app.css"/>
+    <!--<link rel="stylesheet" type="text/css" href="dist/dialog-polyfill.css"/>-->
   </head>
   <body>
     <h1>Chinese-English Dictionary JavaScript Demo</h1>
@@ -21,6 +22,10 @@
        Some more text:
        <div id='textbody2' class='textbody'>羅閱城在哪裡？</div>
      </p>
+      <p>
+       If you do not see the dialog and are using Safari or Edge then read
+       the section of the README.md on cross-browser support.
+     </p>
     </main>
     <dialog id='dict-dialog'>
       <!--
@@ -31,7 +36,7 @@
       <p id='dict-dialog_headword_id'></p>
       <p><button id='dict-dialog_ok'>OK</button></p>
     </dialog>
-    <script src="dist/polyfills.bundle.js"></script>
-    <script src="dist/demo_app.bundle.js"></script>
+    <!--<script defer src="dist/dialog-polyfill.js"></script>-->
+    <script defer src="demo_app.js" type="module""></script>
   </body>
 </html>

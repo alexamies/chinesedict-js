@@ -1,5 +1,4 @@
 /**
- *  @license
  * Licensed  under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
@@ -19,14 +18,11 @@
  * A JavaScript module that finds words in a string of Chinese text
  */
 
-const dialogPolyfill = require('dialog-polyfill');
-const chinesedict_pb = require('./chinesedict_pb.js');
-
 /** 
  * A class for finding Chinese words and segmenting blocks of text with a
  * Chinese-English dictionary.
  */
-class ChineseDict {
+export default class ChineseDict {
 
   /**
    * Create a ChineseDict object, loads the dictionary
@@ -44,26 +40,12 @@ class ChineseDict {
         .then(function(response) {
           console.log(`ChineseDict response.status: ${response.status}`);
           if(response.ok) {
-            return response.arrayBuffer();
+            return response.json();
           }
           throw new Error('Error fetching dictionary');
         })
-        .then(function(arrayBuffer) {
-          let byteArray = new Uint8Array(arrayBuffer);
-          return dict.load_dictionary_(byteArray.buffer);
-        })
-        .then(function(dictionary) {
-          const entries = dictionary.getEntriesList();
-          if (entries.length == 0) {
-            console.log(`No dictionary entries`);
-          }
-          console.log(`read ${entries.length} dictionary entries`);
-  	      for (let i = 0; i < entries.length; i++) {
-  	  	    const entry = entries[i];
-  	        const traditional = entry.getTraditional();
-            //console.log(`ChineseDict traditional: ${traditional}`);
-            headwords.set(traditional, entry);
-  	      }
+        .then(function(dictData) {
+          dict.load_dictionary_(dictData, headwords);
   	      dict.highlight_words_(selector, dialog_id);
   	    });
     }
@@ -129,11 +111,16 @@ class ChineseDict {
    * Deserializes the dictionary from protobuf format.
    *
    * @private
-   * @param {!Uint8Array} buffer - The bytes to load
-   * @return {chinesedict_pb.Dictionary} The segmented text as an array of terms
+   * @param {!Array.<Array.<String>>} dictData - An array of dictionary terms
+   * @param {!Map} A map of headwords
    */
-  load_dictionary_(buffer) {
-    return new chinesedict_pb.Dictionary.deserializeBinary(buffer);
+  load_dictionary_(dictData, headwords) {
+    console.log(`read ${dictData.length} dictionary entries`);
+    for (let i = 0; i < dictData.length; i++) {
+      const entry = dictData[i];
+      const traditional = entry["t"];
+      headwords.set(traditional, entry);
+    }
   }
 
   /**
@@ -148,22 +135,22 @@ class ChineseDict {
   	  return '';
   	}
     let segments = [];
-    for (let j = 0; j < text.length; j++) {
+    let j = 0;
+    while (j < text.length) {
       let k = text.length - j;
       while (k > 0) {
         const chars = text.substring(j, j + k);
         if (this.headwords.has(chars)) {
-          console.log(`findwords found: ${chars}`);
+          console.log(`findwords found: ${chars} for j ${j}, k ${k}`);
           const entry = this.headwords.get(chars);
-          const term = new Term(chars,
-                                entry.getHeadwordId(),
-                                entry.getEnglish());
+          const term = new Term(chars, entry['h'], entry['e']);
           segments.push(term);
           j += chars.length;
           break;
         }
         if (chars.length == 1) {
           segments.push(new Term(chars));
+          j++;
         }
         k--;
       }
@@ -179,7 +166,6 @@ class ChineseDict {
    */
   setup_dialog_(dialog_id) {
   	const dialog = document.getElementById(dialog_id);
-  	dialogPolyfill.registerDialog(dialog);
   	const dialog_ok_id = dialog_id + '_ok';
   	const dialog_ok = document.getElementById(dialog_ok_id);
   	if (dialog && dialog_ok) {
@@ -273,5 +259,3 @@ class Term {
   	return this.english;
   }
 }
-
-export default ChineseDict;

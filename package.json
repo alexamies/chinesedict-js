@@ -1,22 +1,12 @@
 {
   "name": "@alexamies/chinesedict-js",
   "version": "0.0.1",
-  "description": "A client JavaScript module for a Chinese-English dictionary",
+  "description": "A JavaScript browser module for a Chinese-English dictionary",
   "license": "Apache-2.0",
   "repository": "alexamies/chinesedict-js",
   "main": "demo_app.js",
-  "scripts": {
-    "build": "npx webpack --config webpack.config.js",
-    "test": "mocha"
-  },
   "author": "alexamies",
-  "devDependencies": {
-    "webpack": "^4.26.1",
-    "webpack-cli": "^3.1.2"
-  },
   "dependencies": {
-    "@babel/polyfill": "^7.0.0",
-    "dialog-polyfill": "^0.4.10",
-    "google-protobuf": "^3.6.1"
+    "dialog-polyfill": "^0.4.10"
   }
 }

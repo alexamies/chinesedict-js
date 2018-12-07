@@ -10,7 +10,6 @@
   "author": "alexamies",
   "license": "Apache-2.0",
   "dependencies": {
-    "csv-parse": "^4.0.1",
-    "google-protobuf": "^3.6.1"
+    "csv-parse": "^4.0.1"
   }
 }

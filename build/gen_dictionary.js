@@ -1,5 +1,4 @@
 /**
- *  @license
  * Licensed  under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
@@ -17,7 +16,7 @@
 /**
  * @fileoverview
  * A Nodejs utility to generate a dictionary file in tab separated variable and
- * save as protobuf3.
+ * save as JSON.
  */
 
 'use strict';
@@ -25,7 +24,6 @@
 const assert = require('assert');
 const fs = require('fs');
 const parse = require('csv-parse');
-const chinesedict_pb = require('../chinesedict_pb.js');
 
 let tsvfile = 'words.tsv';
 if (process.argv.length > 2) {
@@ -48,18 +46,20 @@ function gen_dict(tsvfile) {
       console.log(`Error parsing TSV file: ${err}`);
       return;
     }
-    write_proto(data);
+    write_json(data);
   });
   fs.createReadStream(tsvfile).pipe(parser);
 }
 
 /**
- * Write to protobuf
+ * Write to JSON
  * @param {!Array.<Array.<string>>} data - The parsed TSV data
  */
-function write_proto(data) {
+function write_json(data) {
   console.log('Generating dictionary file');
   const entries = [];
+  let jsonData = '[';
+  let n = 0;
   for (let i = 0; i < data.length; i++) {
   	const rec = data[i];
   	assert(rec.length == 16,
@@ -85,35 +85,23 @@ function write_proto(data) {
     }
     //console.log(`simplified: ${simplified}, traditional ${traditional}`);
     if (topic_en == 'Buddhism') {
-      const entry = new chinesedict_pb.Dictionary.Entry();
-      entry.setHeadwordId(headword);
-      entry.setSimplified(simplified);
-      entry.setTraditional(traditional);
-      entry.setPinyin(pinyin);
-      entry.setEnglish(english);
-      //entry.setPos(pos);
-      //entry.setConceptCn(concept_cn);
-      //entry.setConceptEn(concept_en);
-      //entry.setTopicCn(topic_cn);
-      //entry.setTopicEn(topic_en);
-      //entry.setParentCn(parent_cn);
-      //entry.setParentEn(parent_en);
-      //entry.setImage(image);
-      //entry.setMp3(mp3);
-      //entry.setNotes(notes);
-      //entry.setLuid(luid);
-      entries.push(entry);
+      if (traditional === '\\N') {
+        traditional = simplified;
+      }
+      jsonData += `{"s":"${simplified}","t":"${traditional}","p":"${pinyin}","e":"${english}","h":"${headword}"}`;
+      if (i < (data.length - 1)) {
+        jsonData += ','
+      }
+      n++;
     }
   }
-  const dict = new chinesedict_pb.Dictionary();
-  dict.setEntriesList(entries);
+  jsonData += ']'
 
-  const bytes = dict.serializeBinary();
-  const filename = 'words.pb';
-  fs.writeFile(filename, bytes, (err) => {
+  const filename = 'words.json';
+  fs.writeFile(filename, jsonData, (err) => {
     if (err) {
       console.log(`Error saving dictionary: ${err}`);
     }
   });
-  console.log(`Wrote ${entries.length} to ${filename}`);
+  console.log(`Wrote ${n} terms to ${filename}`);
 }

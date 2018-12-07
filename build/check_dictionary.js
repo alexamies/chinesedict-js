@@ -1,5 +1,4 @@
 /**
- *  @license
  * Licensed  under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
@@ -22,25 +21,23 @@
  'use strict';
 
 const fs = require('fs');
-const chinesedict_pb = require('../chinesedict_pb.js');
+var words = require('./words.json');
 
-read_dict()
+const filename = 'words.json';
+console.log(`Read ${words.length} entries`);
 
 /**
  * Read the dictionary file
+ * @param {!string} filename - The name of the JSON file to deserialize
+ * @return {Array.<Array.<String>>} The deserialized dictionary terms
  */
-function read_dict() {
-  console.log('Reading the proto file');
-  const filename = 'words.pb';
+function read_dict(filename) {
+  console.log('Reading the dictionary JSON file');
   const bytes = fs.readFile(filename, (err, data) => {
     if (err) {
       console.log(`Error reading dictionary file: ${err}`);
     } else {
-      const dict = new chinesedict_pb.Dictionary.deserializeBinary(data);
-      const entries = dict.getEntriesList();
-      console.log(`Read ${entries.length} from ${filename}`);
-      const trad1 = entries[0].getTraditional();
-      console.log(`First entry ${trad1}`);
+      return JSON.parse(bytes);
     }
   });
 }

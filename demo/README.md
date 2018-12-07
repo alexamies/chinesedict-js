@@ -35,7 +35,7 @@ cd $CDICT_HOME/build
 node gen_dictionary.js $CNREADER_HOME/data/words.txt
 ```
 
-This generates a words.pb protobuf file that can be copied to your web dist
+This generates a words.json file that can be copied to your web dist
 directory created below.
 
 ## Build the Web Client
@@ -44,19 +44,13 @@ directory and build the client assets.
 ```
 cd $CDICT_HOME/demo/static
 npm install
-npm run build
 ```
 
-This creates a dist directory and writes the bundled JavaScript files there.
+This creates the dist directory and writes the bundled JavaScript files there.
 Copy the dictionary file to the dist directory:
 ```
-cp $CDICT_HOME/build/words.pb $CDICT_HOME/demo/static/.
-```
-
-Manually copy the style sheets:
-```
-cp node_modules/@alexamies/chinesedict-js/chinesedict.css .
-cp node_modules/dialog-polyfill/dialog-polyfill.css dist/.
+mkdir $CDICT_HOME/demo/static/dist
+cp $CDICT_HOME/build/words.json $CDICT_HOME/demo/static/dist/.
 ```
 
 ## Run locally

@@ -8,16 +8,14 @@
     <meta name="description" 
           content="Chinese-English Dictionary JavaScript Demo">
     <title>Chinese-English Dictionary JavaScript Demo</title>
-    <link rel="stylesheet" type="text/css" href="chinesedictdemo.css"/>
+    <link rel="stylesheet" type="text/css" href="/chinesedictdemo.css"/>
   </head>
   <body>
     <h1>Chinese-English Dictionary JavaScript Demo</h1>
     <main>
       <p>
        Part of FGDB entry for 目犍連:
-       <div id='textbody1' class='textbody'>
-    梵名 Maudgalyāyana，巴利名 Moggallāna。為佛陀十大弟子之一。又作摩訶目犍連（梵 Mahāmaudgalyāyana）、大目犍連、大目乾連、大目連、目連、目揵連、目伽略、勿伽羅、目犍連延、目犍羅夜那、沒特伽羅、毛伽利耶夜那。別名拘律陀（梵 Kolita）、拘律、俱哩多、拘離迦、拘理迦、俱離多。意譯天抱。被譽為神通第一。為古代印度摩揭陀國王舍城外拘律陀村人，婆羅門種。生而容貌端正，自幼即與舍利弗交情甚篤，同為刪闍耶（梵 Sañjaya）外道之弟子，各領徒眾二百五十人。嘗與舍利弗互約，先得悟解脫者必以相告，遂共競精進修行。後舍利弗因逢佛陀弟子阿說示，而悟諸法無我之理，並告目犍連，目犍連遂率弟子一同拜謁佛陀，蒙其教化，時經一月，證得阿羅漢果。於佛本行集經卷四十七舍利弗目連緣品、四分律卷三十三等均載有此事。 
-       </div>
+       <div id='textbody1' class='textbody'>梵名 Maudgalyāyana，巴利名 Moggallāna。為佛陀十大弟子之一。又作摩訶目犍連（梵 Mahāmaudgalyāyana）、大目犍連、大目乾連、大目連、目連、目揵連、目伽略、勿伽羅、目犍連延、目犍羅夜那、沒特伽羅、毛伽利耶夜那。別名拘律陀（梵 Kolita）、拘律、俱哩多、拘離迦、拘理迦、俱離多。意譯天抱。被譽為神通第一。為古代印度摩揭陀國王舍城外拘律陀村人，婆羅門種。生而容貌端正，自幼即與舍利弗交情甚篤，同為刪闍耶（梵 Sañjaya）外道之弟子，各領徒眾二百五十人。嘗與舍利弗互約，先得悟解脫者必以相告，遂共競精進修行。後舍利弗因逢佛陀弟子阿說示，而悟諸法無我之理，並告目犍連，目犍連遂率弟子一同拜謁佛陀，蒙其教化，時經一月，證得阿羅漢果。於佛本行集經卷四十七舍利弗目連緣品、四分律卷三十三等均載有此事。</div>
      </p>
     </main>
     <dialog id='dict-dialog'>
@@ -30,7 +28,7 @@
       <p id='dict-dialog_headword_id'></p>
       <p><button id='dict-dialog_ok'>OK</button></p>
     </dialog>
-    <script src="dist/polyfills.bundle.js"></script>
-    <script src="dist/chinesedictdemo.bundle.js"></script>
+    <script defer src="/node_modules/dialog-polyfill/dialog-polyfill.js"></script>
+    <script defer src="/chinesedictdemo.js" type="module"></script>
   </body>
 </html>
