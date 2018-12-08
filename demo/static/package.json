@@ -1,6 +1,6 @@
 {
   "name": "static",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "A demo for the Chinese-English Dictionary JavaScript module",
   "main": "chinesedictdemo.js",
   "license": "Apache-2.0",
@@ -9,18 +9,8 @@
     "type": "git",
     "url": "https://github.com/alexamies/chinesedict-js/demo/static"
   },
-  "scripts": {
-    "build": "npx webpack --config webpack.config.js"
-  },
   "dependencies": {
     "@alexamies/chinesedict-js": "git+https://github.com/alexamies/chinesedict-js.git",
     "@babel/polyfill": "^7.0.0"
-  },
-  "devDependencies": {
-    "@babel/cli": "^7.2.0",
-    "@babel/core": "^7.2.0",
-    "@babel/preset-env": "^7.2.0",
-    "webpack": "^4.26.1",
-    "webpack-cli": "^3.1.2"
   }
 }

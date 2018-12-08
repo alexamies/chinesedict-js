@@ -1,45 +1,23 @@
 # Chinese Dictionary JavaScript Module
 Status: early prototype
 
-This project contains an ES6 JavaScript browser module for showing keywords in a
-static Chinese web page. The JavaScript module should work on any web page.
-It does not require a web framework, like Material or React. It is designed
-and built using plain JavaScript and compiled into a bundle to be compatible
-with modern browsers.
+An ES6 JavaScript browser module for showing Chinese-English dictionary terms
+in a static Chinese web page. The JavaScript module does not require a web
+framework, like Material or React, but it should be compatible with those. It is
+designed and built using plain JavaScript to be used with modern browsers.
 
-## Simple Demo
-The file index.html is ready to be served as a demo web page. It needs to be
-served on a web server (not just opened in a browser from the local file
-system). For example, using a Docker Apache 2 image:
+## Prerequisites
+Install Node.js. Initialize it in your public HTML directory:
 ```
-docker run -itd --rm -p 8080:80 --name demo_app  \
-  --mount type=bind,source="$(pwd)",target=/usr/local/apache2/htdocs \
-  httpd:2.4
-```
-
-Open the index.html file in a web browser at http://localhost:8080/index.html
-Click on one of the highlighted words. If everything is ok you should see a
-dialog like this (on Chrome):
-
-<img
-src='https://github.com/alexamies/chinesedict-js/blob/master/screenshot.png'/>
-
-Instructions for bundling in your web application are described below.
-
-See a more complex demo at <a href='https://chinesedictdemo.appspot.com'
->chinesedictdemo.appspot.com</a>.
-
-## Prerequisities
-Install [Nodejs](https://nodejs.org). set it up in your own web application
-directory with the command
-```
-npm init -y
+mkdir public_html
+cd public_html
+npm init
 ```
 
 ## Install
 Get the chinesedict-js JavaScript module with the command:
 ```
-npm install git+https://github.com/alexamies/chinesedict-js.git
+npm install @alexamies/chinesedict-js
 ```
 
 The files from the GitHub project will be located in the directory
@@ -53,6 +31,11 @@ git clone https://github.com/alexamies/chinesedict-js.git
 cd chinesedict-js.git
 ```
 
+## Use
+You can import the chinesedict-js module into your web pages with a JavaScript
+[import](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import)
+statement.
+
 You may want to create a dist directory to bundle files served but these
 instructions simply serve from the node_modules/@alexamies/chinesedict-js/
 directory. For example, bundling into directory dist:
@@ -62,9 +45,11 @@ cp node_modules/@alexamies/chinesedict-js/index.js dist/.
 cp node_modules/@alexamies/chinesedict-js/chinesedict.css dist/.
 ```
 
-Create a JavaScript module for your own code and import it into your HTML page:
+Make sure that you reference your own JavaScript code in your HTML page using a
+[script](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/script)
+element with type="module"
 ```
-&lt;script src="demo_app.js" type="module"&gt;&lt;/script&gt;
+<script src="demo_app.js" type="module"></script>
 ```
 
 In demo_app.js, add JavaScript code to import the ES6 module:
@@ -97,12 +82,43 @@ cp node_modules/dialog-polyfill/dialog-polyfill.css dist/.
 
 The dialog-polyfill is not used as a module. Load it into your HTML page:
 ```
-&lt;script src="/dist/dialog-polyfill.js"&gt;&lt;/script&gt;
+<script src="/dist/dialog-polyfill.js"></script>
 ```
 
-Also, import the stylesheet:
+Also, import the stylesheet into your CSS file with a
+[CSS import](https://developer.mozilla.org/en-US/docs/Web/CSS/@import)
+statement:
 ```
 @import '/dist/dialog-polyfill.css';
+```
+
+## Simple Demo
+The file index.html is ready to be served as a demo web page. It needs to be
+served on a web server (not just opened in a browser from the local file
+system). For example, using a Docker Apache 2 image:
+```
+docker run -itd --rm -p 8080:80 --name demo_app  \
+  --mount type=bind,source="$(pwd)",target=/usr/local/apache2/htdocs \
+  httpd:2.4
+```
+
+Open the index.html file in a web browser at http://localhost:8080/index.html
+Click on one of the highlighted words. If everything is ok you should see a
+dialog like this (on Chrome):
+
+<img
+src='https://github.com/alexamies/chinesedict-js/blob/master/screenshot.png?raw=true'/>
+
+Instructions for bundling in your web application are described below.
+
+See a more complex demo at
+[chinesedictdemo.appspot.com](https://chinesedictdemo.appspot.com).
+
+## Prerequisities
+Install [Nodejs](https://nodejs.org). set it up in your own web application
+directory with the command
+```
+npm init -y
 ```
 
 ## Customize
@@ -137,12 +153,9 @@ the dialog element is not yet supported natively by Edge or Safari.
 Modern browsers ES6 style JavaScript including modules. If you want to support
 older browsers you will need to do that with
 [Babel presets](https://babeljs.io/docs/en/presets) or Webpack compilation.
-A sample webpack configuration file is included. However, that is not used at
-present because their dependence on Common JS modules worsens performance.
 
-### Mobile Support
-Browser testing on mobile devices is a TODO. You may need to add your own
-styles. 
+### Mobile Device Support
+The module can be used on web pages designed for mobile devices. 
 
 ### Performance
 Bundling and minification with WebPack or Babel may help but, as mentioned
