@@ -26,6 +26,9 @@ src='https://github.com/alexamies/chinesedict-js/blob/master/screenshot.png'/>
 
 Instructions for bundling in your web application are described below.
 
+See a more complex demo at <a href='https://chinesedictdemo.appspot.com'
+>chinesedictdemo.appspot.com</a>.
+
 ## Prerequisities
 Install [Nodejs](https://nodejs.org). set it up in your own web application
 directory with the command
@@ -52,7 +55,12 @@ cd chinesedict-js.git
 
 You may want to create a dist directory to bundle files served but these
 instructions simply serve from the node_modules/@alexamies/chinesedict-js/
-directory.
+directory. For example, bundling into directory dist:
+```
+mkdir dist
+cp node_modules/@alexamies/chinesedict-js/index.js dist/.
+cp node_modules/@alexamies/chinesedict-js/chinesedict.css dist/.
+```
 
 Create a JavaScript module for your own code and import it into your HTML page:
 ```
@@ -61,7 +69,7 @@ Create a JavaScript module for your own code and import it into your HTML page:
 
 In demo_app.js, add JavaScript code to import the ES6 module:
 ```
-import ChineseDict from '/node_modules/@alexamies/chinesedict-js/index.js';
+import ChineseDict from '/dist/index.js';
 new ChineseDict('words.json', '.textbody', 'dict-dialog');
 ```
 
@@ -83,17 +91,18 @@ for cross-browser compatibility. The dialog-polyfill files needs to be copied
 manually at the moment. On the command line:
 ```
 npm install dialog-polyfill
+cp node_modules/dialog-polyfill/dialog-polyfill.js dist/.
 cp node_modules/dialog-polyfill/dialog-polyfill.css dist/.
 ```
 
-The dialog-polyfill is not used as a module. Import it into your HTML page:
+The dialog-polyfill is not used as a module. Load it into your HTML page:
 ```
-&lt;script src="/node_modules/dialog-polyfill/dialog-polyfill.js"&gt;&lt;/script&gt;
+&lt;script src="/dist/dialog-polyfill.js"&gt;&lt;/script&gt;
 ```
 
 Also, import the stylesheet:
 ```
-@import '/node_modules/dialog-polyfill/dialog-polyfill.css';
+@import '/dist/dialog-polyfill.css';
 ```
 
 ## Customize

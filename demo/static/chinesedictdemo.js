@@ -1,4 +1,4 @@
-import ChineseDict from '/node_modules/@alexamies/chinesedict-js/index.js'
+import ChineseDict from '/dist/index.js'
 
 // Application JavaScript demonstrating use of the ChineseDict module
 

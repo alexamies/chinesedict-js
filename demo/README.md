@@ -46,11 +46,19 @@ cd $CDICT_HOME/demo/static
 npm install
 ```
 
+Copy the relevant files into a dist directory:
+```
+mkdir dist
+cp node_modules/@alexamies/chinesedict-js/index.js dist/.
+cp node_modules/@alexamies/chinesedict-js/chinesedict.css dist/.
+cp node_modules/dialog-polyfill/dialog-polyfill.js dist/.
+cp node_modules/dialog-polyfill/dialog-polyfill.css dist/.
+```
+
 This creates the dist directory and writes the bundled JavaScript files there.
 Copy the dictionary file to the dist directory:
 ```
-mkdir $CDICT_HOME/demo/static/dist
-cp $CDICT_HOME/build/words.json $CDICT_HOME/demo/static/dist/.
+cp $CDICT_HOME/build/words.json dist/.
 ```
 
 ## Run locally
@@ -68,3 +76,7 @@ GAE_APPLICATION=[Your project id]
 gcloud config set project $GAE_APPLICATION
 ```
 
+Deploy to App Engine:
+```
+gcloud app deploy
+```
