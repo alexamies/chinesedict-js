@@ -120,9 +120,13 @@ A more complex example is given in the [demo](demo/) directory. See this at
 
 ## Customize
 You can customize the module with your own dictionary, HTML content, and styles.
-The dictionary should be structured the same as the example words.pb file
-provided, which may be reused under the [Creative Commons Attribution-Share
-Alike 3.0 License - CCASE 3.0](https://creativecommons.org/licenses/by-sa/3.0/).
+The dictionary should be structured the same as the example words.json file
+provided. If you have not got your own dictionary then you can use the [NTI
+Buddhist Text Reader Project](https://github.com/alexamies/buddhist-dictionary),
+or [Chinese Notes](https://github.com/alexamies/chinesenotes.com)
+Chinese-English dictionary, which may be reused under the [Creative Commons
+Attribution-Share Alike 3.0 License -
+CCASE 3.0](https://creativecommons.org/licenses/by-sa/3.0/).
 
 The build/gen_dictionary.js file is Nodejs command line utility to generate
 the dictionary file. To generate the dictionary use the command
