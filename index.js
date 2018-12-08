@@ -71,12 +71,24 @@ export default class ChineseDict {
   	  	link.href = '#';
   	  	link.addEventListener('click', (event) => {
   	  		this.showdialog_(event, term, dialog_id)});
+        link.addEventListener('mouseover', (event) => {
+          this.domouseover_(event, term)});
   	  	elem.appendChild(link);
   	  } else {
         var text = document.createTextNode(chinese);
         elem.appendChild(text);
   	  }
   	}
+  }
+
+  /**
+   * Respond to a mouse over event for a dictionary term
+   * @private
+   * @param {MouseEvent} event - An event triggered by a user
+   * @param {Term} term - Encapsulates the Chinese and the English equivalent
+   */
+  domouseover_(event, term) {
+    event.target.title = term.get_english();
   }
 
   /**
@@ -175,7 +187,7 @@ export default class ChineseDict {
   	  dialog_ok.addEventListener('click', () => {
   	    dialog.close();
   	  });
- 	}
+ 	  }
   }
 
   /**
@@ -214,7 +226,6 @@ export default class ChineseDict {
   	  alert(`chinese: ${chinese} english: ${english}, id: ${id}`);
   	}
   }
-
 }
 
 /** 

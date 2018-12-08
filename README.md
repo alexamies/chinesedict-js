@@ -2,16 +2,21 @@
 Status: early prototype
 
 An ES6 JavaScript browser module for showing Chinese-English dictionary terms
-in a static Chinese web page. The JavaScript module does not require a web
-framework, like Material or React, but it should be compatible with those. It is
-designed and built using plain JavaScript to be used with modern browsers.
+in web pages. The JavaScript code will scan Chinese text, highlight the words
+contained in the dictionary. When a user mouses over the dictionary terms then a
+tooltip with the English equivalent will be displayed. When a user clicks on a
+term then the other details of the dictionary term will be shown.
+
+The JavaScript module does not require a web framework, like Material or React,
+but it should be compatible with those. It is designed and built using plain
+JavaScript and to be used with modern browsers.
 
 ## Prerequisites
-Install Node.js. Initialize it in your public HTML directory:
+Install Node.js. Initialize your public HTML directory:
 ```
 mkdir public_html
 cd public_html
-npm init
+npm init -y
 ```
 
 ## Install
@@ -23,12 +28,6 @@ npm install @alexamies/chinesedict-js
 The files from the GitHub project will be located in the directory
 ```
 node_modules/@alexamies/chinesedict-js
-```
-
-You can also clone it from GitHub:
-```
-git clone https://github.com/alexamies/chinesedict-js.git
-cd chinesedict-js.git
 ```
 
 ## Use
@@ -93,9 +92,15 @@ statement:
 ```
 
 ## Simple Demo
-The file index.html is ready to be served as a demo web page. It needs to be
-served on a web server (not just opened in a browser from the local file
-system). For example, using a Docker Apache 2 image:
+The file index.html is ready to be served as a demo web page. The easiest way to
+run this yourself is to clone it from GitHub:
+```
+git clone https://github.com/alexamies/chinesedict-js.git
+cd chinesedict-js.git
+```
+
+It needs to be served on a web server (not just opened in a browser from the
+local file system). For example, using a Docker Apache 2 image:
 ```
 docker run -itd --rm -p 8080:80 --name demo_app  \
   --mount type=bind,source="$(pwd)",target=/usr/local/apache2/htdocs \
@@ -109,17 +114,9 @@ dialog like this (on Chrome):
 <img
 src='https://github.com/alexamies/chinesedict-js/blob/master/screenshot.png?raw=true'/>
 
-Instructions for bundling in your web application are described below.
-
-See a more complex demo at
+## More Complex Demo
+A more complex example is given in the [demo](demo/) directory. See this at
 [chinesedictdemo.appspot.com](https://chinesedictdemo.appspot.com).
-
-## Prerequisities
-Install [Nodejs](https://nodejs.org). set it up in your own web application
-directory with the command
-```
-npm init -y
-```
 
 ## Customize
 You can customize the module with your own dictionary, HTML content, and styles.
@@ -141,8 +138,6 @@ You can use your own dictionary or you can convert a dictionary like
 [words.txt](https://github.com/alexamies/chinesenotes.com/tree/master/data/words.txt)
 from tab separated variable format to the format required here.
 
-A more complex example is given in the [demo](demo/) directory.
-
 ## Test
 ### Cross Browser Support
 Cross browser support is provided for the HTML
@@ -158,5 +153,6 @@ older browsers you will need to do that with
 The module can be used on web pages designed for mobile devices. 
 
 ### Performance
-Bundling and minification with WebPack or Babel may help but, as mentioned
-above, their current ES6 module support lags behind browsers.
+Bundling and minification with WebPack or Babel may help but their current ES6
+module support lags behind browsers. Use of common JS modules does not perform
+adequately, except for very small dictionaries and text sizes.
