@@ -22,22 +22,29 @@
 'use strict';
 
 const assert = require('assert');
+const argv = require('yargs').argv
 const fs = require('fs');
 const parse = require('csv-parse');
 
 let tsvfile = 'words.tsv';
-if (process.argv.length > 2) {
-  tsvfile = process.argv[2];
+if (argv._.length > 0) {
+  tsvfile = argv._[0];
 }
-gen_dict(tsvfile)
+let topic = '';
+if ((typeof argv.topic !== 'undefined') && (argv.topic.length > 0)) {
+  topic = argv.topic;
+}
+
+gen_dict(tsvfile, argv.topic)
 
 /**
  * Parse the dictionary tab separated variable file and generate the protobuf
  * file.
  * @param {!string} tsvfile - The name of the TSV file to parse
+ * @param {!string} topic - The name of the topic to restrict entries to
  */
-function gen_dict(tsvfile) {
-  console.log(`Parsing tsv dictionary file ${tsvfile}`);
+function gen_dict(tsvfile, topic) {
+  console.log(`Parsing tsv dictionary file - ${tsvfile}`);
   const parser = parse({
     delimiter: '\t',
     comment: '#'
@@ -46,7 +53,7 @@ function gen_dict(tsvfile) {
       console.log(`Error parsing TSV file: ${err}`);
       return;
     }
-    write_json(data);
+    write_json(data, topic);
   });
   fs.createReadStream(tsvfile).pipe(parser);
 }
@@ -54,9 +61,10 @@ function gen_dict(tsvfile) {
 /**
  * Write to JSON
  * @param {!Array.<Array.<string>>} data - The parsed TSV data
+ * @param {!string} topic - The name of the topic to restrict entries to
  */
-function write_json(data) {
-  console.log('Generating dictionary file');
+function write_json(data, topic_en) {
+  console.log(`Generating dictionary file ${topic}`);
   const entries = [];
   let jsonData = '[';
   let n = 0;
@@ -84,7 +92,7 @@ function write_json(data) {
       traditional = simplified;
     }
     //console.log(`simplified: ${simplified}, traditional ${traditional}`);
-    if (topic_en == 'Buddhism') {
+    if ((topic === '') || (topic_en === topic)) {
       if (traditional === '\\N') {
         traditional = simplified;
       }

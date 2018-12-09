@@ -129,7 +129,10 @@ Attribution-Share Alike 3.0 License -
 CCASE 3.0](https://creativecommons.org/licenses/by-sa/3.0/).
 
 The build/gen_dictionary.js file is Nodejs command line utility to generate
-the dictionary file. To generate the dictionary use the command
+the dictionary file. This utility assumes the tab separated variable format of
+the words.txt file in the [Chinese
+Notes](https://github.com/alexamies/chinesenotes.com) project. To generate the
+dictionary use the command
 
 ```
 cd build
@@ -137,10 +140,14 @@ npm install
 node gen_dictionary.js words.tsv
 ```
 
-The dictionary file is stored and read JSON format.
-You can use your own dictionary or you can convert a dictionary like 
-[words.txt](https://github.com/alexamies/chinesenotes.com/tree/master/data/words.txt)
-from tab separated variable format to the format required here.
+To restrict the entries to a specific topic use the --topic argument. For
+example,
+```
+node gen_dictionary.js --topic "Literary Chinese" words.tsv
+```
+
+The dictionary file is stored in JSON format.
+
 
 ## Test
 ### Cross Browser Support
