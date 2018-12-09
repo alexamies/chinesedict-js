@@ -2,3 +2,15 @@ dialog {
   width: 400px;
   height: 200px;
 }
+
+/* Different color and underlining for proper nouns */
+a.highlight {
+    text-decoration: underline;
+    color: blue;
+}
+
+/* No underlining for regular terms */
+a.nohighlight {
+  text-decoration: none;
+  color: inherit;
+}

@@ -11,6 +11,8 @@ The JavaScript module does not require a web framework, like Material or React,
 but it should be compatible with those. It is designed and built using plain
 JavaScript and to be used with modern browsers.
 
+Only traditional Chinese text is supported at present.
+
 ## Prerequisites
 Install Node.js. Initialize your public HTML directory:
 ```

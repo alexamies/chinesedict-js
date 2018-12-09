@@ -25,12 +25,19 @@
 export default class ChineseDict {
 
   /**
-   * Create a ChineseDict object, loads the dictionary
+   * Create a ChineseDict object, loads the dictionary. Scans the text in the
+   * DOM elements matching the selector. If the highlight is empty or has value
+   * 'all' then all words with dictionary entries will be highlighted. If
+   * highlight is set to 'proper' then event listeners will be added for all
+   * terms but only those that are proper nouns (names, places, etc) will be
+   * highlighted.
+   *
    * @param {string} filename - Name of the dictionary file
    * @param {string} selector - A DOM selector used to find the page elements
    * @param {string} dialog_id - A DOM id used to find the dialog
+   * @param {string} highlight - Which terms to highlight: all | proper
    */
-  constructor(filename, selector, dialog_id) {
+  constructor(filename, selector, dialog_id, highlight) {
     console.log('ChineseDict constructor');
   	const headwords = new Map();
   	this.headwords = headwords;
@@ -46,7 +53,7 @@ export default class ChineseDict {
         })
         .then(function(dictData) {
           dict.load_dictionary_(dictData, headwords);
-  	      dict.highlight_words_(selector, dialog_id);
+  	      dict.highlight_words_(selector, dialog_id, highlight);
   	    });
     }
     this.setup_dialog_(dialog_id);
@@ -58,17 +65,24 @@ export default class ChineseDict {
    * @param {!Element} elem - The DOM element to add the segments to
    * @param {!Array.<string>} terms - The segmented text array of terms
    * @param {string} dialog_id - A DOM id used to find the dialog
+   * @param {string} highlight - Which terms to highlight: all | proper
    */
-  decorate_segments_(elem, terms, dialog_id) {
-    console.log(`decorate_segments_ dialog_id: ${dialog_id}`);
+  decorate_segments_(elem, terms, dialog_id, highlight) {
+    console.log(`decorate_segments_ dialog_id: ${dialog_id}, ${highlight}`);
   	elem.innerHTML = "";
   	for (let i = 0; i < terms.length; i++) {
   	  const term = terms[i];
-  	  let chinese = term.get_chinese();
+  	  const chinese = term.get_chinese();
+      const grammar = term.get_grammar();
   	  if (term.get_headword_id()) {
   	  	var link = document.createElement('a');
   	  	link.textContent = chinese;
   	  	link.href = '#';
+        if ((highlight !== 'proper') || (grammar === 'proper noun')) {
+          link.className = 'highlight';
+        } else {
+          link.className = 'nohighlight';
+        }
   	  	link.addEventListener('click', (event) => {
   	  		this.showdialog_(event, term, dialog_id)});
         link.addEventListener('mouseover', (event) => {
@@ -99,8 +113,9 @@ export default class ChineseDict {
    * @private
    * @param {string} selector - A DOM selector used to find the page elements
    * @param {string} dialog_id - A DOM id used to find the dialog
+   * @param {string} highlight - Which terms to highlight: all | proper
    */
-  highlight_words_(selector, dialog_id) {
+  highlight_words_(selector, dialog_id, highlight) {
   	if (!selector) {
       console.log('findwords: selector empty');
       return;
@@ -115,7 +130,7 @@ export default class ChineseDict {
       const el = elems[i];
       const text = el.textContent;
       let terms = this.segment_text_(text);
-      this.decorate_segments_(el, terms, dialog_id);
+      this.decorate_segments_(el, terms, dialog_id, highlight);
     }
   }
 
@@ -153,9 +168,10 @@ export default class ChineseDict {
       while (k > 0) {
         const chars = text.substring(j, j + k);
         if (this.headwords.has(chars)) {
-          console.log(`findwords found: ${chars} for j ${j}, k ${k}`);
+          //console.log(`findwords found: ${chars} for j ${j}, k ${k}`);
           const entry = this.headwords.get(chars);
-          const term = new Term(chars, entry['h'], entry['e']);
+          const term = new Term(chars, entry['h'], entry['p'], entry['e'],
+                                entry['g']);
           segments.push(term);
           j += chars.length;
           break;
@@ -201,6 +217,7 @@ export default class ChineseDict {
   	console.log(`showdialog_ this: ${this}`);
   	const chinese = event.target.textContent;
   	const english = term.get_english();
+    const pinyin = term.get_pinyin();
   	const id = term.get_headword_id();
   	const dialog = document.getElementById(dialog_id);
   	if (dialog) {
@@ -209,6 +226,11 @@ export default class ChineseDict {
   	  if (headword_div) {
   	    headword_div.innerHTML = chinese;
   	  }
+      const pinyin_div_id = dialog_id + '_pinyin';
+      const pinyin_div = document.getElementById(pinyin_div_id);
+      if (pinyin_div) {
+        pinyin_div.innerHTML = pinyin;
+      }
   	  const english_div_id = dialog_id + '_english';
   	  const english_div = document.getElementById(english_div_id);
   	  if (english_div) {
@@ -236,17 +258,25 @@ class Term {
   /**
    * Create a Term object
    * @param {!string} chinese - The Chinese text for the term
-   * @param {number} headword_id - The headword id, if there is a match
-   * @param {Array<string>} english - English equivalents, if there is a match
+   * @param {string} headword_id - The headword id
+   * @param {string} pinyin - Mandarin pronunciation
+   * @param {string} english - English equivalent
+   * @param {string} grammar - Part of speech
    */
-  constructor(chinese, headword_id, english) {
+  constructor(chinese, headword_id, pinyin, english, grammar) {
   	this.chinese = chinese;
   	if (headword_id) {
   	  this.headword_id = headword_id;
   	}
+    if (pinyin) {
+      this.pinyin = pinyin;
+    }   
   	if (english) {
   	  this.english = english;
   	} 	
+    if (grammar) {
+      this.grammar = grammar;
+    }   
   }
 
   /**
@@ -258,18 +288,34 @@ class Term {
   }
 
   /**
+   * Gets the English equivalent for the term
+   * @return {string} English equivalent for the term
+   */
+  get_english() {
+    return this.english;
+  }
+
+  /**
+   * Gets the part of speech for the term
+   * @return {string} part of speech for the term
+   */
+  get_grammar() {
+    return this.grammar;
+  }
+
+  /**
    * Gets the headword_id for the term
-   * @return {number} headword_id - The headword id, if there is a match
+   * @return {string} headword_id - The headword id
    */
   get_headword_id() {
   	return this.headword_id;
   }
 
   /**
-   * Gets the headword_id for the term
-   * @return {Array<string>} english - English equivalents, if there is a match
+   * Gets the Mandarin pronunciation for the term
+   * @return {string} Mandarin pronunciation
    */
-  get_english() {
-  	return this.english;
+  get_pinyin() {
+    return this.pinyin;
   }
 }

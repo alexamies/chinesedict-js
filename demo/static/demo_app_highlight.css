@@ -1,0 +1,6 @@
+@import '/dist/chinesedict.css';
+@import '/dist/dialog-polyfill.css';
+
+html, body {
+  max-width: 800px;
+}

@@ -77,7 +77,7 @@ function write_json(data, topic_en) {
     let traditional = rec[2];
     const pinyin = rec[3];
     const english = rec[4];
-    const pos = rec[5];
+    const grammar = rec[5];
     const concept_cn = rec[6];
     const concept_en = rec[7];
     const topic_cn = rec[8];
@@ -93,12 +93,25 @@ function write_json(data, topic_en) {
     }
     //console.log(`simplified: ${simplified}, traditional ${traditional}`);
     if ((topic === '') || (topic_en === topic)) {
+      let t = `"t":"${traditional}",`;
       if (traditional === '\\N') {
-        traditional = simplified;
+        t = `"t":"${simplified}",`;
       }
-      jsonData += `{"s":"${simplified}","t":"${traditional}","p":"${pinyin}","e":"${english}","h":"${headword}"}`;
+      let e = '';
+      if (english !== '\\N') {
+        e = `"e":"${english}",`;
+      }
+      let p = '';
+      if (pinyin !== '\\N') {
+        p = `"p":"${pinyin}",`;
+      }
+      let g = '';
+      if (grammar !== '\\N') {
+        g = `"g":"${grammar}",`;
+      }
+      jsonData += `{"s":"${simplified}",${t}${p}${e}${g}"h":"${headword}"}`;
       if (i < (data.length - 1)) {
-        jsonData += ','
+        jsonData += ',\n'
       }
       n++;
     }

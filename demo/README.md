@@ -49,8 +49,8 @@ npm install
 Copy the relevant files into a dist directory:
 ```
 mkdir dist
-cp node_modules/@alexamies/chinesedict-js/index.js dist/.
-cp node_modules/@alexamies/chinesedict-js/chinesedict.css dist/.
+cp $CDICT_HOME/index.js dist/.
+cp $CDICT_HOME/chinesedict.css dist/.
 cp node_modules/dialog-polyfill/dialog-polyfill.js dist/.
 cp node_modules/dialog-polyfill/dialog-polyfill.css dist/.
 ```
@@ -80,3 +80,22 @@ Deploy to App Engine:
 ```
 gcloud app deploy
 ```
+
+## Example with Highlighting of Proper Nouns Only
+The example in [static/highlighting.html](static/highlighting.html) demonstrates
+restricting highlighting of proper nouns only. The other words are clickable
+but not highlighted. This prevents the user being presented with a page filled
+with highlighted elements.
+
+Build the whole Chinese Notes dictionary
+```
+cd $CDICT_HOME/build
+node gen_dictionary.js $CNREADER_HOME/data/words.txt
+node check_dictionary.js
+cd $CDICT_HOME/demo
+cp $CDICT_HOME/build/words.json $CDICT_HOME/demo/static/dist/words_all.json
+npm start
+```
+
+The entire Chinese Notes / NTI Reader dictionary is large. It would be ideal to
+serve it compressed.

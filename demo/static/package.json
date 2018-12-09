@@ -10,7 +10,6 @@
     "url": "https://github.com/alexamies/chinesedict-js/demo/static"
   },
   "dependencies": {
-    "@alexamies/chinesedict-js": "git+https://github.com/alexamies/chinesedict-js.git",
-    "@babel/polyfill": "^7.0.0"
+    "@alexamies/chinesedict-js": "git+https://github.com/alexamies/chinesedict-js.git"
   }
 }
