@@ -1,7 +1,7 @@
 # Demo Application
 You can use the chinesedict-js module on any web or application server. These
 instructions explain how to a more complex example than the initial example
-using the App Engine Standard [Node.js Runtim
+using the App Engine Standard [Node.js Runtime
 Environment](https://cloud.google.com/appengine/docs/standard/nodejs/runtime),
 which uses the [Express](https://expressjs.com/) web framework. Actually, the
 demo only uses Express for static file serving but takes advantage of the
@@ -32,7 +32,7 @@ that we will use for this demo. Change to the build directory and build the
 protobuf format of the dictionary file:
 ```
 cd $CDICT_HOME/build
-node gen_dictionary.js $CNREADER_HOME/data/words.txt
+node gen_dictionary.js --topic "Buddhism" $CNREADER_HOME/data/words.txt
 ```
 
 This generates a words.json file that can be copied to your web dist
