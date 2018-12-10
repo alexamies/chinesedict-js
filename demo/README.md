@@ -29,7 +29,7 @@ CNREADER_HOME=`pwd`/chinesenotes.com
 This contains a tab separated variable (TSV) dictionary file
 [words.txt](https://github.com/alexamies/chinesenotes.com/blob/master/data/words.txt)
 that we will use for this demo. Change to the build directory and build the
-protobuf format of the dictionary file:
+JSON format of the dictionary file:
 ```
 cd $CDICT_HOME/build
 node gen_dictionary.js --topic "Buddhism" $CNREADER_HOME/data/words.txt
