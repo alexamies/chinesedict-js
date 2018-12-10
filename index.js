@@ -36,9 +36,13 @@ export default class ChineseDict {
    * @param {string} selector - A DOM selector used to find the page elements
    * @param {string} dialog_id - A DOM id used to find the dialog
    * @param {string} highlight - Which terms to highlight: all | proper
+   * @param {function} onerror - Callback in case of an error
    */
-  constructor(filename, selector, dialog_id, highlight) {
+  constructor(filename, selector, dialog_id, highlight, onerror) {
     console.log('ChineseDict constructor');
+    if (typeof onerror === 'undefined') {
+      onerror = console.log;
+    }
   	const headwords = new Map();
   	this.headwords = headwords;
   	const dict = this;
@@ -49,6 +53,7 @@ export default class ChineseDict {
           if(response.ok) {
             return response.json();
           }
+          onerror(response.status);
           throw new Error('Error fetching dictionary');
         })
         .then(function(dictData) {
