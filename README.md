@@ -150,6 +150,10 @@ node gen_dictionary.js --topic "Literary Chinese" words.tsv
 
 The dictionary file is stored in JSON format.
 
+## Integration
+### Angular
+A prototype for Angular integration is given at
+[angular/README.md](angular/README.md).
 
 ## Test
 ### Cross Browser Support
