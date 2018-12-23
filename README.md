@@ -1,11 +1,11 @@
 # Chinese Dictionary JavaScript Module
 Status: early prototype
 
-An ES6 JavaScript browser module for showing Chinese-English dictionary terms
-in web pages. The JavaScript code will scan Chinese text, highlight the words
-contained in the dictionary. When a user mouses over the dictionary terms then a
-tooltip with the English equivalent will be displayed. When a user clicks on a
-term then the other details of the dictionary term will be shown.
+An ECMAScript 2015 (ES6) browser module for showing Chinese-English dictionary
+terms in web pages. The JavaScript code will scan Chinese text, highlight the
+words contained in the dictionary. When a user mouses over the dictionary terms
+then a tooltip with the English equivalent will be displayed. When a user clicks
+on a term then the other details of the dictionary term will be shown.
 
 The JavaScript module does not require a web framework, like Material or React,
 but it should be compatible with those. It is designed and built using plain
@@ -151,8 +151,12 @@ node gen_dictionary.js --topic "Literary Chinese" words.tsv
 The dictionary file is stored in JSON format.
 
 ## Integration
+### Typescript
+A preliminary prototype for Typescript integration is given at
+[typescript/README.md](typescript/README.md).
+
 ### Angular
-A prototype for Angular integration is given at
+A preliminary prototype for Angular integration is given at
 [angular/README.md](angular/README.md).
 
 ## Test
