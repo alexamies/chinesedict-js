@@ -15,11 +15,19 @@
 
 /**
  * @fileoverview
- * A JavaScript module that finds words in a string of Chinese text
+ * A module that finds words in a string of Chinese text
  */
 
+// Dependencies, including Browser implementation of fetch and dialogPolyfill
+// pollyfill for HTMLDialogElement
 declare var fetch;
 declare var dialogPolyfill;
+declare global {
+  interface HTMLDialogElement {
+      close(): void;
+      showModal(): void;
+  }
+}
 
 /** 
  * A class for finding Chinese words and segmenting blocks of text with a
@@ -205,7 +213,8 @@ export class ChineseDict {
   	const dialog_ok = document.getElementById(dialog_ok_id);
   	if (dialog && dialog_ok) {
   	  dialog_ok.addEventListener('click', () => {
-  	    dialog.close();
+        let d = dialog as any as HTMLDialogElement;
+        d.close();
   	  });
  	  }
   }
@@ -246,7 +255,8 @@ export class ChineseDict {
   	    headword_id_div.innerHTML = id;
   	  }
   	  console.log('showdialog_ showing dialog');
-  	  dialog.showModal();
+      let d = dialog as any as HTMLDialogElement;
+  	  d.showModal();
   	} else {
   	  console.log(`showdialog_ ${dialog_id} not found`);
   	  alert(`chinese: ${chinese} english: ${english}, id: ${id}`);

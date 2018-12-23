@@ -151,8 +151,8 @@ node gen_dictionary.js --topic "Literary Chinese" words.tsv
 The dictionary file is stored in JSON format.
 
 ## Integration
-### Typescript
-A preliminary prototype for Typescript integration is given at
+### TypeScript
+A preliminary prototype for TypeScript integration is given at
 [typescript/README.md](typescript/README.md).
 
 ### Angular

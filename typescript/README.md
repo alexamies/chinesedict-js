@@ -1,8 +1,8 @@
-## Integration with Typescript
+## Integration with TypeScript
 Status: Preliminary
 
 ## Prerequisites
-The integration is based on [Typescript
+The integration is based on [TypeScript
 modules](https://www.typescriptlang.org/docs/handbook/modules.html), which share
 the same concept of modules as ECMAScript 2015 (ES6).
 
@@ -21,11 +21,6 @@ cp ../chinesedict.css assets/..
 Compile the demo app
 ```
 tsc -m es2015 --target es2015 myapp.ts
-```
-
-If you have errors then try tracing for module resolution
-```
-tsc --traceResolution -m es2015 --target ES6 myapp.ts
 ```
 
 Run a web server to serve the page. Again, for example, using a Docker Apache 2
