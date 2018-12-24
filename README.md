@@ -55,7 +55,7 @@ element with type="module"
 
 In demo_app.js, add JavaScript code to import the ES6 module:
 ```
-import ChineseDict from '/dist/index.js';
+import { ChineseDict } from './index.js';
 new ChineseDict('words.json', '.textbody', 'dict-dialog');
 ```
 
@@ -83,14 +83,14 @@ cp node_modules/dialog-polyfill/dialog-polyfill.css dist/.
 
 The dialog-polyfill is not used as a module. Load it into your HTML page:
 ```
-<script src="/dist/dialog-polyfill.js"></script>
+<script src="/assets/dialog-polyfill.js"></script>
 ```
 
 Also, import the stylesheet into your CSS file with a
 [CSS import](https://developer.mozilla.org/en-US/docs/Web/CSS/@import)
 statement:
 ```
-@import '/dist/dialog-polyfill.css';
+@import '/assets/dialog-polyfill.css';
 ```
 
 ## Simple Demo
@@ -117,7 +117,7 @@ dialog like this (on Chrome):
 src='https://github.com/alexamies/chinesedict-js/blob/master/screenshot.png?raw=true'/>
 
 ## More Complex Demo
-A more complex example is given in the [demo](demo/) directory. See this at
+A more complex example is given in [demo](demo/README.md). See this at
 [chinesedictdemo.appspot.com](https://chinesedictdemo.appspot.com).
 
 ## Customize
@@ -151,9 +151,30 @@ node gen_dictionary.js --topic "Literary Chinese" words.tsv
 The dictionary file is stored in JSON format.
 
 ## Integration
-### TypeScript
-A preliminary prototype for TypeScript integration is given at
-[typescript/README.md](typescript/README.md).
+The module JavaScript is generated from TypeScript, which can provide direct
+integration into Angular.
+
+## Building with TypeScript
+The JavaScript module is based on a [TypeScript
+module](https://www.typescriptlang.org/docs/handbook/modules.html).  Both
+use the same ECMAScript 2015 (ES6) module concepts.
+
+Install Typescript
+```
+npm install -g typescript
+```
+
+Compile the module
+```
+tsc -m es2015 --target es2015 index.ts
+```
+
+Compile the demo app
+```
+tsc -m es2015 --target es2015 demo_app.ts
+```
+
+This will generate the demo_app.js file used in the basic example.
 
 ### Angular
 A preliminary prototype for Angular integration is given at
@@ -167,11 +188,13 @@ using [dialog-polyfill](https://github.com/GoogleChrome/dialog-polyfill) since
 the dialog element is not yet supported natively by Edge or Safari.
 
 Modern browsers ES6 style JavaScript including modules. If you want to support
-older browsers you will need to do that with
-[Babel presets](https://babeljs.io/docs/en/presets) or Webpack compilation.
+older browsers you will need to do that with a different compilation target for
+the tsc TypeScript compiler above. However, this will result in less readable
+and slower code.
 
 ### Mobile Device Support
-The module can be used on web pages designed for mobile devices. 
+The module can be used on web pages designed for mobile devices although it has
+not yet been designed for an optimal experience.
 
 ### Performance
 Bundling and minification with WebPack or Babel may help but their current ES6
