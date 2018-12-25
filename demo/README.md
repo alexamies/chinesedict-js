@@ -28,7 +28,7 @@ CNREADER_HOME=`pwd`/chinesenotes.com
 
 This contains a tab separated variable (TSV) dictionary file
 [words.txt](https://github.com/alexamies/chinesenotes.com/blob/master/data/words.txt)
-that we will use for this demo. Change to the build directory and build the
+that will be used for this demo. Change to the build directory and build the
 JSON format of the dictionary file:
 ```
 cd $CDICT_HOME/build
@@ -50,7 +50,7 @@ Copy the relevant files into a dist directory:
 ```
 mkdir dist
 cp $CDICT_HOME/index.js dist/.
-cp $CDICT_HOME/chinesedict.css dist/.
+cp $CDICT_HOME/assets/chinesedict.css dist/.
 cp node_modules/dialog-polyfill/dialog-polyfill.js dist/.
 cp node_modules/dialog-polyfill/dialog-polyfill.css dist/.
 ```

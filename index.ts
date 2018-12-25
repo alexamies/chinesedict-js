@@ -15,7 +15,8 @@
 
 /**
  * @fileoverview
- * A module that finds words in a string of Chinese text
+ * A module that encapsulates a Chinese-English dictionary, including finding
+ * words in sections of Chinese text.
  */
 
 // Dependencies, including Browser implementation of fetch and dialogPolyfill
@@ -31,48 +32,37 @@ declare global {
 
 /** 
  * A class for finding Chinese words and segmenting blocks of text with a
- * Chinese-English dictionary.
+ * Chinese-English dictionary. May highlight either all terms in the text 
+ * matching dictionary entries or only the proper nouns.
  */
 export class ChineseDict {
   headwords;
+  selector: string;
+  dialog_id: string;
+  highlight: 'all' | 'proper';
 
   /**
-   * Create a ChineseDict object, loads the dictionary. Scans the text in the
-   * DOM elements matching the selector. If the highlight is empty or has value
-   * 'all' then all words with dictionary entries will be highlighted. If
-   * highlight is set to 'proper' then event listeners will be added for all
-   * terms but only those that are proper nouns (names, places, etc) will be
-   * highlighted.
+   * Use a DictionaryBuilder implementation rather than calling the constructor
+   * directly.
    *
-   * @param {string} filename - Name of the dictionary file
    * @param {string} selector - A DOM selector used to find the page elements
    * @param {string} dialog_id - A DOM id used to find the dialog
    * @param {string} highlight - Which terms to highlight: all | proper
    */
-  constructor(filename, selector, dialog_id, highlight) {
+  constructor(selector: string,
+              dialog_id: string,
+              highlight: 'all' | 'proper') {
     console.log('ChineseDict constructor');
   	const headwords = new Map();
   	this.headwords = headwords;
-  	const dict = this;
-  	if (filename) {
-      fetch(filename)
-        .then(function(response) {
-          console.log(`ChineseDict response.status: ${response.status}`);
-          if(response.ok) {
-            return response.json();
-          }
-          throw new Error('Error fetching dictionary');
-        })
-        .then(function(dictData) {
-          dict.load_dictionary_(dictData, headwords);
-  	      dict.highlight_words_(selector, dialog_id, highlight);
-  	    });
-    }
-    this.setup_dialog_(dialog_id);
+    this.selector = selector;
+    this.dialog_id = dialog_id;
+    this.highlight = highlight;
   }
 
   /**
    * Decorate the segments of text
+   *
    * @private
    * @param {!Element} elem - The DOM element to add the segments to
    * @param {!Array.<string>} terms - The segmented text array of terms
@@ -96,7 +86,7 @@ export class ChineseDict {
           link.className = 'nohighlight';
         }
   	  	link.addEventListener('click', (event) => {
-  	  		this.showdialog_(event, term, dialog_id)});
+  	  		this.showDialog(event, term, dialog_id)});
         link.addEventListener('mouseover', (event) => {
           this.domouseover_(event, term)});
   	  	elem.appendChild(link);
@@ -108,8 +98,9 @@ export class ChineseDict {
   }
 
   /**
-   * Respond to a mouse over event for a dictionary term
-   * @private
+   * Respond to a mouse over event for a dictionary term. Expected to be called
+   * in response to a user event.
+   *
    * @param {MouseEvent} event - An event triggered by a user
    * @param {Term} term - Encapsulates the Chinese and the English equivalent
    */
@@ -120,14 +111,14 @@ export class ChineseDict {
   /**
    * Scans blocks of text, highlighting the words in in the dictionary with
    * links that can be clicked to find the definitions. The blocks of text
-   * are identified with a DOM selector.
+   * are identified with a DOM selector. Expected to be called by a builder in
+   * initializing the dictionary.
    *
-   * @private
    * @param {string} selector - A DOM selector used to find the page elements
    * @param {string} dialog_id - A DOM id used to find the dialog
    * @param {string} highlight - Which terms to highlight: all | proper
    */
-  highlight_words_(selector, dialog_id, highlight) {
+  highlightWords(selector, dialog_id, highlight) {
   	if (!selector) {
       console.log('findwords: selector empty');
       return;
@@ -147,13 +138,13 @@ export class ChineseDict {
   }
 
   /**
-   * Deserializes the dictionary from protobuf format.
+   * Deserializes the dictionary from protobuf format. Expected to be called by
+   * a builder in initializing the dictionary.
    *
-   * @private
    * @param {!Array.<Array.<String>>} dictData - An array of dictionary terms
    * @param {!Map} A map of headwords
    */
-  load_dictionary_(dictData, headwords) {
+  loadDictionary(dictData, headwords) {
     console.log(`read ${dictData.length} dictionary entries`);
     for (let i = 0; i < dictData.length; i++) {
       const entry = dictData[i];
@@ -163,7 +154,18 @@ export class ChineseDict {
   }
 
   /**
+   * Look up a term in the matching the given Chinese
+   */
+  lookup(chinese: string): object {
+    if (this.headwords.has(chinese)) {
+      return this.headwords.get(chinese);
+    }
+    return {};
+  }
+
+  /**
    * Segments the text into an array of individual words
+   * 
    * @private
    * @param {string} text - The text string to be segmented
    * @return {Array.<Term>} The segmented text as an array of terms
@@ -200,11 +202,12 @@ export class ChineseDict {
 
   /**
    * Add a listener to the dialog OK button. The OK button should have the ID
-   * of the dialog with '_ok' appended.
-   * @private
+   * of the dialog with '_ok' appended. Expected to be called by a builder in
+   * initializing the dictionary.
+   *
    * @param {string} dialog_id - The DOM id of the dialog HTML element
    */
-  setup_dialog_(dialog_id) {
+  setupDialog(dialog_id) {
   	const dialog = document.getElementById(dialog_id);
     if (typeof dialogPolyfill !== 'undefined') {
       dialogPolyfill.registerDialog(dialog);
@@ -220,14 +223,15 @@ export class ChineseDict {
   }
 
   /**
-   * Show a dialog with the dictionary definition
-   * @private
+   * Show a dialog with the dictionary definition. Expected to be called in
+   * response to a user clicking on a highlighted word.
+   *
    * @param {MouseEvent} event - An event triggered by a user
    * @param {Term} term - Encapsulates the Chinese and the English equivalent
    * @param {string} dialog_id - A DOM id used to find the dialog
    */
-  showdialog_(event, term, dialog_id) {
-  	console.log(`showdialog_ this: ${this}`);
+  showDialog(event, term, dialog_id) {
+  	console.log(`showDialog this: ${this}`);
   	const chinese = event.target.textContent;
   	const english = term.get_english();
     const pinyin = term.get_pinyin();
@@ -254,15 +258,87 @@ export class ChineseDict {
   	  if (headword_id_div) {
   	    headword_id_div.innerHTML = id;
   	  }
-  	  console.log('showdialog_ showing dialog');
+  	  console.log('showDialog showing dialog');
       let d = dialog as any as HTMLDialogElement;
   	  d.showModal();
   	} else {
-  	  console.log(`showdialog_ ${dialog_id} not found`);
+  	  console.log(`showDialog ${dialog_id} not found`);
   	  alert(`chinese: ${chinese} english: ${english}, id: ${id}`);
   	}
   }
 }
+
+
+/** 
+ * An interface for building and initializing ChineseDict objects for different
+ * web application framework or no framework.
+ */
+export interface DictionaryBuilder {
+
+  /**
+   * Creates and initializes a ChineseDict
+   */
+  buildDictionary(): ChineseDict;
+
+}
+
+
+/** 
+ * An implementation of the DictionaryBuilder interface for building and
+ * initializing ChineseDict objects for browser scripts that do not use an
+ * application framework.
+ */
+export class NoFrameworkBuilder implements DictionaryBuilder {
+  private filename: string;
+  private dict: ChineseDict;
+
+  /**
+   * Create an empty ChineseDict object. Call init() to load the dictionary
+   * and scan DOM elements. If the highlight is empty or has value
+   * 'all' then all words with dictionary entries will be highlighted. If
+   * highlight is set to 'proper' then event listeners will be added for all
+   * terms but only those that are proper nouns (names, places, etc) will be
+   * highlighted.
+   *
+   * @param {string} filename - Name of the dictionary file
+   * @param {string} selector - A DOM selector used to find the page elements
+   * @param {string} dialog_id - A DOM id used to find the dialog
+   * @param {string} highlight - Which terms to highlight: all | proper
+   */
+  constructor(filename: string,
+              selector: string,
+              dialog_id: string,
+              highlight: 'all' | 'proper') {
+    console.log('NoFrameworkBuilder constructor');
+    this.filename = filename;
+    this.dict = new ChineseDict(selector, dialog_id, highlight);
+  }
+
+  /**
+   * Creates and initializes a ChineseDict
+   */
+  buildDictionary(): ChineseDict {
+    const dict = this.dict;
+    if (this.filename) {
+      fetch(this.filename)
+        .then(function(response) {
+          console.log(`NoFrameworkBuilder response.status: ${response.status}`);
+          if(response.ok) {
+            return response.json();
+          }
+          throw new Error('Error fetching dictionary');
+        })
+        .then(function(dictData) {
+          dict.loadDictionary(dictData, dict.headwords);
+          dict.highlightWords(dict.selector, dict.dialog_id, dict.highlight);
+        });
+    }
+    dict.setupDialog(dict.dialog_id);
+    return this.dict;
+  }
+
+}
+
 
 /** 
  * Encapsulates a text segment with information about matching dictionary entry 

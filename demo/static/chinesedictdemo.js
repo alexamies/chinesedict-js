@@ -1,6 +1,10 @@
-import { ChineseDict } from '/dist/index.js'
+import { ChineseDict, NoFrameworkBuilder } from '/dist/index.js'
 
 // Application JavaScript demonstrating use of the ChineseDict module
 
 // Use the dictionary
-new ChineseDict('dist/words.json', '.textbody', 'dict-dialog');
+const builder = new NoFrameworkBuilder('dist/words.json',
+	                                   '.textbody',
+	                                   'dict-dialog',
+	                                   'all');
+builder.buildDictionary();

@@ -29,6 +29,7 @@ ng generate service chinesedict
 
 Copy demo app and dictionary files 
 ```
+cp ../../index.ts src/app/chinesedict.ts
 cp ../app.component.ts src/app/.
 cp ../app.component.html src/app/.
 cp ../app.module.ts src/app/.
@@ -36,7 +37,7 @@ cp ../app.module.ts src/app/.
 cp ../chinesedict.service.ts src/app/.
 cp ../chinesedict-wrapper.component.ts src/app/chinesedict-wrapper/.
 cp ../chinesedict-wrapper.component.html src/app/chinesedict-wrapper/.
-cp ../../dist/words_all.json src/assets/.
+cp ../../demo/static/dist/words_all.json src/assets/.
 ```
 
 Start the app

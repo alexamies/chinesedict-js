@@ -32,7 +32,7 @@ The files from the GitHub project will be located in the directory
 node_modules/@alexamies/chinesedict-js
 ```
 
-## Use
+## Basic Use
 You can import the chinesedict-js module into your web pages with a JavaScript
 [import](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import)
 statement.
@@ -55,15 +55,22 @@ element with type="module"
 
 In demo_app.js, add JavaScript code to import the ES6 module:
 ```
-import { ChineseDict } from './index.js';
-new ChineseDict('words.json', '.textbody', 'dict-dialog');
+import { ChineseDict, NoFrameworkBuilder } from './index.js';
+const builder = new NoFrameworkBuilder('assets/words.json',
+                                       '.textbody',
+                                       'dict-dialog',
+                                       'all');
+const cdict = builder.buildDictionary();
 ```
 
-The parameters to the constructor of ChineseDict are
+The NoFrameworkBuilder is a DictionaryBuilder that creates and initializes the
+dictionary. The parameters to the constructor of NoFrameworkBuilder are
 
 1. filename - Name of the dictionary JSON file
 2. selector - A DOM selector for the Chinese text to be segmented
 3. dialog_id - A DOM id used to find the dialog
+4. highlight - Highlight either all the terms ('all', default) or only proper
+               nouns ('proper')
 
 where 'div_id' is select for the HTML elements containing the Chinese text.
 
@@ -98,7 +105,7 @@ The file index.html is ready to be served as a demo web page. The easiest way to
 run this yourself is to clone it from GitHub:
 ```
 git clone https://github.com/alexamies/chinesedict-js.git
-cd chinesedict-js.git
+cd chinesedict-js
 ```
 
 It needs to be served on a web server (not just opened in a browser from the
@@ -120,7 +127,7 @@ src='https://github.com/alexamies/chinesedict-js/blob/master/screenshot.png?raw=
 A more complex example is given in [demo](demo/README.md). See this at
 [chinesedictdemo.appspot.com](https://chinesedictdemo.appspot.com).
 
-## Customize
+## Customize the Dictionary
 You can customize the module with your own dictionary, HTML content, and styles.
 The dictionary should be structured the same as the example words.json file
 provided. If you have not got your own dictionary then you can use the [NTI
@@ -151,8 +158,8 @@ node gen_dictionary.js --topic "Literary Chinese" words.tsv
 The dictionary file is stored in JSON format.
 
 ## Integration
-The module JavaScript is generated from TypeScript, which can provide direct
-integration into Angular.
+The module JavaScript is generated from TypeScript, which can help provide
+direct integration for TypeScript apps.
 
 ## Building with TypeScript
 The JavaScript module is based on a [TypeScript
@@ -179,6 +186,11 @@ This will generate the demo_app.js file used in the basic example.
 ### Angular
 A preliminary prototype for Angular integration is given at
 [angular/README.md](angular/README.md).
+
+### Other Frameworks
+Develop an implementation of the TypeScript DictionaryBuilder interface or work
+with the JavaScript directly to create an initialize the dictionary for your
+framework.
 
 ## Test
 ### Cross Browser Support

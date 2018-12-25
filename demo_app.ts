@@ -1,5 +1,9 @@
 // Application JavaScript demonstrating use of the ChineseDict module
-import { ChineseDict } from './chinesedict.js';
+import { ChineseDict, NoFrameworkBuilder } from './index.js';
 
-// Use the ChineseDict class
-new ChineseDict('assets/words.json', '.textbody', 'dict-dialog', 'nohighlight');
+// Build and initialize the ChineseDict class
+const builder = new NoFrameworkBuilder('assets/words.json',
+                                       '.textbody',
+                                       'dict-dialog',
+                                       'all');
+builder.buildDictionary();
