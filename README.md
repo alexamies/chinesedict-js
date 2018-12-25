@@ -1,5 +1,5 @@
 # Chinese Dictionary JavaScript Module
-Status: early prototype
+Status: early prototype, interface will change
 
 An ECMAScript 2015 (ES6) browser module for showing Chinese-English dictionary
 terms in web pages. The JavaScript code will scan Chinese text, highlight the
@@ -55,16 +55,20 @@ element with type="module"
 
 In demo_app.js, add JavaScript code to import the ES6 module:
 ```
-import { ChineseDict, NoFrameworkBuilder } from './index.js';
-const builder = new NoFrameworkBuilder('assets/words.json',
-                                       '.textbody',
-                                       'dict-dialog',
-                                       'all');
-const cdict = builder.buildDictionary();
+import { ChineseDict, PlainJSBuilder } from './index.js';
+const builder = new PlainJSBuilder('assets/words.json',
+                                   '.textbody',
+                                   'dict-dialog',
+                                   'all');
+const cdict = builder.buildDictionary();  // Matching terms will be highlighted
+const term = cdict.lookup('康熙帝國'); // Example term (a TV Show)
+console.log(`English: ${ term.getEnglish() }`);
+console.log(`Pinyin: ${ term.getPinyin() }`);
 ```
 
-The NoFrameworkBuilder is a DictionaryBuilder that creates and initializes the
-dictionary. The parameters to the constructor of NoFrameworkBuilder are
+The PlainJSBuilder is a DictionaryBuilder implementation that creates and
+initializes the dictionary for browser apps that do not depend on a web
+application framework. The parameters to the constructor of PlainJSBuilder are
 
 1. filename - Name of the dictionary JSON file
 2. selector - A DOM selector for the Chinese text to be segmented

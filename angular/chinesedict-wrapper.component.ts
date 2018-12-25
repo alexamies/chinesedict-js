@@ -18,14 +18,8 @@ export class ChinesedictWrapperComponent implements OnInit {
   lookup(chinese: string) {
     console.log(`ChinesedictWrapper.lookup: ${ chinese }`);
     const entry = this.dict.lookup(chinese);
-    if ('e' in entry) {
-      this.english = entry['e'];
-    } else {
-      console.log(`ChinesedictWrapper.lookup: no English found ${ chinese }`);      
-    }
-    if ('p' in entry) {
-      this.pinyin = entry['p'];
-    }
+    this.english = entry.getEnglish();
+    this.pinyin = entry.getPinyin();
   }
 
   ngOnInit() {

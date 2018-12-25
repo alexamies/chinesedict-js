@@ -1,6 +1,6 @@
 {
   "name": "@alexamies/chinesedict-js",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A JavaScript browser module for a Chinese-English dictionary",
   "license": "Apache-2.0",
   "repository": "alexamies/chinesedict-js",
@@ -8,5 +8,8 @@
   "author": "alexamies",
   "dependencies": {
     "dialog-polyfill": "^0.4.10"
+  },
+  "devDependencies": {
+    "selenium-webdriver": "^4.0.0-alpha.1"
   }
 }
