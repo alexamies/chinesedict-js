@@ -1,6 +1,8 @@
+/* Dialog and contained elements */
 dialog {
-  width: 400px;
-  height: 200px;
+  min-width: 300px;
+  max-width: 600px;
+  min-height: 200px;
 }
 
 /* Different color and underlining for proper nouns */
@@ -9,8 +11,37 @@ a.highlight {
     color: blue;
 }
 
-/* No underlining for regular terms */
-a.nohighlight {
-  text-decoration: none;
-  color: inherit;
+/* No underlining for regular terms but change on hover */
+span.nohighlight:hover {
+  text-decoration: underline;
+  color: blue;
+}
+
+#dict-dialog_headword {
+  font-size: 200%;
+}
+
+#dict-dialog_pinyin {
+  font-style: italic;
+  font-size: 120%;
+}
+
+#dict-dialog_english {
+  font-size: 120%;
+  font-weight: bold;
+}
+
+#dict-dialog_ok {
+  float: right;
+}
+
+/* Lookup styling */
+span.dict-entry_input {
+  display: block;
+}
+span.dict-entry_pinyin {
+  display: block;
+}
+span.dict-entry_english {
+  display: block;
 }

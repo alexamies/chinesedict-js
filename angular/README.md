@@ -37,6 +37,7 @@ cp ../app.module.ts src/app/.
 cp ../chinesedict.service.ts src/app/.
 cp ../chinesedict-wrapper.component.ts src/app/chinesedict-wrapper/.
 cp ../chinesedict-wrapper.component.html src/app/chinesedict-wrapper/.
+cp ../../assets/chinesedict.css src/app/chinesedict-wrapper/chinesedict-wrapper.component.css
 cp ../../demo/static/dist/words_all.json src/assets/.
 ```
 

@@ -4,12 +4,17 @@
   "description": "A JavaScript browser module for a Chinese-English dictionary",
   "license": "Apache-2.0",
   "repository": "alexamies/chinesedict-js",
-  "main": "demo_app.js",
+  "main": "index.js",
   "author": "alexamies",
+  "scripts": {
+    "build": "node_modules/typescript/bin/tsc",
+    "test": "node test/test_basic_demo.js"
+  },
   "dependencies": {
     "dialog-polyfill": "^0.4.10"
   },
   "devDependencies": {
-    "selenium-webdriver": "^4.0.0-alpha.1"
+    "selenium-webdriver": "^4.0.0-alpha.1",
+    "typescript": "^3.2.2"
   }
 }

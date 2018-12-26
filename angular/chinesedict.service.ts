@@ -25,7 +25,7 @@ export class ChinesedictService implements DictionaryBuilder {
    * Creates and initializes a ChineseDict
    */
   buildDictionary(): ChineseDict {
-    const dict = new ChineseDict('p', 'dict-dialog', 'all');
+    const dict = new ChineseDict('p.sourcetext', 'dict-dialog', 'proper');
     this.http.get(this.filename)
       .subscribe(data => this.loadDict(dict, data));
     return dict;

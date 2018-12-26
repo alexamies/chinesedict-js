@@ -1,18 +1,20 @@
 <h2>
   Dictionary Lookup
 </h2>
-<input type='textfield' #chinese/><br/>
-<button (click)="lookup(chinese.value)">Lookup</button>
-<span class='dict-entry--pinyin'>Pinyin: {{pinyin}}</span><br/>
-<span class='dict-entry--english'>English: {{english}}</span><br/>
-Example: 康熙帝國<br/>
+<p>
+  <span class='dict-entry_input'>
+  	<input type='textfield' #chinese/>
+    <button (click)="lookup(chinese.value)">Lookup</button>
+  </span>
+  <span class='dict-entry_pinyin'>Pinyin: {{pinyin}}</span>
+  <span class='dict-entry_english'>English: {{english}}</span>
+</p>
+<p>
+  Example: 康熙帝國
+</p>  
 <dialog id='dict-dialog'>
-   <!--
-    The dialog field ids follow the pattern dict-dialog + _headword, etc
-  -->
-  <span id='dict-dialog_headword'></span><br/>
-  <span id='dict-dialog_pinyin'></span><br/>
-  <span id='dict-dialog_english'></span><br/>
-  <span id='dict-dialog_headword_id'></span><br/>
+  <p id='dict-dialog_headword'></p>
+  <p id='dict-dialog_pinyin'></p>
+  <p id='dict-dialog_english'></p>
   <button id='dict-dialog_ok'>OK</button>
 </dialog>

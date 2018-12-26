@@ -78,19 +78,26 @@ export class ChineseDict {
   	  const chinese = term.getChinese();
       const grammar = term.getGrammar();
   	  if (term.getHeadwordId()) {
-  	  	var link = document.createElement('a');
-  	  	link.textContent = chinese;
-  	  	link.href = '#';
         if ((highlight !== 'proper') || (grammar === 'proper noun')) {
+          const link: HTMLAnchorElement = document.createElement('a');
+          link.textContent = chinese;
+          link.href = '#';
           link.className = 'highlight';
+          link.addEventListener('click', (event) => {
+            this.showDialog(event, term, dialog_id)});
+          link.addEventListener('mouseover', (event) => {
+            this.doMouseover(event, term)});
+          elem.appendChild(link);
         } else {
-          link.className = 'nohighlight';
+          const span: HTMLSpanElement = document.createElement('span');
+          span.className = 'nohighlight';
+          span.textContent = chinese;
+          span.addEventListener('click', (event) => {
+            this.showDialog(event, term, dialog_id)});
+          span.addEventListener('mouseover', (event) => {
+            this.doMouseover(event, term)});
+          elem.appendChild(span);
         }
-  	  	link.addEventListener('click', (event) => {
-  	  		this.showDialog(event, term, dialog_id)});
-        link.addEventListener('mouseover', (event) => {
-          this.doMouseover(event, term)});
-  	  	elem.appendChild(link);
   	  } else {
         var text = document.createTextNode(chinese);
         elem.appendChild(text);
@@ -150,11 +157,14 @@ export class ChineseDict {
     for (let i = 0; i < dictData.length; i++) {
       const entry = dictData[i];
       const traditional = entry["t"];
+      const sense = new WordSense(entry["s"],
+                                  entry["t"],
+                                  entry['p'],
+                                  entry['e'],
+                                  entry['g']);
       const term = new Term(traditional,
                             entry['h'],
-                            entry['p'],
-                            entry['e'],
-                            entry['g']);
+                            sense);
       this.headwords.set(traditional, term);
     }
   }
@@ -166,7 +176,8 @@ export class ChineseDict {
     if (this.headwords.has(chinese)) {
       return this.headwords.get(chinese);
     }
-    return new Term(chinese, '', '', '', '');
+    const sense = new WordSense('', '', '', '', '');
+    return new Term(chinese, '', sense);
   }
 
   /**
@@ -195,7 +206,8 @@ export class ChineseDict {
           break;
         }
         if (chars.length == 1) {
-          segments.push(new Term(chars, '', '', '', ''));
+          const sense = new WordSense('', '', '', '', '');
+          segments.push(new Term(chars, '', sense));
           j++;
         }
         k--;
@@ -220,8 +232,9 @@ export class ChineseDict {
   	const dialog_ok = document.getElementById(dialog_ok_id);
   	if (dialog && dialog_ok) {
   	  dialog_ok.addEventListener('click', () => {
-        let d = dialog as any as HTMLDialogElement;
-        d.close();
+        if (dialog instanceof HTMLDialogElement) {
+          dialog.close();
+        }
   	  });
  	  }
   }
@@ -263,9 +276,11 @@ export class ChineseDict {
   	  if (headword_id_div) {
   	    headword_id_div.innerHTML = id;
   	  }
-  	  console.log('showDialog showing dialog');
-      let d = dialog as any as HTMLDialogElement;
-  	  d.showModal();
+      if (dialog instanceof HTMLDialogElement) {
+  	    dialog.showModal();
+      } else {
+        console.log(`dialog is a $ { typeof dialog }`);
+      }
   	} else {
   	  console.log(`showDialog ${dialog_id} not found`);
   	  alert(`chinese: ${chinese} english: ${english}, id: ${id}`);
@@ -351,52 +366,66 @@ export class PlainJSBuilder implements DictionaryBuilder {
 export class Term {
   private chinese: string;
   private headword_id: string;
-  private pinyin: string;
-  private english: string;
-  private grammar: string;
+  private senses: Array<WordSense>;
 
   /**
    * Create a Term object
-   * @param {!string} chinese - The Chinese text for the term
+   * @param {!string} chinese - Either simplified or traditional, used to look
+   *                            up the term
    * @param {string} headword_id - The headword id
-   * @param {string} pinyin - Mandarin pronunciation
-   * @param {string} english - English equivalent
-   * @param {string} grammar - Part of speech
+   * @param {WordSense} sense - A WordSense object 
    */
   constructor(chinese: string,
               headword_id: string,
-              pinyin: string,
-              english: string,
-              grammar: string) {
+              sense: WordSense) {
     this.chinese = chinese;
     this.headword_id = headword_id;
-    this.pinyin = pinyin;
-    this.english = english;
-    this.grammar = grammar;
+    this.senses = [sense];
+  }
+  /**
+   * Adds a word sense
+   */
+  addSense(sense: WordSense): void {
+    this.senses.push(sense);
   }
 
   /**
-   * Gets the Chinese text for the term
-   * @return {!string} The Chinese text for the term
+   * Gets the Chinese text that the term is stored and looked up by
+   * @return {!string} Either simplified or traditional
    */
   getChinese() {
   	return this.chinese;
   }
 
   /**
-   * Gets the English equivalent for the term
-   * @return {string} English equivalent for the term
+   * A convenience method that flattens the English equivalents for the term
+   * into a single string with a ';' delimiter
+   * @return {string} English equivalents for the term
    */
   getEnglish() {
-    return this.english;
+    let english = "";
+    for (let sense of this.senses) {
+      english += sense.getEnglish();
+      english.replace('/', ', ');
+      english += '; ';
+    }
+    if (english.length > 1) {
+      return english.substring(0, english.length - 2);
+    }
+    return english;
   }
 
   /**
-   * Gets the part of speech for the term
+   * A convenience method that flattens the part of speech for the term. If
+   * there is only one sense then use that for the part of speech. Otherwise,
+   * return an empty string.
    * @return {string} part of speech for the term
    */
   getGrammar() {
-    return this.grammar;
+    if (this.senses.length === 1) {
+      return this.senses[0].getGrammar();
+    }
+    return '';
   }
 
   /**
@@ -408,10 +437,87 @@ export class Term {
   }
 
   /**
-   * Gets the Mandarin pronunciation for the term
+   * A convenience method that flattens the part of pinyin for the term. If
+   * there is only one sense then use that for the part of speech. Otherwise,
+   * return an empty string.
+   * @return {string} Mandarin pronunciation
+   */
+  getPinyin() {
+    if (this.senses.length === 1) {
+      return this.senses[0].getPinyin();
+    }
+    return '';
+  }
+}
+
+/**
+ * Class encapsulating the sense of a Chinese word
+ */
+class WordSense {
+  private simplified: string;
+  private traditional: string;
+  private pinyin: string;
+  private english: string;
+  private grammar: string;
+
+  /**
+   * Create a WordSense object
+   * @param {!string} simplified - Simplified Chinese
+   * @param {!string} traditional - Traditional Chinese
+   * @param {string} pinyin - Mandarin pronunciation
+   * @param {string} english - English equivalent
+   * @param {string} grammar - Part of speech
+   */
+  constructor(chinese: string,
+              traditional: string,
+              pinyin: string,
+              english: string,
+              grammar: string) {
+    this.simplified = chinese;
+    this.traditional = traditional;
+    this.pinyin = pinyin;
+    this.english = english;
+    this.grammar = grammar;
+  }
+
+  /**
+   * Gets the English equivalent for the sense
+   * @return {string} English equivalent for the sense
+   */
+  getEnglish() {
+    console.log(`WordSense.getEnglish ${ this.getEnglish }`);
+    return this.english;
+  }
+
+  /**
+   * Gets the part of speech for the sense
+   * @return {string} part of speech for the sense
+   */
+  getGrammar() {
+    return this.grammar;
+  }
+
+  /**
+   * Gets the Mandarin pronunciation for the sense
    * @return {string} Mandarin pronunciation
    */
   getPinyin() {
     return this.pinyin;
+  }
+
+  /**
+   * Gets the simplified Chinese text for the sense
+   * @return {!string} The simplified Chinese text for the sense
+   */
+  getSimplified() {
+    return this.simplified;
+  }
+
+  /**
+   * Gets the traditional Chinese for the sense
+   * @return {string} traditional Chinese
+   */
+  getTraditional() {
+    return this.traditional;
   }
 }
