@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { ChinesedictService } from '../chinesedict.service';
 
 import { ChineseDict } from '../chinesedict.js';
@@ -6,7 +6,8 @@ import { ChineseDict } from '../chinesedict.js';
 @Component({
   selector: 'app-chinesedict-wrapper',
   templateUrl: './chinesedict-wrapper.component.html',
-  styleUrls: ['./chinesedict-wrapper.component.css']
+  styleUrls: ['./chinesedict-wrapper.component.css'],
+  encapsulation: ViewEncapsulation.None
 })
 export class ChinesedictWrapperComponent implements OnInit {
   private dict: ChineseDict;

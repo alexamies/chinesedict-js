@@ -39,33 +39,32 @@ This generates a words.json file that can be copied to your web dist
 directory created below.
 
 ## Build the Web Client
-The static files are contained in the directory 'static'. Change to that
-directory and build the client assets.
+The static files are compiled in the directory 'static'.
 ```
-cd $CDICT_HOME/demo/static
+cd $CDICT_HOME/demo
 npm install
 ```
 
 Copy the relevant files into a dist directory:
 ```
-mkdir dist
-cp $CDICT_HOME/index.js dist/.
-cp $CDICT_HOME/assets/chinesedict.css dist/.
-cp node_modules/dialog-polyfill/dialog-polyfill.js dist/.
-cp node_modules/dialog-polyfill/dialog-polyfill.css dist/.
+mkdir -p static/dist
+cp $CDICT_HOME/index.js static/dist/.
+cp $CDICT_HOME/assets/chinesedict.css static/dist/.
+cp node_modules/dialog-polyfill/dialog-polyfill.js static/dist/.
+cp node_modules/dialog-polyfill/dialog-polyfill.css static/dist/.
 ```
 
 This creates the dist directory and writes the bundled JavaScript files there.
 Copy the dictionary file to the dist directory:
 ```
-cp $CDICT_HOME/build/words.json dist/.
+cp $CDICT_HOME/build/words.json static/dist/.
 ```
 
 ## Run locally
 Since the application code does not use any App Engine specific features it can
 be run without change using Node.js.
 ```
-cd $CDICT_HOME/demo
+cp $CDICT_HOME
 npm start
 ```
 
@@ -76,8 +75,11 @@ GAE_APPLICATION=[Your project id]
 gcloud config set project $GAE_APPLICATION
 ```
 
-Deploy to App Engine:
+Deploy to App Engine from the demo directory to avoid deploying the full
+contents of the GitHub project. You will need to do som editing of links and
+reorganization of static assets.
 ```
+cp $CDICT_HOME/demo
 gcloud app deploy
 ```
 

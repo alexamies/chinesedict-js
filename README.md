@@ -14,7 +14,7 @@ JavaScript and to be used with modern browsers.
 Only traditional Chinese text is supported at present.
 
 ## Prerequisites
-Install Node.js. Initialize your public HTML directory:
+Install Node.js.
 ```
 mkdir public_html
 cd public_html
@@ -113,11 +113,10 @@ cd chinesedict-js
 ```
 
 It needs to be served on a web server (not just opened in a browser from the
-local file system). For example, using a Docker Apache 2 image:
+local file system). For example, using Express:
 ```
-docker run -itd --rm -p 8080:80 --name demo_app  \
-  --mount type=bind,source="$(pwd)",target=/usr/local/apache2/htdocs \
-  httpd:2.4
+npm install
+npm start
 ```
 
 Open the index.html file in a web browser at http://localhost:8080/index.html
@@ -170,19 +169,14 @@ The JavaScript module is based on a [TypeScript
 module](https://www.typescriptlang.org/docs/handbook/modules.html).  Both
 use the same ECMAScript 2015 (ES6) module concepts.
 
-Install Typescript
+Compile the module and demo app
 ```
-npm install -g typescript
-```
-
-Compile the module
-```
-tsc -m es2015 --target es2015 index.ts
+npm run build
 ```
 
 Compile the demo app
 ```
-tsc -m es2015 --target es2015 demo_app.ts
+npm run build
 ```
 
 This will generate the demo_app.js file used in the basic example.
@@ -197,6 +191,13 @@ with the JavaScript directly to create an initialize the dictionary for your
 framework.
 
 ## Test
+
+### Automated Testing
+With the demo_app already running, type
+```
+npm run test
+```
+
 ### Cross Browser Support
 Cross browser support is provided for the HTML
 [dialog](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dialog)

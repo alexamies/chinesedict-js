@@ -16,6 +16,8 @@
     "start": "node app.js"
   },
   "dependencies": {
-    "express": "^4.16.4"
+    "@alexamies/chinesedict-js": "git+https://github.com/alexamies/chinesedict-js.git",
+    "express": "^4.16.4",
+    "serve-static": "^1.13.2"
   }
 }

@@ -485,7 +485,6 @@ class WordSense {
    * @return {string} English equivalent for the sense
    */
   getEnglish() {
-    console.log(`WordSense.getEnglish ${ this.getEnglish }`);
     return this.english;
   }
 

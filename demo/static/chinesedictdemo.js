@@ -1,4 +1,4 @@
-import { PlainJSBuilder } from '/dist/index.js'
+import { PlainJSBuilder } from '/index.js'
 
 // Application JavaScript demonstrating use of the ChineseDict module
 
