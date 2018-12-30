@@ -13,5 +13,6 @@
   "files": [
   	"index.ts",
   	"demo_app.ts",
-  ]
+  ],
+  "exclude": []
 }

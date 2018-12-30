@@ -116,7 +116,7 @@ It needs to be served on a web server (not just opened in a browser from the
 local file system). For example, using Express:
 ```
 npm install
-npm start
+npm run demo
 ```
 
 Open the index.html file in a web browser at http://localhost:8080/index.html
@@ -147,15 +147,14 @@ Notes](https://github.com/alexamies/chinesenotes.com) project. To generate the
 dictionary use the command
 
 ```
-cd build
 npm install
-node gen_dictionary.js words.tsv
+node run prepare
 ```
 
 To restrict the entries to a specific topic use the --topic argument. For
 example,
 ```
-node gen_dictionary.js --topic "Literary Chinese" words.tsv
+node build/gen_dictionary.js --topic "Literary Chinese" build/words.tsv
 ```
 
 The dictionary file is stored in JSON format.
@@ -189,6 +188,10 @@ A preliminary prototype for Angular integration is given at
 Develop an implementation of the TypeScript DictionaryBuilder interface or work
 with the JavaScript directly to create an initialize the dictionary for your
 framework.
+
+## CDN
+Not tested well yet
+https://unpkg.com/@alexamies/chinesedict-js:0.0.10/:index.js
 
 ## Test
 

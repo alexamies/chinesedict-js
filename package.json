@@ -4,25 +4,30 @@
   "description": "A JavaScript browser module for a Chinese-English dictionary",
   "license": "Apache-2.0",
   "repository": "alexamies/chinesedict-js",
-  "main": "index.js",
+  "browser": "index.js",
   "author": "alexamies",
   "scripts": {
+    "prepare": "node build/gen_dictionary.js build/words.tsv",
     "build": "node_modules/typescript/bin/tsc",
+    "demo": "node app.js",
     "test": "node test/test_basic_demo.js"
   },
   "engines": {
     "node": ">=8"
   },
-  "scripts": {
-    "deploy": "gcloud app deploy",
-    "start": "node app.js"
-  },
   "dependencies": {
-    "dialog-polyfill": "^0.4.10",
-    "express": "^4.16.4"
+    "dialog-polyfill": "^0.4.10"
   },
   "devDependencies": {
+    "@reactivex/rxjs": "^6.3.3",
+    "csv-parse": "^4.0.1",
+    "express": "^4.16.4",
+    "rxjs": "^6.3.3",
     "selenium-webdriver": "^4.0.0-alpha.1",
-    "typescript": "^3.2.2"
-  }
+    "typescript": "^3.2.2",
+    "yargs": "^12.0.5"
+  },
+  "files": [
+    "umd/chinesedict.js"
+  ]
 }
