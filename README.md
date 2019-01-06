@@ -43,7 +43,7 @@ directory. For example, bundling into directory dist:
 ```
 mkdir dist
 cp node_modules/@alexamies/chinesedict-js/index.js dist/.
-cp node_modules/@alexamies/chinesedict-js/chinesedict.css dist/.
+cp node_modules/@alexamies/chinesedict-js/assets/chinesedict.css dist/.
 ```
 
 Make sure that you reference your own JavaScript code in your HTML page using a
@@ -170,12 +170,12 @@ use the same ECMAScript 2015 (ES6) module concepts.
 
 Compile the module and demo app
 ```
-npm run build
+npm run compile
 ```
 
-Compile the demo app
+Run the demo app
 ```
-npm run build
+npm run demo
 ```
 
 This will generate the demo_app.js file used in the basic example.

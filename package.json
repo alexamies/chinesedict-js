@@ -8,7 +8,7 @@
   "author": "alexamies",
   "scripts": {
     "prepare": "node build/gen_dictionary.js build/words.tsv",
-    "build": "node_modules/typescript/bin/tsc",
+    "compile": "node_modules/typescript/bin/tsc",
     "demo": "node app.js",
     "test": "node test/test_basic_demo.js"
   },

@@ -154,18 +154,22 @@ export class ChineseDict {
    */
   loadDictionary(dictData) {
     console.log(`read ${dictData.length} dictionary entries`);
-    for (let i = 0; i < dictData.length; i++) {
-      const entry = dictData[i];
+    for (let entry of dictData) {
       const traditional = entry["t"];
       const sense = new WordSense(entry["s"],
                                   entry["t"],
                                   entry['p'],
                                   entry['e'],
                                   entry['g']);
-      const term = new Term(traditional,
-                            entry['h'],
-                            sense);
-      this.headwords.set(traditional, term);
+      if (!this.headwords.has(traditional)) {
+        const term = new Term(traditional,
+                              entry['h'],
+                              sense);
+        this.headwords.set(traditional, term);
+      } else {
+        const term = this.headwords.get(traditional);
+        term.addSense(sense);
+      }
     }
   }
 
@@ -405,14 +409,14 @@ export class Term {
   getEnglish() {
     let english = "";
     for (let sense of this.senses) {
-      english += sense.getEnglish();
-      english.replace('/', ', ');
-      english += '; ';
+      let eng = sense.getEnglish();
+      console.log(`getEnglish before ${ eng }`);
+      const r = new RegExp(' / ', 'g');
+      eng = eng.replace(r, ', ');
+      english += eng + '; ';
     }
-    if (english.length > 1) {
-      return english.substring(0, english.length - 2);
-    }
-    return english;
+    const re = new RegExp('; $');  // remove trailing semicolon
+    return english.replace(re, '');
   }
 
   /**
@@ -437,16 +441,22 @@ export class Term {
   }
 
   /**
-   * A convenience method that flattens the part of pinyin for the term. If
-   * there is only one sense then use that for the part of speech. Otherwise,
-   * return an empty string.
+   * A convenience method that flattens the part of pinyin for the term. Gives
+   * a comma delimited list of unique values
    * @return {string} Mandarin pronunciation
    */
   getPinyin() {
-    if (this.senses.length === 1) {
-      return this.senses[0].getPinyin();
+    const values: Set<string> = new Set<string>();
+    for (let sense of this.senses) {
+      const pinyin = sense.getPinyin();
+      values.add(pinyin);
     }
-    return '';
+    let p: string = '';
+    for (let val of values.values()) {
+      p += val + ', ';
+    }
+    const re = new RegExp(', $');  // remove trailing comma
+    return p.replace(re, '');
   }
 }
 
