@@ -30,12 +30,149 @@ declare global {
   }
 }
 
+
 /** 
- * A class for finding Chinese words and segmenting blocks of text with a
- * Chinese-English dictionary. May highlight either all terms in the text 
- * matching dictionary entries or only the proper nouns.
+ * An interface for building and initializing DictionaryView objects for different
+ * web application framework or no framework.
  */
-export class ChineseDict {
+export interface DictionaryBuilder {
+
+  /**
+   * Creates and initializes a DictionaryView
+   */
+  buildDictionary(): DictionaryView;
+
+}
+
+
+/** 
+ * An entry in a dictionary from a specific source.
+ */
+export class DictionaryEntry {
+  private headword: string;
+  private source: DictionarySource;
+  private senses: Array<WordSense>;
+  private headword_id: string;
+
+  /**
+   * Construct a Dictionary object
+   *
+   * @param {!string} headword - The Chinese headword, simplified or traditional
+   * @param {!DictionarySource} source - The dictionary containing the entry
+   * @param {!Array<WordSense>} senses - An array of word senses
+   */
+  constructor(headword: string,
+              source: DictionarySource,
+              senses: Array<WordSense>,
+              headword_id: string) {
+    //console.log(`DictionaryEntry ${ headword }`);
+    this.headword = headword;
+    this.source = source;
+    this.senses = senses;
+    this.headword_id = headword_id;
+  }
+
+  /**
+   * A convenience method that flattens the English equivalents for the term
+   * into a single string with a ';' delimiter
+   * @return {string} English equivalents for the term
+   */
+  getEnglish() {
+    let english = "";
+    for (let sense of this.senses) {
+      let eng = sense.getEnglish();
+      console.log(`getEnglish before ${ eng }`);
+      const r = new RegExp(' / ', 'g');
+      eng = eng.replace(r, ', ');
+      english += eng + '; ';
+    }
+    const re = new RegExp('; $');  // remove trailing semicolon
+    return english.replace(re, '');
+  }
+
+  /**
+   * A convenience method that flattens the part of speech for the term. If
+   * there is only one sense then use that for the part of speech. Otherwise,
+   * return an empty string.
+   * @return {string} part of speech for the term
+   */
+  getGrammar() {
+    if (this.senses.length === 1) {
+      return this.senses[0].getGrammar();
+    }
+    return '';
+  }
+
+  /**
+   * Gets the headword_id for the term
+   * @return {string} headword_id - The headword id
+   */
+  getHeadwordId(): string {
+    return this.headword_id;
+  }
+
+  /**
+   * A convenience method that flattens the part of pinyin for the term. Gives
+   * a comma delimited list of unique values
+   * @return {string} Mandarin pronunciation
+   */
+  getPinyin() {
+    const values: Set<string> = new Set<string>();
+    for (let sense of this.senses) {
+      const pinyin = sense.getPinyin();
+      values.add(pinyin);
+    }
+    let p: string = '';
+    for (let val of values.values()) {
+      p += val + ', ';
+    }
+    const re = new RegExp(', $');  // remove trailing comma
+    return p.replace(re, '');
+  }
+
+  /**
+   * Gets the dictionary source
+   * @return {DictionarySource} the source of the dictionary
+   */
+  getSource(): DictionarySource {
+    return this.source;
+  }
+
+}
+
+
+/** 
+ * The source a dictionary, including where to load it from, its name,
+ * and where to find out about it.
+ */
+export class DictionarySource {
+  filename: string;
+  title: string;
+  description: string;
+
+  /**
+   * Construct a Dictionary object
+   *
+   * @param {!string} filename - Where to load the dictionary
+   * @param {!string} title - A human readable name
+   * @param {!string} description - More about the dictionary
+   */
+  constructor(filename: string, title: string, description: string) {
+    console.log(`DictionarySource ${ filename }`);
+    this.filename = filename;
+    this.title = title;
+    this.description = description;
+  }
+
+}
+
+
+/** 
+ * A class for presenting Chinese words and segmenting blocks of text with one
+ * or more Chinese-English dictionaries. It may highlight either all terms in
+ * the text matching dictionary entries or only the proper nouns.
+ */
+export class DictionaryView {
   headwords: Map<string, Term>;
   selector: string;
   dialog_id: string;
@@ -52,7 +189,7 @@ export class ChineseDict {
   constructor(selector: string,
               dialog_id: string,
               highlight: 'all' | 'proper' | '') {
-    console.log('ChineseDict constructor');
+    console.log('DictionaryView constructor');
   	this.headwords = new Map<string, Term>();
     this.selector = selector;
     this.dialog_id = dialog_id;
@@ -75,9 +212,10 @@ export class ChineseDict {
     console.log(`decorate_segments_ dialog_id: ${dialog_id}, ${highlight}`);
   	elem.innerHTML = "";
   	for (let term of terms) {
+      const entry = term.getEntries()[0];
   	  const chinese = term.getChinese();
-      const grammar = term.getGrammar();
-  	  if (term.getHeadwordId()) {
+  	  if (entry && entry.getHeadwordId()) {
+        const grammar = entry.getGrammar();
         if ((highlight !== 'proper') || (grammar === 'proper noun')) {
           const link: HTMLAnchorElement = document.createElement('a');
           link.textContent = chinese;
@@ -114,7 +252,8 @@ export class ChineseDict {
    */
   doMouseover(event: MouseEvent, term: Term) {
     const target = <HTMLElement>event.target;
-    target.title = `${term.getPinyin()} | ${term.getEnglish()}`;
+    const entry = term.getEntries()[0];
+    target.title = `${entry.getPinyin()} | ${entry.getEnglish()}`;
   }
 
   /**
@@ -152,23 +291,24 @@ export class ChineseDict {
    *
    * @param {!Array.<Array.<String>>} dictData - An array of dictionary terms
    */
-  loadDictionary(dictData) {
+  loadDictionary(sources: Array<DictionarySource>, dictData: Array<Array<string>>) {
     console.log(`read ${dictData.length} dictionary entries`);
-    for (let entry of dictData) {
-      const traditional = entry["t"];
-      const sense = new WordSense(entry["s"],
-                                  entry["t"],
-                                  entry['p'],
-                                  entry['e'],
-                                  entry['g']);
-      if (!this.headwords.has(traditional)) {
-        const term = new Term(traditional,
-                              entry['h'],
-                              sense);
-        this.headwords.set(traditional, term);
-      } else {
-        const term = this.headwords.get(traditional);
-        term.addSense(sense);
+    for (let source of sources) {
+      for (let entry of dictData) {
+        const traditional = entry["t"];
+        const sense = new WordSense(entry["s"],
+                                    entry["t"],
+                                    entry['p'],
+                                    entry['e'],
+                                    entry['g']);
+        const dictEntry = new DictionaryEntry(traditional, source, [sense], entry['h']);
+        if (!this.headwords.has(traditional)) {
+          const term = new Term(traditional, [dictEntry]);
+          this.headwords.set(traditional, term);
+        } else {
+          const term = this.headwords.get(traditional);
+          term.addDictionaryEntry(dictEntry);
+        }
       }
     }
   }
@@ -180,8 +320,7 @@ export class ChineseDict {
     if (this.headwords.has(chinese)) {
       return this.headwords.get(chinese);
     }
-    const sense = new WordSense('', '', '', '', '');
-    return new Term(chinese, '', sense);
+    return new Term(chinese, []);
   }
 
   /**
@@ -210,8 +349,7 @@ export class ChineseDict {
           break;
         }
         if (chars.length == 1) {
-          const sense = new WordSense('', '', '', '', '');
-          segments.push(new Term(chars, '', sense));
+          segments.push(new Term(chars, []));
           j++;
         }
         k--;
@@ -255,9 +393,14 @@ export class ChineseDict {
   	console.log(`showDialog this: ${this}`);
     const target = <HTMLElement>event.target;
   	const chinese = target.textContent;
-  	const english = term.getEnglish();
-    const pinyin = term.getPinyin();
-  	const id = term.getHeadwordId();
+    if (term.getEntries().length === 0) {
+      return;
+    }
+    const entry = term.getEntries()[0];
+  	const english = entry.getEnglish();
+    const pinyin = entry.getPinyin();
+    const source = entry.getSource().title;
+  	const id = entry.getHeadwordId();
   	const dialog = document.getElementById(dialog_id);
   	if (dialog) {
   	  const headword_div_id = dialog_id + '_headword';
@@ -280,6 +423,11 @@ export class ChineseDict {
   	  if (headword_id_div) {
   	    headword_id_div.innerHTML = id;
   	  }
+      const source_div_id = dialog_id + '_source';
+      const source_div = document.getElementById(source_div_id);
+      if (source_div) {
+        source_div.innerHTML = `Source: ${ source }`;
+      }
       if (dialog instanceof HTMLDialogElement) {
   	    dialog.showModal();
       } else {
@@ -294,57 +442,45 @@ export class ChineseDict {
 
 
 /** 
- * An interface for building and initializing ChineseDict objects for different
- * web application framework or no framework.
- */
-export interface DictionaryBuilder {
-
-  /**
-   * Creates and initializes a ChineseDict
-   */
-  buildDictionary(): ChineseDict;
-
-}
-
-
-/** 
  * An implementation of the DictionaryBuilder interface for building and
- * initializing ChineseDict objects for browser apps that do not use an
+ * initializing DictionaryView objects for browser apps that do not use an
  * application framework.
  */
 export class PlainJSBuilder implements DictionaryBuilder {
-  private filename: string;
-  private dict: ChineseDict;
+  private sources: Array<DictionarySource>;
+  private dict: DictionaryView;
 
   /**
    * Create an empty PlainJSBuilder instance
    *
-   * @param {string} filename - Name of the dictionary file
+   * @param {string} source - Name of the dictionary file
    * @param {string} selector - A DOM selector used to find the page elements
    * @param {string} dialog_id - A DOM id used to find the dialog
    * @param {string} highlight - Which terms to highlight: all | proper
    */
-  constructor(filename: string,
+  constructor(sources: Array<DictionarySource>,
               selector: string,
               dialog_id: string,
               highlight: 'all' | 'proper') {
     console.log('PlainJSBuilder constructor');
-    this.filename = filename;
-    this.dict = new ChineseDict(selector, dialog_id, highlight);
+    this.sources = sources;
+    this.dict = new DictionaryView(selector, dialog_id, highlight);
   }
 
   /**
-   * Creates and initializes a ChineseDict, load the dictionary, and scan DOM 
+   * Creates and initializes a DictionaryView, load the dictionary, and scan DOM 
    * elements matching the selector. If the highlight is empty or has value
    * 'all' then all words with dictionary entries will be highlighted. If
    * highlight is set to 'proper' then event listeners will be added for all
    * terms but only those that are proper nouns (names, places, etc) will be
    * highlighted.
    */
-  buildDictionary(): ChineseDict {
+  buildDictionary(): DictionaryView {
     const dict = this.dict;
-    if (this.filename) {
-      fetch(this.filename)
+    const sources = this.sources;
+    const filename = this.sources[0].filename
+    if (filename) {
+      fetch(filename)
         .then(function(response) {
           console.log(`PlainJSBuilder response.status: ${response.status}`);
           if(response.ok) {
@@ -353,7 +489,7 @@ export class PlainJSBuilder implements DictionaryBuilder {
           throw new Error('Error fetching dictionary');
         })
         .then(function(dictData) {
-          dict.loadDictionary(dictData);
+          dict.loadDictionary(sources, dictData);
           dict.highlightWords(dict.selector, dict.dialog_id, dict.highlight);
         });
     }
@@ -369,95 +505,43 @@ export class PlainJSBuilder implements DictionaryBuilder {
  */
 export class Term {
   private chinese: string;
-  private headword_id: string;
-  private senses: Array<WordSense>;
+  private entries: Array<DictionaryEntry>;
 
   /**
    * Create a Term object
    * @param {!string} chinese - Either simplified or traditional, used to look
    *                            up the term
    * @param {string} headword_id - The headword id
-   * @param {WordSense} sense - A WordSense object 
+   * @param {DictionaryEntry} entries - An array of dictionary entries
    */
-  constructor(chinese: string,
-              headword_id: string,
-              sense: WordSense) {
+  constructor(chinese: string, entries: Array<DictionaryEntry>) {
     this.chinese = chinese;
-    this.headword_id = headword_id;
-    this.senses = [sense];
+    this.entries = entries;
   }
+
   /**
    * Adds a word sense
    */
-  addSense(sense: WordSense): void {
-    this.senses.push(sense);
+  addDictionaryEntry(entry: DictionaryEntry): void {
+    this.entries.push(entry);
   }
 
   /**
    * Gets the Chinese text that the term is stored and looked up by
    * @return {!string} Either simplified or traditional
    */
-  getChinese() {
+  getChinese(): string {
   	return this.chinese;
   }
 
   /**
-   * A convenience method that flattens the English equivalents for the term
-   * into a single string with a ';' delimiter
-   * @return {string} English equivalents for the term
+   * Gets the dictionary entries for this term
+   * @return {!Array<DictionaryEntry>} An array of entries
    */
-  getEnglish() {
-    let english = "";
-    for (let sense of this.senses) {
-      let eng = sense.getEnglish();
-      console.log(`getEnglish before ${ eng }`);
-      const r = new RegExp(' / ', 'g');
-      eng = eng.replace(r, ', ');
-      english += eng + '; ';
-    }
-    const re = new RegExp('; $');  // remove trailing semicolon
-    return english.replace(re, '');
+  getEntries(): Array<DictionaryEntry> {
+    return this.entries;
   }
 
-  /**
-   * A convenience method that flattens the part of speech for the term. If
-   * there is only one sense then use that for the part of speech. Otherwise,
-   * return an empty string.
-   * @return {string} part of speech for the term
-   */
-  getGrammar() {
-    if (this.senses.length === 1) {
-      return this.senses[0].getGrammar();
-    }
-    return '';
-  }
-
-  /**
-   * Gets the headword_id for the term
-   * @return {string} headword_id - The headword id
-   */
-  getHeadwordId() {
-  	return this.headword_id;
-  }
-
-  /**
-   * A convenience method that flattens the part of pinyin for the term. Gives
-   * a comma delimited list of unique values
-   * @return {string} Mandarin pronunciation
-   */
-  getPinyin() {
-    const values: Set<string> = new Set<string>();
-    for (let sense of this.senses) {
-      const pinyin = sense.getPinyin();
-      values.add(pinyin);
-    }
-    let p: string = '';
-    for (let val of values.values()) {
-      p += val + ', ';
-    }
-    const re = new RegExp(', $');  // remove trailing comma
-    return p.replace(re, '');
-  }
 }
 
 /**

@@ -30,6 +30,7 @@ ng generate service chinesedict
 Copy demo app and dictionary files 
 ```
 cp ../../index.ts src/app/chinesedict.ts
+cp ../tsconfig.json .
 cp ../app.component.ts src/app/.
 cp ../app.component.html src/app/.
 cp ../app.module.ts src/app/.

@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { ChinesedictService } from '../chinesedict.service';
 
-import { ChineseDict } from '../chinesedict.js';
+import { DictionaryView } from '../chinesedict.js';
 
 @Component({
   selector: 'app-chinesedict-wrapper',
@@ -10,7 +10,7 @@ import { ChineseDict } from '../chinesedict.js';
   encapsulation: ViewEncapsulation.None
 })
 export class ChinesedictWrapperComponent implements OnInit {
-  private dict: ChineseDict;
+  private dict: DictionaryView;
   english = '';
   pinyin = '';
 
@@ -18,7 +18,8 @@ export class ChinesedictWrapperComponent implements OnInit {
 
   lookup(chinese: string) {
     console.log(`ChinesedictWrapper.lookup: ${ chinese }`);
-    const entry = this.dict.lookup(chinese);
+    const term = this.dict.lookup(chinese);
+    const entry = term.getEntries()[0];
     this.english = entry.getEnglish();
     this.pinyin = entry.getPinyin();
   }
