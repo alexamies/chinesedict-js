@@ -1,3 +1,5 @@
 dist/
 node_modules/
 umd/
+*.zip
+cedict_ts.u8

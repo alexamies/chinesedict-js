@@ -14,37 +14,28 @@
  */
 
 /**
- * @fileoverview
- * A Nodejs utility to generate a dictionary file in tab separated variable and
- * save as JSON.
+ * A Nodejs utility to generate a dictionary file from a tab separated variable
+ * Chinese Notes or CC-CEDICT format and save as JSON for consumption by the
+ * chinesedict-js JavaScript browser client.
  */
 
 'use strict';
 
-const assert = require('assert');
 const argv = require('yargs').argv
+const assert = require('assert');
 const fs = require('fs');
 const parse = require('csv-parse');
 
-let tsvfile = 'words.tsv';
-if (argv._.length > 0) {
-  tsvfile = argv._[0];
-}
-let topic = '';
-if ((typeof argv.topic !== 'undefined') && (argv.topic.length > 0)) {
-  topic = argv.topic;
-}
-
-gen_dict(tsvfile, argv.topic)
-
 /**
- * Parse the dictionary tab separated variable file and generate the protobuf
- * file.
+ * Parse the dictionary tab separated variable file and generate JSON for the
+ *
+ * Assumes that the TSV file is in NTI Reader format
+ *
  * @param {!string} tsvfile - The name of the TSV file to parse
  * @param {!string} topic - The name of the topic to restrict entries to
  */
 function gen_dict(tsvfile, topic) {
-  console.log(`Parsing tsv dictionary file - ${tsvfile}`);
+  console.log(`Parsing tsv dictionary file ${tsvfile}`);
   const parser = parse({
     delimiter: '\t',
     comment: '#'
@@ -59,7 +50,7 @@ function gen_dict(tsvfile, topic) {
 }
 
 /**
- * Write to JSON
+ * Write a line of the NTI Reader dictionary to JSON
  * @param {!Array.<Array.<string>>} data - The parsed TSV data
  * @param {!string} topic - The name of the topic to restrict entries to
  */
@@ -126,3 +117,16 @@ function write_json(data, topic_en) {
   });
   console.log(`Wrote ${n} terms to ${filename}`);
 }
+
+// Entry point from the command line
+let filename = 'build/words.tsv';
+if (argv._.length > 0) {
+  filename = argv._[0];
+}
+let topic = '';
+if ((typeof argv.topic !== 'undefined') && (argv.topic.length > 0)) {
+  topic = argv.topic;
+}
+
+// A TSV file in Chinese Notes / NTI Reader format
+gen_dict(filename, argv.topic)

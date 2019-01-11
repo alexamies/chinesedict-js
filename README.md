@@ -14,7 +14,7 @@ JavaScript and to be used with modern browsers.
 Only traditional Chinese text is supported at present.
 
 ## Prerequisites
-Install Node.js.
+Install Node.js, version 11.
 ```
 mkdir public_html
 cd public_html
@@ -55,25 +55,28 @@ element with type="module"
 
 In demo_app.js, add JavaScript code to import the ES6 module:
 ```
-import { ChineseDict, PlainJSBuilder } from './index.js';
-const builder = new PlainJSBuilder('assets/words.json',
-                                   '.textbody',
-                                   'dict-dialog',
-                                   'all');
-const cdict = builder.buildDictionary();  // Matching terms will be highlighted
-const term = cdict.lookup('康熙帝國'); // Example term (a TV Show)
-console.log(`English: ${ term.getEnglish() }`);
-console.log(`Pinyin: ${ term.getPinyin() }`);
+import { DictionarySource, PlainJSBuilder } from './index.js';
+const source = new DictionarySource('assets/words.json',
+                                    'Demo Dictionary',
+                                    'Just for a demo, see instrucitons for building a full dictionary');
+const builder = new PlainJSBuilder([source], '.textbody', 'dict-dialog', 'all');
+const dictView = builder.buildDictionary(); // Matching terms will be highlighted
+// If the user clicks on a word then a dialog will be shown
+// You can also look a word up directly
+const term = dictView.lookup('康熙帝國'); // Example term (a TV Show)
+const entry = term.getEntries()[0]; // Get the entry from the first dictionary
+console.log(`English: ${ entry.getEnglish() }`);
+console.log(`Pinyin: ${ entry.getPinyin() }`);
 ```
 
 The PlainJSBuilder is a DictionaryBuilder implementation that creates and
-initializes the dictionary for browser apps that do not depend on a web
+initializes the dictionary view for browser apps that do not depend on a web
 application framework. The parameters to the constructor of PlainJSBuilder are
 
-1. filename - Name of the dictionary JSON file
+1. source - An array of sources with the filenames of the dictionary JSON files
 2. selector - A DOM selector for the Chinese text to be segmented
 3. dialog_id - A DOM id used to find the dialog
-4. highlight - Highlight either all the terms ('all', default) or only proper
+4. highlight - Highlight either all the terms ('all' by default) or only proper
                nouns ('proper')
 
 where 'div_id' is select for the HTML elements containing the Chinese text.
@@ -131,8 +134,11 @@ A more complex example is given in [demo](demo/README.md). See this at
 [chinesedictdemo.appspot.com](https://chinesedictdemo.appspot.com).
 
 ## Customize the Dictionary
-You can customize the module with your own dictionary, HTML content, and styles.
-The dictionary should be structured the same as the example words.json file
+A very small demo dict is provided with this project. It is too small to be any
+practical use.
+
+You can customize the module with your own dictionaries, HTML content and styles.
+The dictionary should be structured the same as the example words.json files
 provided. If you have not got your own dictionary then you can use the [NTI
 Buddhist Text Reader Project](https://github.com/alexamies/buddhist-dictionary),
 or [Chinese Notes](https://github.com/alexamies/chinesenotes.com)
@@ -143,12 +149,22 @@ CCASE 3.0](https://creativecommons.org/licenses/by-sa/3.0/).
 The build/gen_dictionary.js file is Nodejs command line utility to generate
 the dictionary file. This utility assumes the tab separated variable format of
 the words.txt file in the [Chinese
-Notes](https://github.com/alexamies/chinesenotes.com) project. To generate the
+Notes](https://github.com/alexamies/chinesenotes.com) project. 
+
+```
+CHINESE_DICT_JS=$PWD
+cd ..
+git clone https://github.com/alexamies/chinesenotes.com.git
+CNREADER_HOME=$PWD/chinesenotes.com
+cd $CHINESE_DICT_JS
+```
+
+To generate the
 dictionary use the command
 
 ```
 npm install
-node run prepare
+node run prepare $CNREADER_HOME/data/words.txt
 ```
 
 To restrict the entries to a specific topic use the --topic argument. For
@@ -158,6 +174,15 @@ node build/gen_dictionary.js --topic "Literary Chinese" build/words.tsv
 ```
 
 The dictionary file is stored in JSON format.
+
+For the
+[CC-CEDICT](https://www.mdbg.net/chinese/dictionary?page=cc-cedict) dictionary
+```
+curl -O https://www.mdbg.net/chinese/export/cedict/cedict_1_0_ts_utf-8_mdbg.zip
+unzip cedict_1_0_ts_utf-8_mdbg.zip
+rm cedict_1_0_ts_utf-8_mdbg.zip
+npm run cc-cedict
+```
 
 ## Integration
 The module JavaScript is generated from TypeScript, which can help provide

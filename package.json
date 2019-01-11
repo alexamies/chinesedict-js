@@ -7,7 +7,8 @@
   "browser": "index.js",
   "author": "alexamies",
   "scripts": {
-    "prepare": "node build/gen_dictionary.js build/words.tsv",
+    "prepare": "node build/gen_dictionary.js",
+    "cc-cedict": "node build/cccedict_generator.js ./cedict_ts.u8",
     "compile": "node_modules/typescript/bin/tsc",
     "demo": "node app.js",
     "test": "node test/test_basic_demo.js"
@@ -16,7 +17,8 @@
     "node": ">=8"
   },
   "dependencies": {
-    "dialog-polyfill": "^0.4.10"
+    "dialog-polyfill": "^0.4.10",
+    "repl": "^0.1.3"
   },
   "devDependencies": {
     "@reactivex/rxjs": "^6.3.3",
