@@ -3,7 +3,7 @@ import { DictionarySource, PlainJSBuilder } from './index.js';
 const { fromEvent } = rxjs;
 console.log('Loading demo_app');
 // Build and initialize the ChineseDict class
-const source = new DictionarySource('assets/words.json', 'Demo Dictionary', 'Just for a demo, see instrucitons for building a full dictionary');
+const source = new DictionarySource('/assets/words.json', 'Demo Dictionary', 'Just for a demo, see instrucitons for building a full dictionary');
 const builder = new PlainJSBuilder([source], '.textbody', 'dict-dialog', 'all');
 const dictView = builder.buildDictionary();
 const button = document.querySelector('#lookup_button');

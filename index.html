@@ -40,21 +40,23 @@
         See the <a href='demo/static/index.html'>More complex demo</a> - see
         demo/README.md for setup required.
       </p>
+      <p>
+        Tests: <a href="test/test1.html">test/test1.html</a>,
+        <a href="test/test2.html">test/test2.html</a>,
+        <a href="test/test3.html">test/test3.html</a>.
+      </p>
     </main>
-    <!--Dialog is hidden until the user clicks on a word-->
+    <!-- Dialog is hidden until the user clicks on a word. You may customize the
+         dialog by styling these elements or leave it out completely. -->
     <dialog id='dict-dialog'>
-      <!--
-        The dialog field ids follow the pattern dict-dialog + _headword, etc
-      -->
       <p id='dict-dialog_headword'></p>
-      <p id='dict-dialog_pinyin'></p>
-      <p id='dict-dialog_english'></p>
-      <p id='dict-dialog_source'></p>
-      <p id='dict-dialog_headword_id'></p>
-      <p><button id='dict-dialog_ok'>OK</button></p>
+      <!-- Used for holding the dictionary entries-->
+      <div id='dict-dialog_container'></div>
+      <p><button id='dict-dialog_ok' class='dialog_ok'>OK</button></p>
     </dialog>
     <!--<script defer src="dist/dialog-polyfill.js"></script>-->
-    <script src='https://unpkg.com/@reactivex/rxjs@6.3.3/dist/global/rxjs.umd.js'></script>
+    <script src='/node_modules/rxjs/bundles/rxjs.umd.js'></script>
+    <!--<script src='https://unpkg.com/@reactivex/rxjs@6.3.3/dist/global/rxjs.umd.js'></script>-->
     <script src="demo_app.js" type="module"></script>
   </body>
 </html>

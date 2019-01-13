@@ -23,12 +23,20 @@ export class DictionaryEntry {
      * @param {!DictionarySource} source - The dictionary containing the entry
      * @param {!Array<WordSense>} senses - An array of word senses
      */
-    constructor(headword, source, senses, headword_id) {
+    constructor(headword, source, senses, headwordId) {
         //console.log(`DictionaryEntry ${ headword }`);
         this.headword = headword;
         this.source = source;
         this.senses = senses;
-        this.headword_id = headword_id;
+        this.headwordId = headwordId;
+    }
+    /**
+     * A convenience method that flattens the English equivalents for the term
+     * into a single string with a ';' delimiter
+     * @return {string} English equivalents for the term
+     */
+    addWordSense(ws) {
+        this.senses.push(ws);
     }
     /**
      * A convenience method that flattens the English equivalents for the term
@@ -39,7 +47,7 @@ export class DictionaryEntry {
         let english = "";
         for (let sense of this.senses) {
             let eng = sense.getEnglish();
-            console.log(`getEnglish before ${eng}`);
+            //console.log(`getEnglish before ${ eng }`);
             const r = new RegExp(' / ', 'g');
             eng = eng.replace(r, ', ');
             english += eng + '; ';
@@ -64,7 +72,7 @@ export class DictionaryEntry {
      * @return {string} headword_id - The headword id
      */
     getHeadwordId() {
-        return this.headword_id;
+        return this.headwordId;
     }
     /**
      * A convenience method that flattens the part of pinyin for the term. Gives
@@ -133,17 +141,44 @@ export class DictionaryView {
         this.highlight = highlight;
     }
     /**
+     * Add a dictionary entry to the dialog
+     *
+     * @param {DictionaryEntry} entry - the word data to add to the dialog
+     */
+    addDictEntryToDialog(entry) {
+        const containerEl = document.createElement('p');
+        const pinyinEl = document.createElement('span');
+        pinyinEl.className = 'dict-dialog_pinyin';
+        pinyinEl.innerHTML = entry.getPinyin();
+        containerEl.appendChild(pinyinEl);
+        const englishEl = document.createElement('span');
+        englishEl.className = 'dict-dialog_english';
+        englishEl.innerHTML = entry.getEnglish();
+        containerEl.appendChild(englishEl);
+        if (entry.getHeadwordId()) {
+            const headwordIdEl = document.createElement('span');
+            headwordIdEl.className = 'dict-dialog_headword_id';
+            headwordIdEl.innerHTML = entry.getHeadwordId();
+            containerEl.appendChild(headwordIdEl);
+        }
+        const sourceEl = document.createElement('span');
+        sourceEl.innerHTML = `Source: ${entry.getSource().title}`;
+        containerEl.appendChild(sourceEl);
+        this.dialogContainerEl.appendChild(containerEl);
+    }
+    /**
      * Decorate the segments of text
      *
      * @private
      * @param {!HTMLElement} elem - The DOM element to add the segments to
      * @param {!Array.<Term>} terms - The segmented text array of terms
      * @param {string} dialog_id - A DOM id used to find the dialog
-     * @param {string} highlight - Which terms to highlight: all | proper
+     * @param {string} highlight - Which terms to highlight: all | proper | ''
      */
     decorate_segments_(elem, terms, dialog_id, highlight) {
         console.log(`decorate_segments_ dialog_id: ${dialog_id}, ${highlight}`);
         elem.innerHTML = "";
+        const thisObject = this;
         for (let term of terms) {
             const entry = term.getEntries()[0];
             const chinese = term.getChinese();
@@ -155,10 +190,10 @@ export class DictionaryView {
                     link.href = '#';
                     link.className = 'highlight';
                     link.addEventListener('click', (event) => {
-                        this.showDialog(event, term, dialog_id);
+                        thisObject.showDialog(event, term, dialog_id);
                     });
                     link.addEventListener('mouseover', (event) => {
-                        this.doMouseover(event, term);
+                        thisObject.doMouseover(event, term);
                     });
                     elem.appendChild(link);
                 }
@@ -167,10 +202,10 @@ export class DictionaryView {
                     span.className = 'nohighlight';
                     span.textContent = chinese;
                     span.addEventListener('click', (event) => {
-                        this.showDialog(event, term, dialog_id);
+                        thisObject.showDialog(event, term, dialog_id);
                     });
                     span.addEventListener('mouseover', (event) => {
-                        this.doMouseover(event, term);
+                        thisObject.doMouseover(event, term);
                     });
                     elem.appendChild(span);
                 }
@@ -198,19 +233,15 @@ export class DictionaryView {
      * links that can be clicked to find the definitions. The blocks of text
      * are identified with a DOM selector. Expected to be called by a builder in
      * initializing the dictionary.
-     *
-     * @param {string} selector - A DOM selector used to find the page elements
-     * @param {string} dialog_id - A DOM id used to find the dialog
-     * @param {string} highlight - Which terms to highlight: all | proper
      */
-    highlightWords(selector, dialog_id, highlight) {
-        if (!selector) {
+    highlightWords() {
+        if (!this.selector) {
             console.log('findwords: selector empty');
             return;
         }
-        let elems = document.body.querySelectorAll(selector);
+        let elems = document.querySelectorAll(this.selector);
         if (!elems) {
-            console.log(`findwords: no elements matching ${selector}`);
+            console.log(`findwords: no elements matching ${this.selector}`);
             return;
         }
         console.log(`findwords num elems: ${elems.length}`);
@@ -218,7 +249,7 @@ export class DictionaryView {
             const el = elems[i];
             const text = el.textContent;
             let terms = this.segment_text_(text);
-            this.decorate_segments_(el, terms, dialog_id, highlight);
+            this.decorate_segments_(el, terms, this.dialog_id, this.highlight);
         }
     }
     /**
@@ -227,21 +258,21 @@ export class DictionaryView {
      *
      * @param {!Array.<Array.<String>>} dictData - An array of dictionary terms
      */
-    loadDictionary(sources, dictData) {
-        console.log(`read ${dictData.length} dictionary entries`);
-        for (let source of sources) {
-            for (let entry of dictData) {
-                const traditional = entry["t"];
-                const sense = new WordSense(entry["s"], entry["t"], entry['p'], entry['e'], entry['g']);
-                const dictEntry = new DictionaryEntry(traditional, source, [sense], entry['h']);
-                if (!this.headwords.has(traditional)) {
-                    const term = new Term(traditional, [dictEntry]);
-                    this.headwords.set(traditional, term);
-                }
-                else {
-                    const term = this.headwords.get(traditional);
-                    term.addDictionaryEntry(dictEntry);
-                }
+    loadDictionary(source, dictData) {
+        //console.log(`loading ${ dictData.length } from ${ source.title }`);
+        for (let entry of dictData) {
+            const traditional = entry["t"];
+            const sense = new WordSense(entry["s"], entry["t"], entry['p'], entry['e'], entry['g']);
+            const dictEntry = new DictionaryEntry(traditional, source, [sense], entry['h']);
+            if (!this.headwords.has(traditional)) {
+                //console.log(`Loading ${ traditional } from ${ source.title } `);
+                const term = new Term(traditional, [dictEntry]);
+                this.headwords.set(traditional, term);
+            }
+            else {
+                //console.log(`Adding ${ traditional } from ${ source.title } `);
+                const term = this.headwords.get(traditional);
+                term.addDictionaryEntry(sense, dictEntry);
             }
         }
     }
@@ -292,23 +323,42 @@ export class DictionaryView {
      * Add a listener to the dialog OK button. The OK button should have the ID
      * of the dialog with '_ok' appended. Expected to be called by a builder in
      * initializing the dictionary.
-     *
-     * @param {string} dialog_id - The DOM id of the dialog HTML element
      */
-    setupDialog(dialog_id) {
-        const dialog = document.getElementById(dialog_id);
-        if (typeof dialogPolyfill !== 'undefined') {
-            dialogPolyfill.registerDialog(dialog);
+    setupDialog() {
+        let dialog = document.getElementById(this.dialog_id);
+        const headwordId = this.dialog_id + '_headword';
+        this.headwordEl = document.getElementById(headwordId);
+        const containerId = this.dialog_id + '_container';
+        this.dialogContainerEl = document.getElementById(containerId);
+        const dialogOkId = this.dialog_id + '_ok';
+        let dialogOk = document.getElementById(dialogOkId);
+        if (!dialog) {
+            console.log(`setupDialog ${this.dialog_id} not found`);
+            dialog = document.createElement('dialog');
+            this.headwordEl = document.createElement('p');
+            dialog.appendChild(this.headwordEl);
+            this.dialogContainerEl = document.createElement('div');
+            dialog.appendChild(this.dialogContainerEl);
+            dialogOk = document.createElement('button');
+            dialogOk.innerText = 'OK';
+            dialogOk.className = 'dialog_ok';
+            dialog.appendChild(dialogOk);
+            document.body.appendChild(dialog);
         }
-        const dialog_ok_id = dialog_id + '_ok';
-        const dialog_ok = document.getElementById(dialog_ok_id);
-        if (dialog && dialog_ok) {
-            dialog_ok.addEventListener('click', () => {
-                if (dialog instanceof HTMLDialogElement) {
-                    dialog.close();
-                }
-            });
+        if (dialog instanceof HTMLDialogElement) {
+            this.dialog = dialog;
+            if (typeof dialogPolyfill !== 'undefined') {
+                dialogPolyfill.registerDialog(dialog);
+            }
         }
+        else {
+            console.log(`dialog is typeof ${typeof dialog}`);
+        }
+        dialogOk.addEventListener('click', () => {
+            if (dialog instanceof HTMLDialogElement) {
+                dialog.close();
+            }
+        });
     }
     /**
      * Show a dialog with the dictionary definition. Expected to be called in
@@ -319,55 +369,22 @@ export class DictionaryView {
      * @param {string} dialog_id - A DOM id used to find the dialog
      */
     showDialog(event, term, dialog_id) {
-        console.log(`showDialog this: ${this}`);
         const target = event.target;
         const chinese = target.textContent;
         if (term.getEntries().length === 0) {
             return;
         }
-        const entry = term.getEntries()[0];
-        const english = entry.getEnglish();
-        const pinyin = entry.getPinyin();
-        const source = entry.getSource().title;
-        const id = entry.getHeadwordId();
-        const dialog = document.getElementById(dialog_id);
-        if (dialog) {
-            const headword_div_id = dialog_id + '_headword';
-            const headword_div = document.getElementById(headword_div_id);
-            if (headword_div) {
-                headword_div.innerHTML = chinese;
-            }
-            const pinyin_div_id = dialog_id + '_pinyin';
-            const pinyin_div = document.getElementById(pinyin_div_id);
-            if (pinyin_div) {
-                pinyin_div.innerHTML = pinyin;
-            }
-            const english_div_id = dialog_id + '_english';
-            const english_div = document.getElementById(english_div_id);
-            if (english_div) {
-                english_div.innerHTML = english;
-            }
-            const headword_id_div_id = dialog_id + '_headword_id';
-            const headword_id_div = document.getElementById(headword_id_div_id);
-            if (headword_id_div) {
-                headword_id_div.innerHTML = id;
-            }
-            const source_div_id = dialog_id + '_source';
-            const source_div = document.getElementById(source_div_id);
-            if (source_div) {
-                source_div.innerHTML = `Source: ${source}`;
-            }
-            if (dialog instanceof HTMLDialogElement) {
-                dialog.showModal();
-            }
-            else {
-                console.log(`dialog is a $ { typeof dialog }`);
-            }
+        this.headwordEl.innerHTML = chinese;
+        while (this.dialogContainerEl.firstChild) {
+            this.dialogContainerEl.removeChild(this.dialogContainerEl.firstChild);
         }
-        else {
-            console.log(`showDialog ${dialog_id} not found`);
-            alert(`chinese: ${chinese} english: ${english}, id: ${id}`);
+        //console.log(`showDialog got: ${ term.getEntries().length } entries`);
+        for (const entry of term.getEntries()) {
+            console.log(`showDialog got: ${entry.getEnglish()} from
+                   ${entry.getSource().title}`);
+            this.addDictEntryToDialog(entry);
         }
+        this.dialog.showModal();
     }
 }
 /**
@@ -400,22 +417,24 @@ export class PlainJSBuilder {
     buildDictionary() {
         const dict = this.dict;
         const sources = this.sources;
-        const filename = this.sources[0].filename;
-        if (filename) {
-            fetch(filename)
-                .then(function (response) {
-                console.log(`PlainJSBuilder response.status: ${response.status}`);
-                if (response.ok) {
-                    return response.json();
-                }
-                throw new Error('Error fetching dictionary');
-            })
-                .then(function (dictData) {
-                dict.loadDictionary(sources, dictData);
-                dict.highlightWords(dict.selector, dict.dialog_id, dict.highlight);
-            });
+        for (const source of sources) {
+            const filename = source.filename;
+            if (filename) {
+                fetch(filename)
+                    .then(function (response) {
+                    console.log(`PlainJSBuilder response.status: ${response.status}`);
+                    if (response.ok) {
+                        return response.json();
+                    }
+                    throw new Error('Error fetching dictionary');
+                })
+                    .then(function (dictData) {
+                    dict.loadDictionary(source, dictData);
+                    dict.highlightWords();
+                });
+            }
         }
-        dict.setupDialog(dict.dialog_id);
+        dict.setupDialog();
         return this.dict;
     }
 }
@@ -437,7 +456,13 @@ export class Term {
     /**
      * Adds a word sense
      */
-    addDictionaryEntry(entry) {
+    addDictionaryEntry(ws, entry) {
+        for (const e of this.entries) {
+            if (e.getSource().title === entry.getSource().title) {
+                e.addWordSense(ws);
+                return;
+            }
+        }
         this.entries.push(entry);
     }
     /**
@@ -467,8 +492,8 @@ class WordSense {
      * @param {string} english - English equivalent
      * @param {string} grammar - Part of speech
      */
-    constructor(chinese, traditional, pinyin, english, grammar) {
-        this.simplified = chinese;
+    constructor(simplified, traditional, pinyin, english, grammar) {
+        this.simplified = simplified;
         this.traditional = traditional;
         this.pinyin = pinyin;
         this.english = english;

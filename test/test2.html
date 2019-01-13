@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link rel="shortcut icon" href="about:blank">
+    <meta name="description" 
+          content="Chinese-English Dictionary JavaScript Demo">
+    <title>Chinese-English Dictionary JavaScript Demo</title>
+    <link rel="stylesheet" type="text/css" href="/assets/chinesedict.css"/>
+    <link rel="stylesheet" type="text/css" href="/assets/demo_app.css"/>
+    <!--<link rel="stylesheet" type="text/css" href="dist/dialog-polyfill.css"/>-->
+  </head>
+  <body>
+    <h1>Chinese-English Dictionary JavaScript Demo</h1>
+    <main>
+      <p>
+      <p>
+        Two dictionaries
+        <div id='textbody1' class='textbody'>對於從四面八方來到</div>
+      </p>
+      </p>
+      <p>
+        <span class='dict-entry_input'>
+          <input type='textfield' id='lookup_input' value='羅閱城'/>
+          <button id='lookup_button'>Lookup</button>
+        </span>
+        <span id='pinyin_span' class='dict-entry_pinyin'></span>
+        <span id='english_span' class='dict-entry_english'></span>
+      </p>
+      <p>
+        Note: There are only two words in the dictionary in this example.
+        See the <a href='demo/static/index.html'>More complex demo</a> - see
+        demo/README.md for setup required.
+      </p>
+    </main>
+    <!--<script defer src="dist/dialog-polyfill.js"></script>-->
+    <script src='../node_modules/rxjs/bundles/rxjs.umd.js'></script>
+    <!--<script src='https://unpkg.com/@reactivex/rxjs@6.3.3/dist/global/rxjs.umd.js'></script>-->
+    <script src="demo_app2.js" type="module"></script>
+  </body>
+</html>

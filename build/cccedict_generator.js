@@ -204,6 +204,9 @@ pMap.set('uo4', 'uò');
 pMap.set('uo5', 'uo');
 pMap.set('xx5', 'xx');
 
+const slashRe = new RegExp('/', 'g');
+const quoteRe = new RegExp('"', 'g');
+
 function cccedict_line(line) {
   if ((line.length > 0) && (line[0] === '#')) {
     return;
@@ -223,7 +226,7 @@ function cccedict_line(line) {
   let s = chinese[1];
   let p = convertPinyin(tokens[2]);
   let e = englishDelims(tokens[4]);
-  return `{'t':'${ t }','s':'${ s }','p':'${ p }','e':'${ e }'}`;
+  return `{"t":"${ t }","s":"${ s }","p":"${ p }","e":"${ e }"}`;
 }
 
 /**
@@ -272,7 +275,8 @@ function convertPinyin(pNum) {
  * Convert '/' in English to ', '
  */
 function englishDelims(englishSlash) {
-  return englishSlash.replace('/', ', ')
+  let eng = englishSlash.replace(slashRe, ', ');
+  return eng.replace(quoteRe, `'`);
 }
 
 
@@ -285,7 +289,7 @@ function englishDelims(englishSlash) {
  */
 function gen_cccedict(filename) {
   console.log(`Parsing CC-CEDICT dictionary file ${filename}`);
-  let entries = '';
+  let entries = '[';
   let lc = 0;
   const rl = readline.createInterface({
     input: fs.createReadStream(filename),
@@ -295,14 +299,15 @@ function gen_cccedict(filename) {
     lc++;
     let data = cccedict_line(line);
     if (data) {
-      if (entries) {
-        entries += ',';
+      if (entries.length > 1) {
+        entries += ',\n';
       }
       entries += data;
     }
   });
   rl.on('close', (line) => {
     console.log(`\nRead ${ lc } lines of the CC-CEDICT file`);
+    entries += ']';
     cccedict_write_json(entries);
     process.exit();
   });

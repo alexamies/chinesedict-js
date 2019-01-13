@@ -8,7 +8,7 @@ const { fromEvent } = rxjs;
 console.log('Loading demo_app');
 
 // Build and initialize the ChineseDict class
-const source = new DictionarySource('assets/words.json',
+const source = new DictionarySource('/assets/words.json',
     'Demo Dictionary',
 	'Just for a demo, see instrucitons for building a full dictionary')
 const builder = new PlainJSBuilder([source],

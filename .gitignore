@@ -3,3 +3,4 @@ node_modules/
 umd/
 *.zip
 cedict_ts.u8
+buddhdic-extracts/
