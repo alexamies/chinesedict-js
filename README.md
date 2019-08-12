@@ -122,12 +122,19 @@ npm install
 npm run demo
 ```
 
-Open the index.html file in a web browser at http://localhost:8080/index.html
+Open the index.html file in a web browser at `http://localhost:8080/index.html`
 Click on one of the highlighted words. If everything is ok you should see a
 dialog like this (on Chrome):
 
 <img
 src='https://github.com/alexamies/chinesedict-js/blob/master/screenshot.png?raw=true'/>
+
+Depending on the contents of the contents of the dictionary, multi-character
+terms may show the details for individual characters. For example, in the
+screenshot below.
+
+<img
+src='https://github.com/alexamies/chinesedict-js/blob/master/images/screenshot_vocab_dialog_parts.png?raw=true'/>
 
 ## More Complex Demo
 A more complex example is given in [demo](demo/README.md). See this at
@@ -149,9 +156,14 @@ CCASE 3.0](https://creativecommons.org/licenses/by-sa/3.0/).
 The build/gen_dictionary.js file is Nodejs command line utility to generate
 the dictionary file. This utility assumes the tab separated variable format of
 the words.txt file in the [Chinese
-Notes](https://github.com/alexamies/chinesenotes.com) project. 
+Notes](https://github.com/alexamies/chinesenotes.com) project. Basic usage is
 
+```bash
+node build/gen_dictionary.js
 ```
+
+To build with the Chinese Notes dictionary:
+```bash
 CHINESE_DICT_JS=$PWD
 cd ..
 git clone https://github.com/alexamies/chinesenotes.com.git
@@ -225,14 +237,6 @@ framework.
 ## CDN
 Not tested well yet
 https://unpkg.com/@alexamies/chinesedict-js:0.0.10/:index.js
-
-## Test
-
-### Automated Testing
-With the demo_app already running, type
-```
-npm run test
-```
 
 ### Cross Browser Support
 Cross browser support is provided for the HTML

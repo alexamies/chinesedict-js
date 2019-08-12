@@ -143,10 +143,11 @@ export class DictionaryView {
     /**
      * Add a dictionary entry to the dialog
      *
+     * @param {string} chinese - the Chinese text
      * @param {DictionaryEntry} entry - the word data to add to the dialog
      */
-    addDictEntryToDialog(entry) {
-        const containerEl = document.createElement('p');
+    addDictEntryToDialog(chinese, entry) {
+        const containerEl = document.createElement('div');
         const pinyinEl = document.createElement('span');
         pinyinEl.className = 'dict-dialog_pinyin';
         pinyinEl.innerHTML = entry.getPinyin();
@@ -162,9 +163,42 @@ export class DictionaryView {
             containerEl.appendChild(headwordIdEl);
         }
         const sourceEl = document.createElement('span');
-        sourceEl.innerHTML = `Source: ${entry.getSource().title}`;
+        sourceEl.innerHTML = `Source: ${entry.getSource().title} <br/>
+      ${entry.getSource().description}`;
         containerEl.appendChild(sourceEl);
+        this.addPartsToDialog(chinese, containerEl);
         this.dialogContainerEl.appendChild(containerEl);
+    }
+    /**
+     * Add parts of a Chinese string to the dialog
+     *
+     * @param {string} chinese - the Chinese text
+     * @param {HTMLDivElement} containerEl - to display the parts in
+     */
+    addPartsToDialog(chinese, containerEl) {
+        console.log(`addPartsToDialog enter ${chinese}`);
+        const partsEl = document.createElement('div');
+        const partsTitleEl = document.createElement('h5');
+        partsTitleEl.innerHTML = `Characters`;
+        partsEl.appendChild(partsTitleEl);
+        let numAdded = 0;
+        for (let i = 0; i < chinese.length; i++) {
+            const cPart = chinese[i];
+            if (this.headwords.has(cPart)) {
+                numAdded++;
+                const partTerm = this.headwords.get(chinese[i]);
+                let eng = "";
+                for (const entry of partTerm.getEntries()) {
+                    eng += entry.getEnglish() + " ";
+                }
+                const partsBodyEl = document.createElement('div');
+                partsBodyEl.innerHTML = `${cPart}: ${eng}`;
+                partsEl.appendChild(partsBodyEl);
+            }
+        }
+        if (numAdded > 0) {
+            containerEl.appendChild(partsEl);
+        }
     }
     /**
      * Decorate the segments of text
@@ -380,9 +414,7 @@ export class DictionaryView {
         }
         //console.log(`showDialog got: ${ term.getEntries().length } entries`);
         for (const entry of term.getEntries()) {
-            console.log(`showDialog got: ${entry.getEnglish()} from
-                   ${entry.getSource().title}`);
-            this.addDictEntryToDialog(entry);
+            this.addDictEntryToDialog(chinese, entry);
         }
         this.dialog.showModal();
     }

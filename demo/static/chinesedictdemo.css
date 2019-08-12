@@ -1,5 +1,5 @@
 @import '/assets/chinesedict.css';
-@import 'dist/dialog-polyfill.css';
+@import '/assets/dialog-polyfill.css';
 
 html, body {
   max-width: 800px;
