@@ -1,4 +1,5 @@
 # Chinese Dictionary JavaScript Module
+
 Status: early prototype, interface will change
 
 An ECMAScript 2015 (ES6) browser module for showing Chinese-English dictionary
@@ -14,25 +15,71 @@ JavaScript and to be used with modern browsers.
 Only traditional Chinese text is supported at present.
 
 ## Prerequisites
+
 Install Node.js, version 11.
+
+## Quickstart
+
+The file index.html is ready to be served as a demo web page. The easiest way to
+run this yourself is to clone it from GitHub:
+
+```shell
+git clone https://github.com/alexamies/chinesedict-js.git
+cd chinesedict-js
 ```
+
+It needs to be served on a web server (not just opened in a browser from the
+local file system). For example, using Express:
+
+```shell
+npm install
+npm run demo
+```
+
+Open the index.html file in a web browser at `http://localhost:8080/index.html`
+Click on one of the highlighted words. If everything is ok you should see a
+dialog like this (on Chrome):
+
+<img
+src='https://github.com/alexamies/chinesedict-js/blob/master/screenshot.png?raw=true'/>
+
+Depending on the contents of the contents of the dictionary, multi-character
+terms may show the details for individual characters. For example, in the
+screenshot below.
+
+<img
+src='https://github.com/alexamies/chinesedict-js/blob/master/images/screenshot_vocab_dialog_parts.png?raw=true'/>
+
+## Using the module in your own projects
+
+Follow the instructions here to use the chinesedict-js in your own module. Refer
+to the demo examples and tests if you get stuck.
+
+### Setup
+
+Suppose that your own project is in directory public_html:
+
+```shell
 mkdir public_html
 cd public_html
 npm init -y
 ```
 
-## Install
+### Installation
 Get the chinesedict-js JavaScript module with the command:
-```
+
+```shell
 npm install @alexamies/chinesedict-js
 ```
 
 The files from the GitHub project will be located in the directory
-```
+
+```shell
 node_modules/@alexamies/chinesedict-js
 ```
 
-## Basic Use
+### Basic use
+
 You can import the chinesedict-js module into your web pages with a JavaScript
 [import](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import)
 statement.
@@ -40,7 +87,8 @@ statement.
 You may want to create a dist directory to bundle files served but these
 instructions simply serve from the node_modules/@alexamies/chinesedict-js/
 directory. For example, bundling into directory dist:
-```
+
+```shell
 mkdir dist
 cp node_modules/@alexamies/chinesedict-js/index.js dist/.
 cp node_modules/@alexamies/chinesedict-js/assets/chinesedict.css dist/.
@@ -49,12 +97,14 @@ cp node_modules/@alexamies/chinesedict-js/assets/chinesedict.css dist/.
 Make sure that you reference your own JavaScript code in your HTML page using a
 [script](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/script)
 element with type="module"
-```
+
+```html
 <script src="demo_app.js" type="module"></script>
 ```
 
 In demo_app.js, add JavaScript code to import the ES6 module:
-```
+
+```javascript
 import { DictionarySource, PlainJSBuilder } from './index.js';
 const source = new DictionarySource('assets/words.json',
                                     'Demo Dictionary',
@@ -82,59 +132,34 @@ application framework. The parameters to the constructor of PlainJSBuilder are
 where 'div_id' is select for the HTML elements containing the Chinese text.
 
 Also, in your CSS file import the stylesheet:
-```
+
+```css
 @import '/node_modules/@alexamies/chinesedict-js/chinesedict.css';
 ```
 
 The [dialog-polyfill](https://github.com/GoogleChrome/dialog-polyfill) is used
 for cross-browser compatibility. The dialog-polyfill files needs to be copied
 manually at the moment. On the command line:
-```
+
+```shell
 npm install dialog-polyfill
 cp node_modules/dialog-polyfill/dialog-polyfill.js dist/.
 cp node_modules/dialog-polyfill/dialog-polyfill.css dist/.
 ```
 
 The dialog-polyfill is not used as a module. Load it into your HTML page:
-```
+
+```html
 <script src="/assets/dialog-polyfill.js"></script>
 ```
 
 Also, import the stylesheet into your CSS file with a
 [CSS import](https://developer.mozilla.org/en-US/docs/Web/CSS/@import)
 statement:
-```
+
+```css
 @import '/assets/dialog-polyfill.css';
 ```
-
-## Simple Demo
-The file index.html is ready to be served as a demo web page. The easiest way to
-run this yourself is to clone it from GitHub:
-```
-git clone https://github.com/alexamies/chinesedict-js.git
-cd chinesedict-js
-```
-
-It needs to be served on a web server (not just opened in a browser from the
-local file system). For example, using Express:
-```
-npm install
-npm run demo
-```
-
-Open the index.html file in a web browser at `http://localhost:8080/index.html`
-Click on one of the highlighted words. If everything is ok you should see a
-dialog like this (on Chrome):
-
-<img
-src='https://github.com/alexamies/chinesedict-js/blob/master/screenshot.png?raw=true'/>
-
-Depending on the contents of the contents of the dictionary, multi-character
-terms may show the details for individual characters. For example, in the
-screenshot below.
-
-<img
-src='https://github.com/alexamies/chinesedict-js/blob/master/images/screenshot_vocab_dialog_parts.png?raw=true'/>
 
 ## More Complex Demo
 A more complex example is given in [demo](demo/README.md). See this at
@@ -158,12 +183,13 @@ the dictionary file. This utility assumes the tab separated variable format of
 the words.txt file in the [Chinese
 Notes](https://github.com/alexamies/chinesenotes.com) project. Basic usage is
 
-```bash
+```shell
 node build/gen_dictionary.js
 ```
 
 To build with the Chinese Notes dictionary:
-```bash
+
+```shell
 CHINESE_DICT_JS=$PWD
 cd ..
 git clone https://github.com/alexamies/chinesenotes.com.git
@@ -174,14 +200,15 @@ cd $CHINESE_DICT_JS
 To generate the
 dictionary use the command
 
-```
+```shell
 npm install
 node run prepare $CNREADER_HOME/data/words.txt
 ```
 
 To restrict the entries to a specific topic use the --topic argument. For
 example,
-```
+
+```shell
 node build/gen_dictionary.js --topic "Literary Chinese" build/words.tsv
 ```
 
@@ -189,7 +216,8 @@ The dictionary file is stored in JSON format.
 
 For the
 [CC-CEDICT](https://www.mdbg.net/chinese/dictionary?page=cc-cedict) dictionary
-```
+
+```shell
 curl -O https://www.mdbg.net/chinese/export/cedict/cedict_1_0_ts_utf-8_mdbg.zip
 unzip cedict_1_0_ts_utf-8_mdbg.zip
 rm cedict_1_0_ts_utf-8_mdbg.zip
@@ -214,12 +242,14 @@ module](https://www.typescriptlang.org/docs/handbook/modules.html).  Both
 use the same ECMAScript 2015 (ES6) module concepts.
 
 Compile the module and demo app
-```
+
+```shell
 npm run compile
 ```
 
 Run the demo app
-```
+
+```shell
 npm run demo
 ```
 

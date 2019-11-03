@@ -6,7 +6,7 @@ console.log('Loading demo_app');
 const source1 = new DictionarySource('/assets/ntireader.json',
   'NTI Reader dictionary',
   'Nan Tien Institute Reader dictionary');
-const source2 = new DictionarySource('/assets/cccedict.json',
+const source2 = new DictionarySource('/assets/cccedict_sample.json',
   'CC-CEDICT Dictionary',
   'CC-CEDICT Chinese-English Dictionary');
 const builder = new PlainJSBuilder([source1, source2], '.textbody', 'dict-dialog', 'all');

@@ -21,6 +21,10 @@ fromEvent(button, 'click')
     const term = dictView.lookup(tf.value);
     console.log(`Value: ${tf.value}`);
     const entry = term.getEntries()[0];
-    pSpan.innerHTML = entry.getPinyin();
-    eSpan.innerHTML = entry.getEnglish();
+    if (entry) {
+      pSpan.innerHTML = entry.getPinyin();
+      eSpan.innerHTML = entry.getEnglish();
+    } else {
+      console.log('entry is not defined');
+    }
 });
