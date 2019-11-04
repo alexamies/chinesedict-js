@@ -108,13 +108,17 @@ In demo_app.js, add JavaScript code to import the ES6 module:
 import { DictionarySource, PlainJSBuilder } from './index.js';
 const source = new DictionarySource('assets/words.json',
                                     'Demo Dictionary',
-                                    'Just for a demo, see instrucitons for building a full dictionary');
-const builder = new PlainJSBuilder([source], '.textbody', 'dict-dialog', 'all');
-const dictView = builder.buildDictionary(); // Matching terms will be highlighted
+                                    'Just for a demo');
+const builder = new PlainJSBuilder([source],
+	                               '.textbody',
+	                               'dict-dialog',
+	                               'all');
+const dictView = builder.buildDictionary(); 
+// Matching terms will be highlighted
 // If the user clicks on a word then a dialog will be shown
 // You can also look a word up directly
-const term = dictView.lookup('康熙帝國'); // Example term (a TV Show)
-const entry = term.getEntries()[0]; // Get the entry from the first dictionary
+const term = dictView.lookup('力'); // Example term
+const entry = term.getEntries()[0]; // Get the entry
 console.log(`English: ${ entry.getEnglish() }`);
 console.log(`Pinyin: ${ entry.getPinyin() }`);
 ```
@@ -236,7 +240,7 @@ Example code for mulitple dictionaries is give in
 The module JavaScript is generated from TypeScript, which can help provide
 direct integration for TypeScript apps.
 
-## Building with TypeScript
+### Building with TypeScript
 The JavaScript module is based on a [TypeScript
 module](https://www.typescriptlang.org/docs/handbook/modules.html).  Both
 use the same ECMAScript 2015 (ES6) module concepts.
@@ -255,20 +259,7 @@ npm run demo
 
 This will generate the demo_app.js file used in the basic example.
 
-### Angular
-A preliminary prototype for Angular integration is given at
-[angular/README.md](angular/README.md).
-
-### Other Frameworks
-Develop an implementation of the TypeScript DictionaryBuilder interface or work
-with the JavaScript directly to create an initialize the dictionary for your
-framework.
-
-## CDN
-Not tested well yet
-https://unpkg.com/@alexamies/chinesedict-js:0.0.10/:index.js
-
-### Cross Browser Support
+### Cross browser support
 Cross browser support is provided for the HTML
 [dialog](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dialog)
 using [dialog-polyfill](https://github.com/GoogleChrome/dialog-polyfill) since
@@ -279,6 +270,52 @@ older browsers you will need to do that with a different compilation target for
 the tsc TypeScript compiler above. However, this will result in less readable
 and slower code.
 
+### Material Web
+
+Copy the material demo app to an external directory
+
+```shell
+cd
+cp -r chinesedict-js/material .
+```
+
+Copy a demo dictionary
+
+```shell
+cp chinesedict-js/assets/words.json .
+```
+
+Change to the material directory
+
+```shell
+cd material
+```
+
+Install the dependencies with the comm
+
+```shell
+npm install
+```
+
+Compile the SCSS bundle with the command
+
+```shell
+npm run build
+```
+
+Start the webpack dev server with the command
+
+```shell
+npm start
+```
+
+If you get stuck read the instructions at
+[Using MDC Web with Sass and ES2015](https://material.io/develop/web/docs/getting-started/).
+
+## CDN
+Not tested well yet
+https://unpkg.com/@alexamies/chinesedict-js:0.0.10/:index.js
+
 ### Mobile Device Support
 The module can be used on web pages designed for mobile devices although it has
 not yet been designed for an optimal experience.
@@ -287,3 +324,12 @@ not yet been designed for an optimal experience.
 Bundling and minification with WebPack or Babel may help but their current ES6
 module support lags behind browsers. Use of common JS modules does not perform
 adequately, except for very small dictionaries and text sizes.
+
+### Angular
+A preliminary prototype for Angular integration is given at
+[angular/README.md](angular/README.md).
+
+### Other Frameworks
+Develop an implementation of the TypeScript DictionaryBuilder interface or work
+with the JavaScript directly to create an initialize the dictionary for your
+framework.
