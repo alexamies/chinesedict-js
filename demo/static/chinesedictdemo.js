@@ -1,9 +1,9 @@
-import { DictionarySource, PlainJSBuilder } from '/assets/index.js'
+import { DictionarySource, PlainJSBuilder } from '/index.js'
 
 // Application JavaScript demonstrating use of the ChineseDict module
 
 // Use the dictionary
-const source1 = new DictionarySource('/assets/ntireader_buddhist.json',
+const source1 = new DictionarySource('/assets/ntireader.json',
   'NTI Reader dictionary',
   `Shared via <a href='http://ntireader.org/about.html'
    >CCA-SA 3.0</a>`);
