@@ -1,8 +1,52 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <link rel="stylesheet" href="dist/bundle.css">
   </head>
-  <body>你好世界</body>
+  <body>
+  	<input type='textfield' id='lookup_input' value='夫家'/>
+  	<button id='lookup_button' class="my-button mdc-button">
+      Lookup
+    </button>
+    <span id='chinese_span' class='dict-entry_input'></span>
+    <span id='pinyin_span' class='dict-entry_pinyin'></span>
+    <span id='english_span' class='dict-entry_english'></span>
+    <div id='document_text'>
+      <span title='Click me' id='target_text'>他力</span>
+    </div>
+  <div class="mdc-dialog"
+     id="CnotesVocabDialog"
+     role="alertdialog"
+     aria-modal="true"
+     aria-labelledby="my-dialog-title"
+     aria-describedby="my-dialog-content">
+    <div class="mdc-dialog__container">
+      <!-- Title cannot contain leading whitespace due to mdc-typography-baseline-top() -->
+      <div class="mdc-dialog__surface cnotes-primer-vocab-box">
+        <header class="mdc-dialog__header">
+          <h2 class="mdc-dialog__title" id="VocabDialogTitle"><!--
+         -->Chinese<!--
+       --></h2>
+        </header>
+        <section class="mdc-dialog__body">
+          <p>
+          	<span class="cnnotes-pinyin" id="PinyinSpan">Pinyin</span> &nbsp;
+            <span class="cnnotes-english-equiv" id="EnglishSpan">English</span>
+          </p>
+        </p>
+        </section>
+        <footer class="mdc-dialog__actions">
+          <button type="button"
+                  class="mdc-button mdc-dialog__button mdc-dialog__button--default"
+                  data-mdc-dialog-action="accept"
+                  >OK</button>
+        </footer>
+      </div>
+    </div>
+    <div class="mdc-dialog__scrim"></div>
+  </div>
+  </body>
   <script src="dist/bundle.js" type="module"></script>
 </html>

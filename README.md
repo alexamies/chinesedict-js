@@ -297,7 +297,7 @@ Install the dependencies with the comm
 npm install
 ```
 
-Compile the SCSS bundle with the command
+Compile the SCSS and JavaScript bundles with the command
 
 ```shell
 npm run build
@@ -308,6 +308,13 @@ Start the webpack dev server with the command
 ```shell
 npm start
 ```
+
+You should see something like the screenshot below.
+
+
+<img
+src='https://github.com/alexamies/chinesedict-js/blob/master/material.png?raw=true'/>
+
 
 If you get stuck read the instructions at
 [Using MDC Web with Sass and ES2015](https://material.io/develop/web/docs/getting-started/).

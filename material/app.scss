@@ -1,3 +1,22 @@
-body {
-  color: blue;
+@import "@material/button/mdc-button";
+@import "@material/dialog/mdc-dialog";
+
+.my-button {
+  @include mdc-button-ink-color(teal);
+  @include mdc-states(teal);
+}
+
+/* Lookup styling */
+span.dict-entry_input {
+  display: block;
+}
+span.dict-entry_pinyin {
+  font-style: italic;
+  display: block;
+  padding: 5px;
+}
+span.dict-entry_english {
+  font-weight: bold;
+  display: block;
+  padding: 5px;
 }

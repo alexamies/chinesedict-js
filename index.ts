@@ -361,7 +361,7 @@ export class DictionaryView {
    * @param {!Array.<Array.<String>>} dictData - An array of dictionary terms
    */
   loadDictionary(source: DictionarySource, dictData: Array<Array<string>>) {
-    //console.log(`loading ${ dictData.length } from ${ source.title }`);
+    console.log(`loading ${ dictData.length } from ${ source.title }`);
     for (let entry of dictData) {
       const traditional = entry["t"];
       const sense = new WordSense(entry["s"],
