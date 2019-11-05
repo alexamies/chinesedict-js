@@ -313,7 +313,7 @@ You should see something like the screenshot below.
 
 
 <img
-src='https://github.com/alexamies/chinesedict-js/blob/master/material.png?raw=true'/>
+src='https://github.com/alexamies/chinesedict-js/blob/master/images/material.png?raw=true'/>
 
 
 If you get stuck read the instructions at
