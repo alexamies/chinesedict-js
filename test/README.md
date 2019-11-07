@@ -8,6 +8,9 @@ Run these from the top level directory.
 
 ## Test Basic Demo
 Start the demo and run
+
+```start
+node run start
 ```
-node test/test_basic_demo.js
-```
+
+then navigate to the HTML files in this directory

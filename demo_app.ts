@@ -1,9 +1,7 @@
 // Application JavaScript demonstrating use of the ChineseDict module
 import { DictionarySource, PlainJSBuilder } from './index.js';
 
-declare var rxjs;
-
-const { fromEvent } = rxjs;
+import { fromEvent } from 'rxjs';
 
 console.log('Loading demo_app');
 

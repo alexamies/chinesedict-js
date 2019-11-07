@@ -33,7 +33,7 @@ local file system). For example, using Express:
 
 ```shell
 npm install
-npm run demo
+npm run start
 ```
 
 Open the index.html file in a web browser at `http://localhost:8080/index.html`
@@ -82,16 +82,10 @@ node_modules/@alexamies/chinesedict-js
 
 You can import the chinesedict-js module into your web pages with a JavaScript
 [import](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import)
-statement.
+statement:
 
-You may want to create a dist directory to bundle files served but these
-instructions simply serve from the node_modules/@alexamies/chinesedict-js/
-directory. For example, bundling into directory dist:
-
-```shell
-mkdir dist
-cp node_modules/@alexamies/chinesedict-js/index.js dist/.
-cp node_modules/@alexamies/chinesedict-js/assets/chinesedict.css dist/.
+```javascript
+import { DictionarySource, PlainJSBuilder } from '@alexamies/chinesedict-js';
 ```
 
 Make sure that you reference your own JavaScript code in your HTML page using a
@@ -138,10 +132,10 @@ where 'div_id' is select for the HTML elements containing the Chinese text.
 Also, in your CSS file import the stylesheet:
 
 ```css
-@import '/node_modules/@alexamies/chinesedict-js/chinesedict.css';
+@import '@alexamies/chinesedict-js/chinesedict.css';
 ```
 
-The [dialog-polyfill](https://github.com/GoogleChrome/dialog-polyfill) is used
+The [dialog-polyfill](https://github.com/GoogleChrome/dialog-polyfill) can be used
 for cross-browser compatibility. The dialog-polyfill files needs to be copied
 manually at the moment. On the command line:
 
@@ -170,8 +164,7 @@ A more complex example is given in [demo](demo/README.md). See this at
 [chinesedictdemo.appspot.com](https://chinesedictdemo.appspot.com).
 
 ## Customize the Dictionary
-A very small demo dict is provided with this project. It is too small to be any
-practical use.
+A very small demo dict is provided with some examples.
 
 You can customize the module with your own dictionaries, HTML content and styles.
 The dictionary should be structured the same as the example words.json files
@@ -245,16 +238,22 @@ The JavaScript module is based on a [TypeScript
 module](https://www.typescriptlang.org/docs/handbook/modules.html).  Both
 use the same ECMAScript 2015 (ES6) module concepts.
 
-Compile the module and demo app
+Compile the TypeScript module and demo app
 
 ```shell
 npm run compile
 ```
 
+Build the JavaScript into an optimized bundle with module dependencies
+
+```shell
+npm run build
+```
+
 Run the demo app
 
 ```shell
-npm run demo
+npm run start
 ```
 
 This will generate the demo_app.js file used in the basic example.
@@ -270,7 +269,10 @@ older browsers you will need to do that with a different compilation target for
 the tsc TypeScript compiler above. However, this will result in less readable
 and slower code.
 
-### Material Web
+### Material Design Web
+
+The Material Design Web example shows how to use the module without DOM
+dependencies.
 
 Copy the material demo app to an external directory
 
@@ -310,7 +312,6 @@ npm start
 ```
 
 You should see something like the screenshot below.
-
 
 <img
 src='https://github.com/alexamies/chinesedict-js/blob/master/images/material.png?raw=true'/>

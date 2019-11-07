@@ -2,9 +2,9 @@ const autoprefixer = require('autoprefixer');
 
 module.exports = {
   mode: 'development',
-  entry: ['./app.scss', './demo_material_app.js'],
+  entry: ['./demo_app.scss', './demo_app.js'],
   output: {
-    path: __dirname + "/dist",
+    path: __dirname + "/assets",
     filename: 'bundle.js',
   },
   module: {

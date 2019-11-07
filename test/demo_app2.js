@@ -1,6 +1,6 @@
 // Application JavaScript demonstrating use of the ChineseDict module
 import { DictionarySource, PlainJSBuilder } from '../index.js';
-const { fromEvent } = rxjs;
+import { fromEvent } from 'rxjs';
 console.log('Loading demo_app');
 // Build and initialize the ChineseDict class
 const source1 = new DictionarySource('/assets/ntireader_sample.json',

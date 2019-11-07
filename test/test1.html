@@ -8,8 +8,7 @@
     <meta name="description" 
           content="Chinese-English Dictionary JavaScript Demo">
     <title>Chinese-English Dictionary JavaScript Demo</title>
-    <link rel="stylesheet" type="text/css" href="/assets/chinesedict.css"/>
-    <link rel="stylesheet" type="text/css" href="/assets/demo_app.css"/>
+    <link rel="stylesheet" type="text/css" href="/assets/bundle.css"/>
     <!--<link rel="stylesheet" type="text/css" href="dist/dialog-polyfill.css"/>-->
   </head>
   <body>
@@ -40,13 +39,9 @@
       </p>
       <p>
         Note: There are only two words in the dictionary in this example.
-        See the <a href='demo/static/index.html'>More complex demo</a> - see
-        demo/README.md for setup required.
       </p>
     </main>
     <!--<script defer src="dist/dialog-polyfill.js"></script>-->
-    <script src='../node_modules/rxjs/bundles/rxjs.umd.js'></script>
-    <!--<script src='https://unpkg.com/@reactivex/rxjs@6.3.3/dist/global/rxjs.umd.js'></script>-->
-    <script src="/demo_app.js" type="module"></script>
+    <script src="/assets/bundle.js" type="module"></script>
   </body>
 </html>

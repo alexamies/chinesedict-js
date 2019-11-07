@@ -13,6 +13,10 @@
  * under the License.
  */
 
+import { Observable, of } from 'rxjs';
+import { ajax } from 'rxjs/ajax';
+import { catchError, map } from 'rxjs/operators';
+
 /**
  * A module that encapsulates a Chinese-English dictionary, including finding
  * words in sections of Chinese text.
@@ -20,7 +24,6 @@
 
 // Dependencies, including Browser implementation of fetch and dialogPolyfill
 // pollyfill for HTMLDialogElement
-declare var fetch;
 declare var dialogPolyfill;
 declare global {
   interface HTMLDialogElement {
@@ -149,7 +152,101 @@ export class DictionaryEntry {
 
 
 /** 
- * The source a dictionary, including where to load it from, its name,
+ * Loads the dictionaries from source files.
+ */
+export class DictionaryLoader {
+  private sources: Array<DictionarySource>;
+  private headwords: Map<string, Term>;
+
+  /**
+   * Create an empty PlainJSBuilder instance
+   *
+   * @param {string} sources - Names of the dictionary files
+   */
+  constructor(sources: Array<DictionarySource>) {
+    console.log('DictionaryLoader constructor');
+    this.sources = sources;
+    this.headwords = new Map<string, Term>();
+  }
+
+  /**
+   * Returns a map of headwords, wait until after loading to call this
+   */
+  getHeadwords(): Map<string, Term> {
+    return this.headwords;
+  }
+
+  /**
+   * Returns an Observable that will complete on loading all the dictionaries
+   */
+  loadDictionaries() {
+    console.log('loadDictionaries enter');
+    const observable = new Observable(subscriber => {
+      const sources = this.sources;
+      let numLoaded = 0;
+      for (const source of sources) {
+        const filename = source.filename;
+        console.log(`loadDictionaries loading ${ filename }`);
+        if (filename) {
+          const reqObs = ajax.getJSON(filename);
+          const subscribe = reqObs.subscribe(
+            res => {
+              console.log(`loadDictionaries: for date for ${ filename }`);
+              this.load_dictionary_(source, <Array<Array<string>>>res);
+              numLoaded++;
+              subscriber.next(numLoaded);
+              if (numLoaded >= sources.length) {
+                console.log(`loadDictionaries: ${ this.headwords.size } terms`);
+                subscriber.complete();
+              }
+            },
+            error => {
+              console.log(`Error fetching dictionary: ${ error }`);
+              subscriber.next(error);
+              return of(error);
+            }
+          );
+        } else {
+          subscriber.next('Error no filename provided');
+        }
+      }
+    });
+    return observable;
+  }
+
+  /**
+   * @private
+   * Deserializes the dictionary from protobuf format. Expected to be called by
+   * a builder in initializing the dictionary.
+   *
+   * @param {!Array.<Array.<String>>} dictData - An array of dictionary terms
+   */
+  load_dictionary_(source: DictionarySource, dictData: Array<Array<string>>) {
+    console.log(`loading ${ dictData.length } terms from ${ source.title }`);
+    for (const entry of dictData) {
+      const traditional = entry["t"];
+      const sense = new WordSense(entry["s"],
+                                  entry["t"],
+                                  entry['p'],
+                                  entry['e'],
+                                  entry['g']);
+      const dictEntry = new DictionaryEntry(traditional, source, [sense], entry['h']);
+      if (!this.headwords.has(traditional)) {
+        // console.log(`Loading ${ traditional } from ${ source.title } `);
+        const term = new Term(traditional, [dictEntry]);
+        this.headwords.set(traditional, term);
+      } else {
+        // console.log(`Adding ${ traditional } from ${ source.title } `);
+        const term = this.headwords.get(traditional);
+        term.addDictionaryEntry(sense, dictEntry);
+      }
+    }
+  }
+}
+
+
+/** 
+ * The source of a dictionary, including where to load it from, its name,
  * and where to find out about it.
  */
 export class DictionarySource {
@@ -336,8 +433,9 @@ export class DictionaryView {
    * initializing the dictionary.
    */
   highlightWords() {
+    console.log('highlightWords: enter');
   	if (!this.selector) {
-      console.log('findwords: selector empty');
+      console.log('highlightWords: selector empty');
       return;
   	}
     let elems = document.querySelectorAll(this.selector);
@@ -351,34 +449,6 @@ export class DictionaryView {
       const text = el.textContent;
       let terms = this.segment_text_(text);
       this.decorate_segments_(el, terms, this.dialog_id, this.highlight);
-    }
-  }
-
-  /**
-   * Deserializes the dictionary from protobuf format. Expected to be called by
-   * a builder in initializing the dictionary.
-   *
-   * @param {!Array.<Array.<String>>} dictData - An array of dictionary terms
-   */
-  loadDictionary(source: DictionarySource, dictData: Array<Array<string>>) {
-    console.log(`loading ${ dictData.length } from ${ source.title }`);
-    for (let entry of dictData) {
-      const traditional = entry["t"];
-      const sense = new WordSense(entry["s"],
-                                  entry["t"],
-                                  entry['p'],
-                                  entry['e'],
-                                  entry['g']);
-      const dictEntry = new DictionaryEntry(traditional, source, [sense], entry['h']);
-      if (!this.headwords.has(traditional)) {
-        //console.log(`Loading ${ traditional } from ${ source.title } `);
-        const term = new Term(traditional, [dictEntry]);
-        this.headwords.set(traditional, term);
-      } else {
-        //console.log(`Adding ${ traditional } from ${ source.title } `);
-        const term = this.headwords.get(traditional);
-        term.addDictionaryEntry(sense, dictEntry);
-      }
     }
   }
 
@@ -400,31 +470,18 @@ export class DictionaryView {
    * @return {Array.<Term>} The segmented text as an array of terms
    */
   segment_text_(text): Array<Term> {
-  	if (!text) {
-  	  console.log('segment_text_ empty text');
-  	  return [];
-  	}
-    let segments: Array<Term> = [];
-    let j = 0;
-    while (j < text.length) {
-      let k = text.length - j;
-      while (k > 0) {
-        const chars = text.substring(j, j + k);
-        if (this.headwords.has(chars)) {
-          //console.log(`findwords found: ${chars} for j ${j}, k ${k}`);
-          const term = this.headwords.get(chars);
-          segments.push(term);
-          j += chars.length;
-          break;
-        }
-        if (chars.length == 1) {
-          segments.push(new Term(chars, []));
-          j++;
-        }
-        k--;
-      }
-    }
-    return segments;
+    const parser = new TextParser(this.headwords);
+    return parser.segmentText(text);
+  }
+
+  /**
+   * Segments the text into an array of individual words
+   * 
+   * @param {string} text - The text string to be segmented
+   * @return {Array.<Term>} The segmented text as an array of terms
+   */
+  setHeadwords(headwords: Map<string, Term>) {
+    this.headwords = headwords;
   }
 
   /**
@@ -530,27 +587,21 @@ export class PlainJSBuilder implements DictionaryBuilder {
    * highlighted.
    */
   buildDictionary(): DictionaryView {
-    const dict = this.dict;
-    const sources = this.sources;
-    for (const source of sources) {
-      const filename = source.filename;
-      if (filename) {
-        fetch(filename)
-          .then(function(response) {
-            console.log(`PlainJSBuilder response.status: ${response.status}`);
-            if(response.ok) {
-              return response.json();
-            }
-            throw new Error('Error fetching dictionary');
-          })
-          .then(function(dictData) {
-            dict.loadDictionary(source, dictData);
-            dict.highlightWords();
-          });
-      }
-    }
-    dict.setupDialog();
-    return this.dict;
+    console.log('buildDictionary enter');
+    const thisDict = this.dict;
+    const loader = new DictionaryLoader(this.sources);
+    const observable = loader.loadDictionaries();
+    observable.subscribe({
+      next(x) { console.log('buildDictionary next ' + x); },
+      error(err) { console.error('buildDictionary error: ' + err); },
+      complete() { 
+        console.log('buildDictionary done');
+        thisDict.setHeadwords(loader.getHeadwords());
+        thisDict.highlightWords();
+        thisDict.setupDialog();
+       }
+    });
+    return thisDict;
   }
 
 }
@@ -605,6 +656,60 @@ export class Term {
   }
 
 }
+
+
+/** 
+ * Utility for segmenting text into individual terms.
+ */
+export class TextParser {
+  private headwords: Map<string, Term>;
+
+  /**
+   * Construct a Dictionary object
+   *
+   * @param {!Map<string, Term>} headwords - a dictionary
+   * @param {!string} title - A human readable name
+   * @param {!string} description - More about the dictionary
+   */
+  constructor(headwords: Map<string, Term>) {
+    this.headwords = headwords;
+  }
+
+  /**
+   * Segments the text into an array of individual words
+   * 
+   * @param {string} text - The text string to be segmented
+   * @return {Array.<Term>} The segmented text as an array of terms
+   */
+  segmentText(text): Array<Term> {
+    if (!text) {
+      console.log('segment_text_ empty text');
+      return [];
+    }
+    const segments: Array<Term> = [];
+    let j = 0;
+    while (j < text.length) {
+      let k = text.length - j;
+      while (k > 0) {
+        const chars = text.substring(j, j + k);
+        if (this.headwords.has(chars)) {
+          //console.log(`findwords found: ${chars} for j ${j}, k ${k}`);
+          const term = this.headwords.get(chars);
+          segments.push(term);
+          j += chars.length;
+          break;
+        }
+        if (chars.length == 1) {
+          segments.push(new Term(chars, []));
+          j++;
+        }
+        k--;
+      }
+    }
+    return segments;
+  }
+}
+
 
 /**
  * Class encapsulating the sense of a Chinese word
