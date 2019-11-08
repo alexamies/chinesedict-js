@@ -15,6 +15,7 @@
 
 import { fromEvent } from 'rxjs';
 import { MDCDialog } from "@material/dialog";
+import {MDCList} from '@material/list';
 import { DictionaryLoader, DictionarySource, Term, TextParser } from '@alexamies/chinesedict-js';
 
 
@@ -44,6 +45,81 @@ class DemoApp {
     this.document_text = document.querySelector('#document_text');
     this.dialogDiv = document.querySelector("#CnotesVocabDialog")
     this.wordDialog = new MDCDialog(this.dialogDiv);
+  }
+
+
+  // Add a term object to a list of terms
+  // Parameters:
+  //   term is a word object
+  //   tList - the term list
+  // Returns a HTML element that the object is added to
+  addTermToList(term: Term, tList: HTMLElement) {
+    const li = document.createElement("li");
+    li.className = "mdc-list-item";
+    const span = document.createElement("span");
+    span.className = "mdc-list-item__text";
+    li.appendChild(span);
+    const spanL1 = document.createElement("span");
+
+    // Primary text is the query term (Chinese)
+    spanL1.className = "mdc-list-item__primary-text";
+    const tNode1 = document.createTextNode(term.getChinese());
+    spanL1.appendChild(tNode1);
+    span.appendChild(spanL1);
+
+    // Secondary text is the Pinyin, English equivalent, and notes
+    let pinyin = "";
+    let english = "";
+    const spanL2 = document.createElement("span");
+    spanL2.className = "mdc-list-item__secondary-text";
+    const spanPinyin = document.createElement("span");
+    spanPinyin.className = "dict-entry-pinyin";
+    const textNode2 = document.createTextNode(pinyin + " ");
+    spanPinyin.appendChild(textNode2);
+    spanL2.appendChild(spanPinyin);
+    spanL2.appendChild(this.combineEnglish(term));
+    span.appendChild(spanL2);
+    tList.appendChild(li);
+    return tList;
+  }s
+
+
+  // Combine and crop the list of English equivalents and notes to a limited
+  // number of characters.
+  // Parameters:
+  //   term: includes an array of DictionaryEntry objects with word senses
+  // Returns a HTML element that can be added to the list element
+  combineEnglish(term: Term) {
+    const maxLen = 120;
+    const englishSpan = document.createElement("span");
+    const entries = term.getEntries();
+    if (entries && entries.length == 1) {
+      // if only a single sense don't enumerate a list of one
+      let textLen = 0;
+      const equivSpan = document.createElement("span");
+      equivSpan.setAttribute("class", "dict-entry-definition");
+      const equivalent = entries[0].getEnglish();
+      textLen += equivalent.length;
+      const equivTN = document.createTextNode(equivalent);
+      equivSpan.appendChild(equivTN);
+      englishSpan.appendChild(equivSpan);
+    } else if (entries && entries.length > 1) {
+      // For longer lists, give the enumeration with equivalents only
+      let equiv = "";
+      for (let j = 0; j < entries.length; j++) {
+        equiv += (j + 1) + ". " + entries[j].getEnglish() + "; ";
+        if (equiv.length > maxLen) {
+          equiv + " ...";
+          break;
+        }
+      }
+      const equivSpan = document.createElement("span");
+      equivSpan.setAttribute("class", "dict-entry-definition");
+      const equivTN1 = document.createTextNode(equiv);
+      equivSpan.appendChild(equivTN1);
+      englishSpan.appendChild(equivSpan);
+    }
+    return englishSpan;
   }
 
   init() {
@@ -111,21 +187,25 @@ class DemoApp {
       englishSpan.innerHTML = "";
     }
 
+    // Show parts of the term
+    const parser = new TextParser(this.headwords);
+    const terms = parser.segmentText(chinese);
+    const tList = document.createElement("ul");
+    tList.className = "mdc-list mdc-list--two-line";
+    terms.forEach((t) => {
+      this.addTermToList(t, tList);
+    });
+    const partsDiv = document.querySelector("#parts");
+    partsDiv.appendChild(tList);
+
     // Show more details
     const term = this.headwords.get(chinese);
     if (term) {
       const entry = term.getEntries()[0];
       const notesSpan = document.querySelector("#VocabNotesSpan");
-      notesSpan.innerHTML = entry.getSource().title;
+      const sourceTitle = entry.getSource().title;
+      notesSpan.innerHTML = 'Source: ' + entry.getSource().title;
     }
-
-    // Show parts of the term
-    const parser = new TextParser(this.headwords);
-    const terms = parser.segmentText(chinese);
-    terms.forEach((t) => {
-      const c = t.getChinese();
-      console.log(`showVocabDialog ${ c } `);
-    });
 
     this.wordDialog.open();
   }
