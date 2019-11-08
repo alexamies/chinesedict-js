@@ -48,14 +48,14 @@ class DemoApp {
         const tNode1 = document.createTextNode(term.getChinese());
         spanL1.appendChild(tNode1);
         span.appendChild(spanL1);
-        // Secondary text is the Pinyin, English equivalent, and notes
-        let pinyin = "";
-        let english = "";
+        // Secondary text is the Pinyin and English equivalent
+        const entries = term.getEntries();
+        const pinyin = (entries && entries.length > 0) ? entries[0].getPinyin() : "";
         const spanL2 = document.createElement("span");
         spanL2.className = "mdc-list-item__secondary-text";
         const spanPinyin = document.createElement("span");
         spanPinyin.className = "dict-entry-pinyin";
-        const textNode2 = document.createTextNode(pinyin + " ");
+        const textNode2 = document.createTextNode(" " + pinyin + " ");
         spanPinyin.appendChild(textNode2);
         spanL2.appendChild(spanPinyin);
         spanL2.appendChild(this.combineEnglish(term));
@@ -170,6 +170,9 @@ class DemoApp {
             this.addTermToList(t, tList);
         });
         const partsDiv = document.querySelector("#parts");
+        while (partsDiv.firstChild) {
+            partsDiv.removeChild(partsDiv.firstChild);
+        }
         partsDiv.appendChild(tList);
         // Show more details
         const term = this.headwords.get(chinese);
