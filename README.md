@@ -99,7 +99,6 @@ element with type="module"
 In demo_app.js, add JavaScript code to import the ES6 module:
 
 ```javascript
-import { DictionarySource, PlainJSBuilder } from './index.js';
 const source = new DictionarySource('assets/words.json',
                                     'Demo Dictionary',
                                     'Just for a demo');
@@ -272,9 +271,32 @@ and slower code.
 ### Material Design Web
 
 The Material Design Web example shows how to use the module without DOM
-dependencies.
+dependencies. The load the dictionary data only first import `DictionaryLoader`
+and `DictionarySource`.
 
-Copy the material demo app to an external directory
+```JavaScript
+import { DictionaryLoader, DictionarySource } from '@alexamies/chinesedict-js';
+````
+
+Load the dictionary with code like
+
+```JavaScript
+const observable = loader.loadDictionaries();
+observable.subscribe({
+  next(x) { console.log('load next ' + x); },
+  error(err) { console.error(`load error:  + ${err}`); },
+  complete() {
+    console.log('loading dictionary done');
+    thisApp.headwords = loader.getHeadwords();
+  }
+});
+```
+
+The loadDictionaries() function returns an RxJS Observable. When that completes
+the dictionary will be loaded and you can get the headwords with type
+`Map<string, Term>`.
+
+To run the demo, first copy the material demo app to an external directory
 
 ```shell
 cd
@@ -299,7 +321,13 @@ Install the dependencies with the comm
 npm install
 ```
 
-Compile the SCSS and JavaScript bundles with the command
+Compile the TypeScript
+
+```shell
+npm run compile
+```
+
+Build the CSS and JavaScript bundles with the command
 
 ```shell
 npm run build

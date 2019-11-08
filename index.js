@@ -171,12 +171,12 @@ export class DictionaryLoader {
             const sense = new WordSense(entry["s"], entry["t"], entry['p'], entry['e'], entry['g']);
             const dictEntry = new DictionaryEntry(traditional, source, [sense], entry['h']);
             if (!this.headwords.has(traditional)) {
-                console.log(`Loading ${traditional} from ${source.title} `);
+                // console.log(`Loading ${ traditional } from ${ source.title } `);
                 const term = new Term(traditional, [dictEntry]);
                 this.headwords.set(traditional, term);
             }
             else {
-                console.log(`Adding ${traditional} from ${source.title} `);
+                // console.log(`Adding ${ traditional } from ${ source.title } `);
                 const term = this.headwords.get(traditional);
                 term.addDictionaryEntry(sense, dictEntry);
             }
