@@ -15,7 +15,7 @@
 
 import { fromEvent } from 'rxjs';
 import { MDCDialog } from "@material/dialog";
-import { DictionaryLoader, DictionarySource, Term } from '@alexamies/chinesedict-js';
+import { DictionaryLoader, DictionarySource, Term, TextParser } from '@alexamies/chinesedict-js';
 
 
 /**
@@ -32,7 +32,6 @@ class DemoApp {
   private pSpan: HTMLElement;
   private eSpan: HTMLElement;
   private document_text: HTMLElement;
-  private target_text: HTMLElement;
   private dialogDiv: HTMLElement;
   private wordDialog: MDCDialog;
 
@@ -43,7 +42,6 @@ class DemoApp {
     this.pSpan = document.querySelector('#pinyin_span');
     this.eSpan = document.querySelector('#english_span');
     this.document_text = document.querySelector('#document_text');
-    this.target_text = document.querySelector('#target_text');
     this.dialogDiv = document.querySelector("#CnotesVocabDialog")
     this.wordDialog = new MDCDialog(this.dialogDiv);
   }
@@ -60,21 +58,24 @@ class DemoApp {
       this.pSpan.innerHTML = entry.getPinyin();
       this.eSpan.innerHTML = entry.getEnglish();
     });
-  
-    // Respond to a text click
-    fromEvent(this.target_text, 'click')
-      .subscribe(() => {
-      this.showVocabDialog();
-    });
 
+    const thisApp = this;
+    let vocabElements = document.querySelectorAll(".vocabulary");
+    vocabElements.forEach((elem) => {
+      elem.addEventListener("click", function(evt) {
+        evt.preventDefault();
+        thisApp.showVocabDialog(elem);
+        return false;
+      });
+    });
   }
 
   // Load the dictionary
   load() {
     const thisApp = this;
-    const source = new DictionarySource('/words.json',
-                                        'Demo Dictionary',
-                                        'Just for a demo');
+    const source = new DictionarySource('/ntireader.json',
+                                        'NTI Reader Dictionary',
+                                        'Full NTI Reader dictionary');
     const loader = new DictionaryLoader([source]);
     const observable = loader.loadDictionaries();
     observable.subscribe({
@@ -88,23 +89,44 @@ class DemoApp {
   }
 
   // Shows the vocabular dialog with details of the given word
-  showVocabDialog() {
+  showVocabDialog(elem) {
+    // Show Chinese, pinyin, and English
     const titleElem = document.querySelector("#VocabDialogTitle");
-    const chinese = this.target_text.textContent;
-    const term = this.headwords.get(chinese);
+    const s = elem.title;
+    const n = s.indexOf("|");
+    const pinyin = s.substring(0, n);
+    let english = "";
+    if (n < s.length) {
+      english = s.substring(n + 1, s.length);
+    }
+    const chinese = elem.textContent;
     console.log(`Value: ${chinese}`);
-    const entry = term.getEntries()[0];
-    const pinyin = entry.getPinyin();
-    const english = entry.getEnglish();
     const pinyinSpan = document.querySelector("#PinyinSpan");
     const englishSpan = document.querySelector("#EnglishSpan");
-    titleElem.innerHTML = chinese;
+    titleElem.innerHTML = chinese
     pinyinSpan.innerHTML = pinyin;
     if (english) {
       englishSpan.innerHTML = english;
     } else {
       englishSpan.innerHTML = "";
     }
+
+    // Show more details
+    const term = this.headwords.get(chinese);
+    if (term) {
+      const entry = term.getEntries()[0];
+      const notesSpan = document.querySelector("#VocabNotesSpan");
+      notesSpan.innerHTML = entry.getSource().title;
+    }
+
+    // Show parts of the term
+    const parser = new TextParser(this.headwords);
+    const terms = parser.segmentText(chinese);
+    terms.forEach((t) => {
+      const c = t.getChinese();
+      console.log(`showVocabDialog ${ c } `);
+    });
+
     this.wordDialog.open();
   }
 

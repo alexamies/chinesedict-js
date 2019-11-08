@@ -11,7 +11,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@alexamies/chinesedict-js": "0.1.4",
+    "@alexamies/chinesedict-js": "0.1.5",
     "material-components-web": "^4.0.0",
     "rxjs": "^6.5.3"
   },

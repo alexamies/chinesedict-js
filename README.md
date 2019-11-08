@@ -306,7 +306,7 @@ cp -r chinesedict-js/material .
 Copy a demo dictionary
 
 ```shell
-cp chinesedict-js/assets/words.json .
+cp chinesedict-js/assets/ntireader.json .
 ```
 
 Change to the material directory
