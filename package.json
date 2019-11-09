@@ -1,10 +1,12 @@
 {
   "name": "@alexamies/chinesedict-js",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "description": "A JavaScript browser module for a Chinese-English dictionary",
   "license": "Apache-2.0",
   "repository": "alexamies/chinesedict-js",
   "browser": "index.js",
+  "main": "index.js",
+  "types": "index.d.ts",
   "author": "alexamies",
   "scripts": {
     "prepare": "node build/gen_dictionary.js",
