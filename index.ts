@@ -232,14 +232,15 @@ export class DictionaryLoader {
   load_dictionary_(source: DictionarySource, dictData: Array<Array<string>>) {
     console.log(`load_dictionary_ terms from ${ source.title }`);
     for (const entry of dictData) {
-      const traditional = entry["t"];
-      const sense = new WordSense(entry["s"],
-                                  entry["t"],
-                                  entry['p'],
-                                  entry['e'],
-                                  entry['g'],
-                                  entry['n']);
-      const dictEntry = new DictionaryEntry(traditional, source, [sense], entry['h']);
+      const traditional = <string>entry["t"];
+      const sense = new WordSense(<string>entry["s"],
+                                  <string>entry["t"],
+                                  <string>entry['p'],
+                                  <string>entry['e'],
+                                  <string>entry['g'],
+                                  <string>entry['n']);
+      const dictEntry = new DictionaryEntry(traditional, source, [sense],
+                                            <string>entry['h']);
       if (!this.headwords.has(traditional)) {
         // console.log(`Loading ${ traditional } from ${ source.title } `);
         const term = new Term(traditional, [dictEntry]);
@@ -478,7 +479,7 @@ export class DictionaryView {
    * @param {string} text - The text string to be segmented
    * @return {Array.<Term>} The segmented text as an array of terms
    */
-  segment_text_(text): Array<Term> {
+  segment_text_(text: string): Array<Term> {
     const parser = new TextParser(this.headwords);
     return parser.segmentText(text);
   }
