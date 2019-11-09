@@ -59,5 +59,8 @@ span.dict-entry_english {
   display: block;
   padding: 5px;
 }
+span.dict-entry-notes {
+    font-weight: bold;
+}
 html, body {
   max-width: 800px; }

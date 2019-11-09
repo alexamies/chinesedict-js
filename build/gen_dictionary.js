@@ -77,7 +77,10 @@ function write_json(data, topic_en) {
     const parent_en = rec[11];
     const image = rec[12];
     const mp3 = rec[13];
-    const notes = rec[14];
+    let notes = rec[14];
+    if (notes == '\\N') {
+      notes = '';
+    }
     const headword = rec[15];
     if (traditional == '\\N') {
       traditional = simplified;
@@ -100,7 +103,11 @@ function write_json(data, topic_en) {
       if (grammar !== '\\N') {
         g = `"g":"${grammar}",`;
       }
-      jsonData += `{"s":"${simplified}",${t}${p}${e}${g}"h":"${headword}"}`;
+      let n = '';
+      if (notes !== '\\N') {
+        n = `"n":"${notes}",`;
+      }
+      jsonData += `{"s":"${simplified}",${t}${p}${e}${g}${n}"h":"${headword}"}`;
       if (i < (data.length - 1)) {
         jsonData += ',\n'
       }
@@ -109,7 +116,7 @@ function write_json(data, topic_en) {
   }
   jsonData += ']'
 
-  const filename = 'words.json';
+  const filename = 'ntireader.json';
   fs.writeFile(filename, jsonData, (err) => {
     if (err) {
       console.log(`Error saving dictionary: ${err}`);

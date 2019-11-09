@@ -43,7 +43,7 @@ class DemoApp {
     this.pSpan = document.querySelector('#pinyin_span');
     this.eSpan = document.querySelector('#english_span');
     this.document_text = document.querySelector('#document_text');
-    this.dialogDiv = document.querySelector("#CnotesVocabDialog")
+    this.dialogDiv = document.querySelector("#CnotesVocabDialog");
     this.wordDialog = new MDCDialog(this.dialogDiv);
   }
 
@@ -160,6 +160,8 @@ class DemoApp {
       complete() { 
         console.log('loading dictionary done');
         thisApp.headwords = loader.getHeadwords();
+        const loadingStatus = document.querySelector("#loadingStatus")
+        loadingStatus.innerHTML = "Dictionary loading status: loaded";
       }
     });
   }
@@ -187,27 +189,41 @@ class DemoApp {
       englishSpan.innerHTML = "";
     }
 
-    // Show parts of the term
-    const parser = new TextParser(this.headwords);
-    const terms = parser.segmentText(chinese);
-    const tList = document.createElement("ul");
-    tList.className = "mdc-list mdc-list--two-line";
-    terms.forEach((t) => {
-      this.addTermToList(t, tList);
-    });
+    // Show parts of the term for multi-character terms
     const partsDiv = document.querySelector("#parts");
     while (partsDiv.firstChild) {
       partsDiv.removeChild(partsDiv.firstChild);
     }
-    partsDiv.appendChild(tList);
+    const partsTitle = <HTMLElement>document.querySelector("#partsTitle");
+    if (chinese.length > 1) {
+      partsTitle.style.display = "block";
+      const parser = new TextParser(this.headwords);
+      const terms = parser.segmentExludeWhole(chinese);
+      console.log(`showVocabDialog got ${ terms.length } terms`);
+      const tList = document.createElement("ul");
+      tList.className = "mdc-list mdc-list--two-line";
+      terms.forEach((t) => {
+        this.addTermToList(t, tList);
+      });
+      partsDiv.appendChild(tList);
+    } else {
+      partsTitle.style.display = "none";
+    }
 
     // Show more details
     const term = this.headwords.get(chinese);
     if (term) {
       const entry = term.getEntries()[0];
       const notesSpan = document.querySelector("#VocabNotesSpan");
+      if (entry.getSenses().length == 1) {
+        const ws = entry.getSenses()[0];
+        notesSpan.innerHTML = ws.getNotes();
+      } else {
+        notesSpan.innerHTML = "";
+      }
+      const sourceSpan = document.querySelector("#SourceSpan");
       const sourceTitle = entry.getSource().title;
-      notesSpan.innerHTML = 'Source: ' + entry.getSource().title;
+      sourceSpan.innerHTML = 'Source: ' + entry.getSource().title;
     }
 
     this.wordDialog.open();

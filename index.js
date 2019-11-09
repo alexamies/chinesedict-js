@@ -101,6 +101,13 @@ export class DictionaryEntry {
     getSource() {
         return this.source;
     }
+    /**
+     * Gets the word senses
+     * @return {Array<WordSense>} an array of WordSense objects
+     */
+    getSenses() {
+        return this.senses;
+    }
 }
 /**
  * Loads the dictionaries from source files.
@@ -136,7 +143,7 @@ export class DictionaryLoader {
                 if (filename) {
                     const reqObs = ajax.getJSON(filename);
                     const subscribe = reqObs.subscribe(res => {
-                        console.log(`loadDictionaries: for date for ${filename}`);
+                        console.log(`loadDictionaries: for ${filename}`);
                         this.load_dictionary_(source, res);
                         numLoaded++;
                         subscriber.next(numLoaded);
@@ -165,10 +172,10 @@ export class DictionaryLoader {
      * @param {!Array.<Array.<String>>} dictData - An array of dictionary terms
      */
     load_dictionary_(source, dictData) {
-        console.log(`loading ${dictData.length} terms from ${source.title}`);
+        console.log(`load_dictionary_ terms from ${source.title}`);
         for (const entry of dictData) {
             const traditional = entry["t"];
-            const sense = new WordSense(entry["s"], entry["t"], entry['p'], entry['e'], entry['g']);
+            const sense = new WordSense(entry["s"], entry["t"], entry['p'], entry['e'], entry['g'], entry['n']);
             const dictEntry = new DictionaryEntry(traditional, source, [sense], entry['h']);
             if (!this.headwords.has(traditional)) {
                 // console.log(`Loading ${ traditional } from ${ source.title } `);
@@ -567,6 +574,47 @@ export class TextParser {
         this.headwords = headwords;
     }
     /**
+     * Segments the text into an array of individual words, excluding the whole
+     * text given as a parameter
+     *
+     * @param {string} text - The text string to be segmented
+     * @return {Array.<Term>} The segmented text as an array of terms
+     */
+    segmentExludeWhole(text) {
+        if (!text) {
+            console.log('segmentExludeWhole empty text');
+            return [];
+        }
+        const segments = [];
+        let j = 0;
+        while (j < text.length) {
+            let k = text.length - j;
+            while (k > 0) {
+                const chars = text.substring(j, j + k);
+                //console.log(`segmentExludeWhole checking: ${chars} for j ${j}, k ${k}`);
+                if (chars.length < text.length && this.headwords.has(chars)) {
+                    //console.log(`segmentExludeWhole found: ${chars} for j ${j}, k ${k}`);
+                    const term = this.headwords.get(chars);
+                    segments.push(term);
+                    j += chars.length;
+                    break;
+                }
+                if (chars.length == 1) {
+                    if (this.headwords.has(chars)) {
+                        const t = this.headwords.get(chars);
+                        segments.push(t);
+                    }
+                    else {
+                        segments.push(new Term(chars, []));
+                    }
+                    j++;
+                }
+                k--;
+            }
+        }
+        return segments;
+    }
+    /**
      * Segments the text into an array of individual words
      *
      * @param {string} text - The text string to be segmented
@@ -611,13 +659,15 @@ class WordSense {
      * @param {string} pinyin - Mandarin pronunciation
      * @param {string} english - English equivalent
      * @param {string} grammar - Part of speech
+     * @param {string} notes - Freeform notes
      */
-    constructor(simplified, traditional, pinyin, english, grammar) {
+    constructor(simplified, traditional, pinyin, english, grammar, notes) {
         this.simplified = simplified;
         this.traditional = traditional;
         this.pinyin = pinyin;
         this.english = english;
         this.grammar = grammar;
+        this.notes = notes;
     }
     /**
      * Gets the English equivalent for the sense
@@ -639,6 +689,13 @@ class WordSense {
      */
     getPinyin() {
         return this.pinyin;
+    }
+    /**
+     * Gets notes relating to the word sense
+     * @return {string} freeform notes
+     */
+    getNotes() {
+        return this.notes;
     }
     /**
      * Gets the simplified Chinese text for the sense

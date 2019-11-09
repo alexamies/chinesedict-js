@@ -296,6 +296,13 @@ The loadDictionaries() function returns an RxJS Observable. When that completes
 the dictionary will be loaded and you can get the headwords with type
 `Map<string, Term>`.
 
+You can parse a text string into individual terms with `TextParser`:
+
+```JavaScript
+const parser = new TextParser(headwords);
+const terms = parser.segmentText(text);
+````
+
 To run the demo, first copy the material demo app to an external directory
 
 ```shell
