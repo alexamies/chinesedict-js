@@ -116,7 +116,7 @@ function write_json(data, topic_en) {
   }
   jsonData += ']'
 
-  const filename = 'ntireader.json';
+  const filename = 'words.json';
   fs.writeFile(filename, jsonData, (err) => {
     if (err) {
       console.log(`Error saving dictionary: ${err}`);

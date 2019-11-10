@@ -280,19 +280,28 @@ dependencies. The load the dictionary data only first import `DictionaryLoader`
 and `DictionarySource`.
 
 ```JavaScript
-import { DictionaryLoader, DictionarySource } from '@alexamies/chinesedict-js';
+import { DictionaryCollection } from '@alexamies/chinesedict-js';
+import { DictionaryLoader } from '@alexamies/chinesedict-js';
+import { DictionarySource } from '@alexamies/chinesedict-js';
+import { Term } from '@alexamies/chinesedict-js';
+import { TextParser } from '@alexamies/chinesedict-js';
 ````
 
 Load the dictionary with code like
 
 ```JavaScript
+const source = new DictionarySource(
+               'ntireader.json',
+               'NTI Reader Dictionary',
+               'Nan Tien Institute Reader dictionary');
+const loader = new DictionaryLoader([source]);
 const observable = loader.loadDictionaries();
 observable.subscribe({
-  next(x) { console.log('load next ' + x); },
-  error(err) { console.error(`load error:  + ${err}`); },
-  complete() {
-    console.log('loading dictionary done');
-    thisApp.headwords = loader.getHeadwords();
+  error(err) { console.error(`load error:  + ${ err }`); },
+  complete() { 
+    thisApp.dictionaries = loader.getDictionaryCollection();
+    const loadingStatus = thisApp.querySelectorNonNull("#loadingStatus")
+    loadingStatus.innerHTML = "Dictionary loading status: loaded";
   }
 });
 ```
@@ -304,7 +313,7 @@ the dictionary will be loaded and you can get the headwords with type
 You can parse a text string into individual terms with `TextParser`:
 
 ```JavaScript
-const parser = new TextParser(headwords);
+const parser = new TextParser(dictionaries);
 const terms = parser.segmentText(text);
 ````
 
