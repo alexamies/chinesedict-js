@@ -15,10 +15,10 @@ const builder = new PlainJSBuilder([source],
                                    'all');
 const dictView = builder.buildDictionary();
 
-const button = document.querySelector('#lookup_button');
+const button = <HTMLElement>document.querySelector('#lookup_button');
 const tf = <HTMLInputElement>document.querySelector('#lookup_input');
-const pSpan = document.querySelector('#pinyin_span');
-const eSpan = document.querySelector('#english_span');
+const pSpan = <HTMLElement>document.querySelector('#pinyin_span');
+const eSpan = <HTMLElement>document.querySelector('#english_span');
 
 // Lookup a value in the dictionary
 fromEvent(button, 'click')

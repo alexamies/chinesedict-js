@@ -6,8 +6,8 @@
     "lib": ["es2015", "dom"],
     "module": "es2015",
     "moduleResolution": "node",
-    "noImplicitAny": false,
     "outDir": "./",
+    "strict": true,
     "target": "es2015",
     "removeComments": false
   },

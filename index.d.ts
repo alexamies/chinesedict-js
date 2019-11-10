@@ -14,6 +14,11 @@
  */
 import { Observable } from 'rxjs';
 declare global {
+    interface DialogPolyfill {
+        registerDialog(dialog: HTMLDialogElement): void;
+    }
+}
+declare global {
     interface HTMLDialogElement {
         close(): void;
         showModal(): void;
@@ -28,6 +33,46 @@ export interface DictionaryBuilder {
      * Creates and initializes a DictionaryView
      */
     buildDictionary(): DictionaryView;
+}
+/**
+ * A dictionary collection represents one or more dictionary sources, indexed by
+ * a set of headwords and loaded from a set of JSON files. The set of headwords
+ * is empty until the dictionary is loaded.
+ */
+export declare class DictionaryCollection {
+    private headwords;
+    private loaded;
+    /**
+     * Construct a DictionaryCollection instance
+     */
+    constructor();
+    /**
+     * Checks for the presence of a headword in the DictionaryCollection.
+     *
+     * @param {!string} headword - Simplified or traditional Chinese
+     */
+    has(headword: string): boolean;
+    /**
+     * True is the dictionary is loaded. The lookup method will return
+     * non-trivial terms after that.
+     */
+    isLoaded(): boolean;
+    /**
+     * Looks up a headword in the DictionaryCollection. If the headword is not
+     * present then return a Term object populated with the headword but with an
+     * empty body.
+     *
+     * @param {!string} headword - Simplified or traditional Chinese
+     * @return {!Term} A non-null term
+     */
+    lookup(headword: string): Term;
+    /**
+     * Sets the map of headwords, also indicating that the dictionary collection
+     * is loaded.
+     *
+     * @param {!Map<string, Term>} headwords - indexing the dictionary collection
+     */
+    setHeadwords(headwords: Map<string, Term>): void;
 }
 /**
  * An entry in a dictionary from a specific source.
@@ -101,7 +146,7 @@ export declare class DictionaryLoader {
     /**
      * Returns a map of headwords, wait until after loading to call this
      */
-    getHeadwords(): Map<string, Term>;
+    getDictionaryCollection(): DictionaryCollection;
     /**
      * Returns an Observable that will complete on loading all the dictionaries
      */
@@ -111,9 +156,9 @@ export declare class DictionaryLoader {
      * Deserializes the dictionary from protobuf format. Expected to be called by
      * a builder in initializing the dictionary.
      *
-     * @param {!Array.<Array.<String>>} dictData - An array of dictionary terms
+     * @param {!Array<object>} dictData - An array of dictionary term objects
      */
-    load_dictionary_(source: DictionarySource, dictData: Array<Array<string>>): void;
+    load_dictionary_(source: DictionarySource, dictData: Array<JSONDictEntry>): void;
 }
 /**
  * The source of a dictionary, including where to load it from, its name,
@@ -138,12 +183,11 @@ export declare class DictionarySource {
  * the text matching dictionary entries or only the proper nouns.
  */
 export declare class DictionaryView {
-    private headwords;
+    private dictionaries;
     private selector;
     private dialog_id;
     private highlight;
     private dialog;
-    private dictEntryElems;
     private dialogContainerEl;
     private headwordEl;
     /**
@@ -207,12 +251,11 @@ export declare class DictionaryView {
      */
     segment_text_(text: string): Array<Term>;
     /**
-     * Segments the text into an array of individual words
+     * Sets the collection of dictionaries to use in the dictionary view.
      *
-     * @param {string} text - The text string to be segmented
-     * @return {Array.<Term>} The segmented text as an array of terms
+     * @param {!DictionaryCollection} The collection of dictionaries
      */
-    setHeadwords(headwords: Map<string, Term>): void;
+    setDictionaryCollection(dictionaries: DictionaryCollection): void;
     /**
      * Add a listener to the dialog OK button. The OK button should have the ID
      * of the dialog with '_ok' appended. Expected to be called by a builder in
@@ -228,6 +271,15 @@ export declare class DictionaryView {
      * @param {string} dialog_id - A DOM id used to find the dialog
      */
     showDialog(event: MouseEvent, term: Term, dialog_id: string): void;
+}
+interface JSONDictEntry {
+    s: string;
+    t: string;
+    p: string;
+    e: string;
+    g: string;
+    n: string;
+    h: string;
 }
 /**
  * An implementation of the DictionaryBuilder interface for building and
@@ -289,15 +341,13 @@ export declare class Term {
  * Utility for segmenting text into individual terms.
  */
 export declare class TextParser {
-    private headwords;
+    private dictionaries;
     /**
      * Construct a Dictionary object
      *
-     * @param {!Map<string, Term>} headwords - a dictionary
-     * @param {!string} title - A human readable name
-     * @param {!string} description - More about the dictionary
+     * @param {!DictionaryCollection} dictionaries - a collection of dictionary
      */
-    constructor(headwords: Map<string, Term>);
+    constructor(dictionaries: DictionaryCollection);
     /**
      * Segments the text into an array of individual words, excluding the whole
      * text given as a parameter
@@ -305,14 +355,14 @@ export declare class TextParser {
      * @param {string} text - The text string to be segmented
      * @return {Array.<Term>} The segmented text as an array of terms
      */
-    segmentExludeWhole(text: any): Array<Term>;
+    segmentExludeWhole(text: string): Array<Term>;
     /**
      * Segments the text into an array of individual words
      *
      * @param {string} text - The text string to be segmented
      * @return {Array.<Term>} The segmented text as an array of terms
      */
-    segmentText(text: any): Array<Term>;
+    segmentText(text: string): Array<Term>;
 }
 /**
  * Class encapsulating the sense of a Chinese word

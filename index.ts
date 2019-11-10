@@ -24,7 +24,12 @@ import { catchError, map } from 'rxjs/operators';
 
 // Dependencies, including Browser implementation of fetch and dialogPolyfill
 // pollyfill for HTMLDialogElement
-declare var dialogPolyfill;
+declare var dialogPolyfill: DialogPolyfill;
+declare global {
+  interface DialogPolyfill {
+    registerDialog(dialog: HTMLDialogElement): void;
+  }
+}
 declare global {
   interface HTMLDialogElement {
       close(): void;
@@ -46,6 +51,68 @@ export interface DictionaryBuilder {
 
 }
 
+
+/** 
+ * A dictionary collection represents one or more dictionary sources, indexed by
+ * a set of headwords and loaded from a set of JSON files. The set of headwords
+ * is empty until the dictionary is loaded.
+ */
+export class DictionaryCollection {
+  private headwords: Map<string, Term>;
+  private loaded: boolean;
+
+  /**
+   * Construct a DictionaryCollection instance
+   */
+  constructor() {
+    this.headwords = new Map<string, Term>();
+    this.loaded = false;
+  }
+
+  /**
+   * Checks for the presence of a headword in the DictionaryCollection.
+   *
+   * @param {!string} headword - Simplified or traditional Chinese
+   */
+  has(headword: string): boolean {
+    return this.headwords.has(headword);
+  } 
+
+  /**
+   * True is the dictionary is loaded. The lookup method will return
+   * non-trivial terms after that.
+   */
+  isLoaded(): boolean {
+    return this.loaded;
+  }   
+
+  /**
+   * Looks up a headword in the DictionaryCollection. If the headword is not
+   * present then return a Term object populated with the headword but with an
+   * empty body.
+   *
+   * @param {!string} headword - Simplified or traditional Chinese
+   * @return {!Term} A non-null term
+   */
+  lookup(headword: string): Term {
+    const term = this.headwords.get(headword);
+    if (term) {
+      return term;
+    } else {
+      return new Term(headword, []);
+    }
+  } 
+
+  /**
+   * Sets the map of headwords, also indicating that the dictionary collection
+   * is loaded.
+   *
+   * @param {!Map<string, Term>} headwords - indexing the dictionary collection
+   */
+  setHeadwords(headwords: Map<string, Term>) {
+    this.headwords = headwords;
+  } 
+}
 
 /** 
  * An entry in a dictionary from a specific source.
@@ -180,8 +247,10 @@ export class DictionaryLoader {
   /**
    * Returns a map of headwords, wait until after loading to call this
    */
-  getHeadwords(): Map<string, Term> {
-    return this.headwords;
+  getDictionaryCollection() {
+    const dictionaries = new DictionaryCollection();
+    dictionaries.setHeadwords(this.headwords);
+    return dictionaries;
   }
 
   /**
@@ -200,7 +269,7 @@ export class DictionaryLoader {
           const subscribe = reqObs.subscribe(
             res => {
               console.log(`loadDictionaries: for ${ filename }`);
-              this.load_dictionary_(source, <Array<Array<string>>>res);
+              this.load_dictionary_(source, <Array<JSONDictEntry>>res);
               numLoaded++;
               subscriber.next(numLoaded);
               if (numLoaded >= sources.length) {
@@ -227,20 +296,20 @@ export class DictionaryLoader {
    * Deserializes the dictionary from protobuf format. Expected to be called by
    * a builder in initializing the dictionary.
    *
-   * @param {!Array.<Array.<String>>} dictData - An array of dictionary terms
+   * @param {!Array<object>} dictData - An array of dictionary term objects
    */
-  load_dictionary_(source: DictionarySource, dictData: Array<Array<string>>) {
+  load_dictionary_(source: DictionarySource, dictData: Array<JSONDictEntry>) {
     console.log(`load_dictionary_ terms from ${ source.title }`);
     for (const entry of dictData) {
-      const traditional = <string>entry["t"];
-      const sense = new WordSense(<string>entry["s"],
-                                  <string>entry["t"],
-                                  <string>entry['p'],
-                                  <string>entry['e'],
-                                  <string>entry['g'],
-                                  <string>entry['n']);
+      const traditional = entry["t"];
+      const sense = new WordSense(entry["s"],
+                                  entry["t"],
+                                  entry["p"],
+                                  entry["e"],
+                                  entry["g"],
+                                  entry["n"]);
       const dictEntry = new DictionaryEntry(traditional, source, [sense],
-                                            <string>entry['h']);
+                                            entry["h"]);
       if (!this.headwords.has(traditional)) {
         // console.log(`Loading ${ traditional } from ${ source.title } `);
         const term = new Term(traditional, [dictEntry]);
@@ -248,7 +317,7 @@ export class DictionaryLoader {
       } else {
         // console.log(`Adding ${ traditional } from ${ source.title } `);
         const term = this.headwords.get(traditional);
-        term.addDictionaryEntry(sense, dictEntry);
+        term!.addDictionaryEntry(sense, dictEntry);
       }
     }
   }
@@ -286,14 +355,13 @@ export class DictionarySource {
  * the text matching dictionary entries or only the proper nouns.
  */
 export class DictionaryView {
-  private headwords: Map<string, Term>;
+  private dictionaries: DictionaryCollection;
   private selector: string;
   private dialog_id: string;
   private highlight: 'all' | 'proper' | '';
-  private dialog: HTMLDialogElement;
-  private dictEntryElems: Array<Element>;
-  private dialogContainerEl: Element;
-  private headwordEl: Element;
+  private dialog: HTMLDialogElement | null;
+  private dialogContainerEl: Element | null;
+  private headwordEl: Element | null;
 
   /**
    * Use a DictionaryBuilder implementation rather than calling the constructor
@@ -307,10 +375,15 @@ export class DictionaryView {
               dialog_id: string,
               highlight: 'all' | 'proper' | '') {
     console.log('DictionaryView constructor');
-  	this.headwords = new Map<string, Term>();
+  	this.dictionaries = new DictionaryCollection();
     this.selector = selector;
     this.dialog_id = dialog_id;
     this.highlight = highlight;
+    this.dialog = <HTMLDialogElement | null>document.getElementById(this.dialog_id);
+    const containerId= this.dialog_id +'_container';
+    this.dialogContainerEl = <Element | null>document.getElementById(containerId);
+    const headwordId= this.dialog_id +'_headword';
+    this.headwordEl = <Element | null>document.getElementById(headwordId);
   }
 
   /**
@@ -340,7 +413,7 @@ export class DictionaryView {
       ${ entry.getSource().description }`;
     containerEl.appendChild(sourceEl);
     this.addPartsToDialog(chinese, containerEl);
-    this.dialogContainerEl.appendChild(containerEl);
+    this.dialogContainerEl!.appendChild(containerEl);
   }  
 
   /**
@@ -358,11 +431,11 @@ export class DictionaryView {
     let numAdded = 0;
     for (let i = 0; i < chinese.length; i++) {
       const cPart = chinese[i];
-      if (this.headwords.has(cPart)) {
+      if (this.dictionaries.has(cPart)) {
         numAdded++;
-        const partTerm = this.headwords.get(chinese[i]);
+        const partTerm = this.dictionaries.lookup(chinese[i]);
         let eng = "";
-        for (const entry of partTerm.getEntries()) {
+        for (const entry of partTerm!.getEntries()) {
           eng += entry.getEnglish() + " ";
         }
         const partsBodyEl = document.createElement('div');
@@ -457,8 +530,10 @@ export class DictionaryView {
     for (let i = 0; i < elems.length; i++) {
       const el = elems[i];
       const text = el.textContent;
-      let terms = this.segment_text_(text);
-      this.decorate_segments_(el, terms, this.dialog_id, this.highlight);
+      if (text) {
+        const terms = this.segment_text_(text);
+        this.decorate_segments_(el, terms, this.dialog_id, this.highlight);
+      }
     }
   }
 
@@ -466,10 +541,7 @@ export class DictionaryView {
    * Look up a term in the matching the given Chinese
    */
   lookup(chinese: string): Term {
-    if (this.headwords.has(chinese)) {
-      return this.headwords.get(chinese);
-    }
-    return new Term(chinese, []);
+    return this.dictionaries.lookup(chinese);
   }
 
   /**
@@ -480,18 +552,17 @@ export class DictionaryView {
    * @return {Array.<Term>} The segmented text as an array of terms
    */
   segment_text_(text: string): Array<Term> {
-    const parser = new TextParser(this.headwords);
+    const parser = new TextParser(this.dictionaries);
     return parser.segmentText(text);
   }
 
   /**
-   * Segments the text into an array of individual words
+   * Sets the collection of dictionaries to use in the dictionary view.
    * 
-   * @param {string} text - The text string to be segmented
-   * @return {Array.<Term>} The segmented text as an array of terms
+   * @param {!DictionaryCollection} The collection of dictionaries
    */
-  setHeadwords(headwords: Map<string, Term>) {
-    this.headwords = headwords;
+  setDictionaryCollection(dictionaries: DictionaryCollection) {
+    this.dictionaries = dictionaries;
   }
 
   /**
@@ -500,37 +571,31 @@ export class DictionaryView {
    * initializing the dictionary.
    */
   setupDialog() {
-  	let dialog = document.getElementById(this.dialog_id);
-    const headwordId= this.dialog_id +'_headword'
-    this.headwordEl = document.getElementById(headwordId);
-    const containerId= this.dialog_id +'_container'
-    this.dialogContainerEl = document.getElementById(containerId);
   	const dialogOkId = this.dialog_id + '_ok';
   	let dialogOk = document.getElementById(dialogOkId);
-    if (!dialog) {
+    if (!this.dialog) {
       console.log(`setupDialog ${ this.dialog_id } not found`);
-      dialog = document.createElement('dialog');
+      this.dialog = document.createElement('dialog');
       this.headwordEl = document.createElement('p');
-      dialog.appendChild(this.headwordEl);
+      this.dialog.appendChild(this.headwordEl);
       this.dialogContainerEl = document.createElement('div');
-      dialog.appendChild(this.dialogContainerEl);
+      this.dialog.appendChild(this.dialogContainerEl);
       dialogOk = document.createElement('button');
       dialogOk.innerText = 'OK';
       dialogOk.className = 'dialog_ok';
-      dialog.appendChild(dialogOk);
-      document.body.appendChild(dialog);
+      this.dialog.appendChild(dialogOk);
+      document.body.appendChild(this.dialog);
     }
-    if (dialog instanceof HTMLDialogElement) {
-      this.dialog = dialog;
+    if (this.dialog instanceof HTMLDialogElement) {
       if (typeof dialogPolyfill !== 'undefined') {
-        dialogPolyfill.registerDialog(dialog);
+        dialogPolyfill.registerDialog(this.dialog);
       }
     } else {
-      console.log(`dialog is typeof ${ typeof dialog }`);
+      console.log(`dialog is typeof ${ typeof this.dialog }`);
     }
-  	dialogOk.addEventListener('click', () => {
-      if (dialog instanceof HTMLDialogElement) {
-        dialog.close();
+  	dialogOk!.addEventListener('click', () => {
+      if (this.dialog instanceof HTMLDialogElement) {
+        this.dialog.close();
       }
   	});
   }
@@ -549,16 +614,36 @@ export class DictionaryView {
     if (term.getEntries().length === 0) {
       return;
     }
-    this.headwordEl.innerHTML = chinese;
-    while (this.dialogContainerEl.firstChild) {
-      this.dialogContainerEl.removeChild(this.dialogContainerEl.firstChild);
+    if (this.headwordEl && chinese) {
+      this.headwordEl.innerHTML = chinese;
+    }
+    if (this.dialogContainerEl) {
+      while (this.dialogContainerEl.firstChild) {
+        this.dialogContainerEl.removeChild(this.dialogContainerEl.firstChild);
+      }
     }
     //console.log(`showDialog got: ${ term.getEntries().length } entries`);
-    for (const entry of term.getEntries()) {
-      this.addDictEntryToDialog(chinese, entry);
+    if (chinese) {
+      for (const entry of term.getEntries()) {
+        this.addDictEntryToDialog(chinese, entry);
+      }
     }
-    this.dialog.showModal();
+    if (this.dialog) {
+      this.dialog.showModal();
+    }
   }
+}
+
+
+// Interface for JSON data loaded into dictionary
+interface JSONDictEntry {
+  s: string // simplified
+  t: string // traditional
+  p: string // Pinyin
+  e: string // English
+  g: string // grammar
+  n: string // notes
+  h: string // headword id
 }
 
 
@@ -606,7 +691,7 @@ export class PlainJSBuilder implements DictionaryBuilder {
       error(err) { console.error('buildDictionary error: ' + err); },
       complete() { 
         console.log('buildDictionary done');
-        thisDict.setHeadwords(loader.getHeadwords());
+        thisDict.setDictionaryCollection(loader.getDictionaryCollection());
         thisDict.highlightWords();
         thisDict.setupDialog();
        }
@@ -672,17 +757,15 @@ export class Term {
  * Utility for segmenting text into individual terms.
  */
 export class TextParser {
-  private headwords: Map<string, Term>;
+  private dictionaries: DictionaryCollection;
 
   /**
    * Construct a Dictionary object
    *
-   * @param {!Map<string, Term>} headwords - a dictionary
-   * @param {!string} title - A human readable name
-   * @param {!string} description - More about the dictionary
+   * @param {!DictionaryCollection} dictionaries - a collection of dictionary
    */
-  constructor(headwords: Map<string, Term>) {
-    this.headwords = headwords;
+  constructor(dictionaries: DictionaryCollection) {
+    this.dictionaries = dictionaries;
   }
 
   /**
@@ -692,7 +775,7 @@ export class TextParser {
    * @param {string} text - The text string to be segmented
    * @return {Array.<Term>} The segmented text as an array of terms
    */
-  segmentExludeWhole(text): Array<Term> {
+  segmentExludeWhole(text: string): Array<Term> {
     if (!text) {
       console.log('segmentExludeWhole empty text');
       return [];
@@ -704,16 +787,16 @@ export class TextParser {
       while (k > 0) {
         const chars = text.substring(j, j + k);
         //console.log(`segmentExludeWhole checking: ${chars} for j ${j}, k ${k}`);
-        if (chars.length < text.length && this.headwords.has(chars)) {
+        if (chars.length < text.length && this.dictionaries.has(chars)) {
           //console.log(`segmentExludeWhole found: ${chars} for j ${j}, k ${k}`);
-          const term = this.headwords.get(chars);
+          const term = this.dictionaries.lookup(chars);
           segments.push(term);
           j += chars.length;
           break;
         }
         if (chars.length == 1) {
-          if (this.headwords.has(chars)) {
-            const t = this.headwords.get(chars);
+          if (this.dictionaries.has(chars)) {
+            const t = this.dictionaries.lookup(chars);
             segments.push(t);
           } else {
             segments.push(new Term(chars, []));
@@ -732,7 +815,7 @@ export class TextParser {
    * @param {string} text - The text string to be segmented
    * @return {Array.<Term>} The segmented text as an array of terms
    */
-  segmentText(text): Array<Term> {
+  segmentText(text: string): Array<Term> {
     if (!text) {
       console.log('segment_text_ empty text');
       return [];
@@ -743,9 +826,9 @@ export class TextParser {
       let k = text.length - j;
       while (k > 0) {
         const chars = text.substring(j, j + k);
-        if (this.headwords.has(chars)) {
+        if (this.dictionaries.has(chars)) {
           //console.log(`findwords found: ${chars} for j ${j}, k ${k}`);
-          const term = this.headwords.get(chars);
+          const term = this.dictionaries.lookup(chars);
           segments.push(term);
           j += chars.length;
           break;

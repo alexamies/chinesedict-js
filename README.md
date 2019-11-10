@@ -3,10 +3,12 @@
 Status: early prototype, interface will change
 
 An ECMAScript 2015 (ES6) browser module for showing Chinese-English dictionary
-terms in web pages. The JavaScript code will scan Chinese text, highlight the
-words contained in the dictionary. When a user mouses over the dictionary terms
-then a tooltip with the English equivalent will be displayed. When a user clicks
-on a term then the other details of the dictionary term will be shown.
+terms in web pages. The JavaScript code will load one or more dictionaries from
+JSON files. Basical lookup is provided as well as parsing Chinese text and
+highlighting the words contained in the dictionary. When a user mouses over the
+dictionary terms then a tooltip with the English equivalent will be displayed.
+When a user clicks on a term then the other details of the dictionary term will
+be shown.
 
 The JavaScript module does not require a web framework, like Material or React,
 but it should be compatible with those. It is designed and built using plain
@@ -80,7 +82,9 @@ node_modules/@alexamies/chinesedict-js
 
 ### Basic use
 
-You can import the chinesedict-js module into your web pages with a JavaScript
+With the basic use of the chinesedict-js module, a DictionaryView is created
+that takes care of TML DOM manipulation required to display the dictionary
+elements. You can import the module into your web pages with a JavaScript
 [import](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import)
 statement:
 
@@ -269,18 +273,7 @@ git clone https://github.com/alexamies/chinesedict-js.git
 cp chinesedict-js/index.d.ts node_modules/@alexamies/chinesedict-js/.
 ```
 
-### Cross browser support
-Cross browser support is provided for the HTML
-[dialog](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dialog)
-using [dialog-polyfill](https://github.com/GoogleChrome/dialog-polyfill) since
-the dialog element is not yet supported natively by Edge or Safari.
-
-Modern browsers ES6 style JavaScript including modules. If you want to support
-older browsers you will need to do that with a different compilation target for
-the tsc TypeScript compiler above. However, this will result in less readable
-and slower code.
-
-### Material Design Web
+### Using with dictionary with your own HTML presentation
 
 The Material Design Web example shows how to use the module without DOM
 dependencies. The load the dictionary data only first import `DictionaryLoader`
@@ -367,9 +360,16 @@ src='https://github.com/alexamies/chinesedict-js/blob/master/images/material.png
 If you get stuck read the instructions at
 [Using MDC Web with Sass and ES2015](https://material.io/develop/web/docs/getting-started/).
 
-## CDN
-Not tested well yet
-https://unpkg.com/@alexamies/chinesedict-js:0.0.10/:index.js
+### Cross browser support
+Cross browser support is provided for the HTML
+[dialog](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dialog)
+using [dialog-polyfill](https://github.com/GoogleChrome/dialog-polyfill) since
+the dialog element is not yet supported natively by Edge or Safari.
+
+Modern browsers ES6 style JavaScript including modules. If you want to support
+older browsers you will need to do that with a different compilation target for
+the tsc TypeScript compiler above. However, this will result in less readable
+and slower code.
 
 ### Mobile Device Support
 The module can be used on web pages designed for mobile devices although it has

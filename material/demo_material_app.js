@@ -14,7 +14,10 @@
  */
 import { fromEvent } from 'rxjs';
 import { MDCDialog } from "@material/dialog";
-import { DictionaryLoader, DictionarySource, TextParser } from '@alexamies/chinesedict-js';
+import { DictionaryCollection } from '@alexamies/chinesedict-js';
+import { DictionaryLoader } from '@alexamies/chinesedict-js';
+import { DictionarySource } from '@alexamies/chinesedict-js';
+import { TextParser } from '@alexamies/chinesedict-js';
 /**
  * A demo client app that uses the Chinese-English dictionary module with
  * Material Design Web.
@@ -22,7 +25,7 @@ import { DictionaryLoader, DictionarySource, TextParser } from '@alexamies/chine
 // class encapsulating the demo application
 class DemoApp {
     constructor() {
-        this.headwords = new Map();
+        this.dictionaries = new DictionaryCollection();
         this.button = this.querySelectorNonNull('#lookup_button');
         this.tf = this.querySelectorNonNull('#lookup_input');
         this.cSpan = this.querySelectorNonNull('#chinese_span');
@@ -115,7 +118,7 @@ class DemoApp {
         fromEvent(this.button, 'click')
             .subscribe(() => {
             this.document_text.style.display = "none";
-            const term = this.headwords.get(this.tf.value);
+            const term = this.dictionaries.lookup(this.tf.value);
             if (term) {
                 console.log(`Value: ${this.tf.value}`);
                 const entry = term.getEntries()[0];
@@ -147,7 +150,7 @@ class DemoApp {
             error(err) { console.error(`load error:  + ${err}`); },
             complete() {
                 console.log('loading dictionary done');
-                thisApp.headwords = loader.getHeadwords();
+                thisApp.dictionaries = loader.getDictionaryCollection();
                 const loadingStatus = thisApp.querySelectorNonNull("#loadingStatus");
                 loadingStatus.innerHTML = "Dictionary loading status: loaded";
             }
@@ -158,7 +161,6 @@ class DemoApp {
         const elem = document.querySelector(selector);
         if (elem === null) {
             console.log(`Unexpected missing HTML element ${selector}`);
-            return new HTMLElement();
         }
         return elem;
     }
@@ -193,7 +195,7 @@ class DemoApp {
         const partsTitle = this.querySelectorNonNull("#partsTitle");
         if (chinese != null && chinese.length > 1) {
             partsTitle.style.display = "block";
-            const parser = new TextParser(this.headwords);
+            const parser = new TextParser(this.dictionaries);
             const terms = parser.segmentExludeWhole(chinese);
             console.log(`showVocabDialog got ${terms.length} terms`);
             const tList = document.createElement("ul");
@@ -207,8 +209,8 @@ class DemoApp {
             partsTitle.style.display = "none";
         }
         // Show more details
-        const term = this.headwords.get(chinese);
-        if (term) {
+        if (this.dictionaries.has(chinese)) {
+            const term = this.dictionaries.lookup(chinese);
             const entry = term.getEntries()[0];
             const notesSpan = this.querySelectorNonNull("#VocabNotesSpan");
             if (entry.getSenses().length == 1) {
