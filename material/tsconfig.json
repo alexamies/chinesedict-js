@@ -1,15 +1,15 @@
 {
   "compilerOptions": {
-    "outDir": "./",
-    "noImplicitAny": true,
+    "allowJs": true,
+    "jsx": "react",
+    "lib": ["es2015", "dom"],
     "module": "es2015",
     "moduleResolution": "node",
-    "target": "es2015",
-    "lib": ["es2015", "dom"],
-    "jsx": "react",
-    "allowJs": true,
-    "noImplicitAny": false,
-    "removeComments": false
+    "noImplicitAny": true,
+    "outDir": "./",
+    "removeComments": false,
+    "strict": true,
+    "target": "es2015"
   },
   "files": [
   	"demo_material_app.ts",

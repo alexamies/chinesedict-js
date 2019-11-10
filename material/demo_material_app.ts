@@ -37,13 +37,14 @@ class DemoApp {
   private wordDialog: MDCDialog;
 
   constructor() {
-    this.button = document.querySelector('#lookup_button');
-    this.tf = document.querySelector('#lookup_input');
-    this.cSpan = document.querySelector('#chinese_span');
-    this.pSpan = document.querySelector('#pinyin_span');
-    this.eSpan = document.querySelector('#english_span');
-    this.document_text = document.querySelector('#document_text');
-    this.dialogDiv = document.querySelector("#CnotesVocabDialog");
+    this.headwords = new Map<string, Term>();
+    this.button = this.querySelectorNonNull('#lookup_button');
+    this.tf = <HTMLInputElement>this.querySelectorNonNull('#lookup_input');
+    this.cSpan = this.querySelectorNonNull('#chinese_span');
+    this.pSpan = this.querySelectorNonNull('#pinyin_span');
+    this.eSpan = this.querySelectorNonNull('#english_span');
+    this.document_text = this.querySelectorNonNull('#document_text');
+    this.dialogDiv = this.querySelectorNonNull("#CnotesVocabDialog");
     this.wordDialog = new MDCDialog(this.dialogDiv);
   }
 
@@ -81,7 +82,7 @@ class DemoApp {
     span.appendChild(spanL2);
     tList.appendChild(li);
     return tList;
-  }s
+  }
 
 
   // Combine and crop the list of English equivalents and notes to a limited
@@ -122,25 +123,38 @@ class DemoApp {
     return englishSpan;
   }
 
+  // Gets DOM element text content checking for null
+  getTextNonNull(elem: HTMLElement): string {
+    const chinese = elem.textContent;
+    if (chinese === null) {
+      return "";
+    }
+    return chinese;
+  }
+
   init() {
     // Respond to a button click
     fromEvent(this.button, 'click')
       .subscribe(() => {
-      this.document_text.style.display = "none";
-      const term = this.headwords.get(this.tf.value);
-      console.log(`Value: ${this.tf.value}`);
-      const entry = term.getEntries()[0];
-      this.cSpan.innerHTML = this.tf.value;
-      this.pSpan.innerHTML = entry.getPinyin();
-      this.eSpan.innerHTML = entry.getEnglish();
+        this.document_text.style.display = "none";
+        const term = this.headwords.get(this.tf.value);
+        if (term) {
+          console.log(`Value: ${ this.tf.value }`);
+          const entry = term.getEntries()[0];
+          this.cSpan.innerHTML = this.tf.value;
+          this.pSpan.innerHTML = entry.getPinyin();
+          this.eSpan.innerHTML = entry.getEnglish();
+        } else {
+          console.log(`Value not found ${ this.tf.value }`);
+        }
     });
 
     const thisApp = this;
-    let vocabElements = document.querySelectorAll(".vocabulary");
-    vocabElements.forEach((elem) => {
+    const vocabElements = document.querySelectorAll(".vocabulary");
+    vocabElements!.forEach((elem) => {
       elem.addEventListener("click", function(evt) {
         evt.preventDefault();
-        thisApp.showVocabDialog(elem);
+        thisApp.showVocabDialog(<HTMLElement>elem);
         return false;
       });
     });
@@ -155,21 +169,30 @@ class DemoApp {
     const loader = new DictionaryLoader([source]);
     const observable = loader.loadDictionaries();
     observable.subscribe({
-      next(x) { console.log('load next ' + x); },
       error(err) { console.error(`load error:  + ${ err }`); },
       complete() { 
         console.log('loading dictionary done');
         thisApp.headwords = loader.getHeadwords();
-        const loadingStatus = document.querySelector("#loadingStatus")
+        const loadingStatus = thisApp.querySelectorNonNull("#loadingStatus")
         loadingStatus.innerHTML = "Dictionary loading status: loaded";
       }
     });
   }
 
+  // Looks up an element checking for null
+  querySelectorNonNull(selector: string): HTMLElement {
+    const elem = <HTMLElement>document.querySelector(selector);
+    if (elem === null) {
+      console.log(`Unexpected missing HTML element ${ selector }`);
+      return new HTMLElement();
+    }
+    return elem
+  }
+
   // Shows the vocabular dialog with details of the given word
-  showVocabDialog(elem) {
+  showVocabDialog(elem: HTMLElement) {
     // Show Chinese, pinyin, and English
-    const titleElem = document.querySelector("#VocabDialogTitle");
+    const titleElem = this.querySelectorNonNull("#VocabDialogTitle");
     const s = elem.title;
     const n = s.indexOf("|");
     const pinyin = s.substring(0, n);
@@ -177,11 +200,11 @@ class DemoApp {
     if (n < s.length) {
       english = s.substring(n + 1, s.length);
     }
-    const chinese = elem.textContent;
+    const chinese = this.getTextNonNull(elem);
     console.log(`Value: ${chinese}`);
-    const pinyinSpan = document.querySelector("#PinyinSpan");
-    const englishSpan = document.querySelector("#EnglishSpan");
-    titleElem.innerHTML = chinese
+    const pinyinSpan = this.querySelectorNonNull("#PinyinSpan");
+    const englishSpan = this.querySelectorNonNull("#EnglishSpan");
+    titleElem.innerHTML = chinese;
     pinyinSpan.innerHTML = pinyin;
     if (english) {
       englishSpan.innerHTML = english;
@@ -190,12 +213,12 @@ class DemoApp {
     }
 
     // Show parts of the term for multi-character terms
-    const partsDiv = document.querySelector("#parts");
+    const partsDiv = this.querySelectorNonNull("#parts");
     while (partsDiv.firstChild) {
       partsDiv.removeChild(partsDiv.firstChild);
     }
-    const partsTitle = <HTMLElement>document.querySelector("#partsTitle");
-    if (chinese.length > 1) {
+    const partsTitle = this.querySelectorNonNull("#partsTitle");
+    if (chinese != null && chinese.length > 1) {
       partsTitle.style.display = "block";
       const parser = new TextParser(this.headwords);
       const terms = parser.segmentExludeWhole(chinese);
@@ -214,14 +237,14 @@ class DemoApp {
     const term = this.headwords.get(chinese);
     if (term) {
       const entry = term.getEntries()[0];
-      const notesSpan = document.querySelector("#VocabNotesSpan");
+      const notesSpan = this.querySelectorNonNull("#VocabNotesSpan");
       if (entry.getSenses().length == 1) {
         const ws = entry.getSenses()[0];
         notesSpan.innerHTML = ws.getNotes();
       } else {
         notesSpan.innerHTML = "";
       }
-      const sourceSpan = document.querySelector("#SourceSpan");
+      const sourceSpan = this.querySelectorNonNull("#SourceSpan");
       const sourceTitle = entry.getSource().title;
       sourceSpan.innerHTML = 'Source: ' + entry.getSource().title;
     }

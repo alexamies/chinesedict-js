@@ -257,6 +257,18 @@ npm run start
 
 This will generate the demo_app.js file used in the basic example.
 
+You may need to copy the type declaration file index.d.ts from the GitHub
+project. For example,
+
+```shell
+mkdir your_project
+cd your_project
+npm install @alexamies/chinesedict-js
+cd ..
+git clone https://github.com/alexamies/chinesedict-js.git
+cp chinesedict-js/index.d.ts node_modules/@alexamies/chinesedict-js/.
+```
+
 ### Cross browser support
 Cross browser support is provided for the HTML
 [dialog](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dialog)

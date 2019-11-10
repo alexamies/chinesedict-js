@@ -1,13 +1,14 @@
 {
   "name": "@alexamies/chinesedict-js",
-  "version": "0.1.8",
+  "version": "0.1.10",
   "description": "A JavaScript browser module for a Chinese-English dictionary",
   "license": "Apache-2.0",
   "repository": "alexamies/chinesedict-js",
   "browser": "index.js",
-  "main": "index.js",
-  "types": "index.d.ts",
+  "main": "@alexamies/chinesedict-js",
+  "types": "./index.d.ts",
   "author": "alexamies",
+  "files": ["index.d.ts", "index.js", "LICENSE.txt", "README.md"],
   "scripts": {
     "prepare": "node build/gen_dictionary.js",
     "cc-cedict": "node build/cccedict_generator.js ./cedict_ts.u8",
