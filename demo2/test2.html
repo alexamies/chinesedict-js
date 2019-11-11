@@ -8,8 +8,7 @@
     <meta name="description" 
           content="Chinese-English Dictionary JavaScript Demo">
     <title>Chinese-English Dictionary JavaScript Demo</title>
-    <link rel="stylesheet" type="text/css" href="/assets/chinesedict.css"/>
-    <link rel="stylesheet" type="text/css" href="/assets/demo_app.css"/>
+    <link rel="stylesheet" type="text/css" href="assets/bundle.css"/>
     <!--<link rel="stylesheet" type="text/css" href="dist/dialog-polyfill.css"/>-->
   </head>
   <body>
@@ -19,17 +18,14 @@
     </p>
     <main>
       <p>
-        Breakdown of multi-character terms by character
-        <div id='textbody1' class='textbody'>又如《康熙帝國》中，康熙為了緩和葛爾丹的侵略，將和碩公主下嫁蒙古。臨別前，稚幼的她對著孝莊太后說道：「假以時日，當父皇與夫君干戈相向時，我該幫誰呢？」面對如此兩難的問題，孝莊太后也不知如何回答，只有淡淡的說：「一切看你自己。」</div>
-      </p>
-      </p>
       <p>
-        If you do not see the dialog and are using Safari or Edge then read
-        the section of the README.md on cross-browser support.
+        Two dictionaries
+        <div id='textbody1' class='textbody'>對於從四面八方來到</div>
+      </p>
       </p>
       <p>
         <span class='dict-entry_input'>
-          <input type='textfield' id='lookup_input' value='羅閱城'/>
+          <input type='textfield' id='lookup_input' value='四面八方'/>
           <button id='lookup_button'>Lookup</button>
         </span>
         <span id='pinyin_span' class='dict-entry_pinyin'></span>
@@ -40,8 +36,7 @@
       </p>
     </main>
     <!--<script defer src="dist/dialog-polyfill.js"></script>-->
-    <script src='../node_modules/rxjs/bundles/rxjs.umd.js'></script>
     <!--<script src='https://unpkg.com/@reactivex/rxjs@6.3.3/dist/global/rxjs.umd.js'></script>-->
-    <script src="demo_app3.js" type="module"></script>
+    <script src="assets/bundle.js" type="module"></script>
   </body>
 </html>

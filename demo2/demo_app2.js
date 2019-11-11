@@ -1,14 +1,14 @@
 // Application JavaScript demonstrating use of the ChineseDict module
 import { DictionarySource, PlainJSBuilder } from '../index.js';
-const { fromEvent } = rxjs;
+import { fromEvent } from 'rxjs';
 console.log('Loading demo_app');
 // Build and initialize the ChineseDict class
 const source1 = new DictionarySource('/assets/ntireader.json',
-  'NTI Reader dictionary',
-  'Nan Tien Institute Reader dictionary');
+  'NTI Reader sample',
+  'Nan Tien Institute Reader dictionary sample');
 const source2 = new DictionarySource('/assets/cccedict_sample.json',
-  'CC-CEDICT Dictionary',
-  'CC-CEDICT Chinese-English Dictionary');
+  'CC-CEDICT Sample',
+  'CC-CEDICT Chinese-English Sample');
 const builder = new PlainJSBuilder([source1, source2], '.textbody', 'dict-dialog', 'all');
 const dictView = builder.buildDictionary();
 const button = document.querySelector('#lookup_button');
@@ -21,6 +21,10 @@ fromEvent(button, 'click')
     const term = dictView.lookup(tf.value);
     console.log(`Value: ${tf.value}`);
     const entry = term.getEntries()[0];
-    pSpan.innerHTML = entry.getPinyin();
-    eSpan.innerHTML = entry.getEnglish();
+    if (entry) {
+      pSpan.innerHTML = entry.getPinyin();
+      eSpan.innerHTML = entry.getEnglish();
+    } else {
+      console.log('entry is not defined');
+    }
 });
