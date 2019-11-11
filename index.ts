@@ -111,6 +111,7 @@ export class DictionaryCollection {
    */
   setHeadwords(headwords: Map<string, Term>) {
     this.headwords = headwords;
+    this.loaded = true;
   } 
 }
 
@@ -298,7 +299,7 @@ export class DictionaryLoader {
    *
    * @param {!Array<object>} dictData - An array of dictionary term objects
    */
-  load_dictionary_(source: DictionarySource, dictData: Array<JSONDictEntry>) {
+  private load_dictionary_(source: DictionarySource, dictData: Array<JSONDictEntry>) {
     console.log(`load_dictionary_ terms from ${ source.title }`);
     for (const entry of dictData) {
       const traditional = entry["t"];
@@ -392,7 +393,7 @@ export class DictionaryView {
    * @param {string} chinese - the Chinese text
    * @param {DictionaryEntry} entry - the word data to add to the dialog
    */
-  addDictEntryToDialog(chinese: string, entry: DictionaryEntry) {
+  private addDictEntryToDialog(chinese: string, entry: DictionaryEntry) {
     const containerEl = document.createElement('div');
     const pinyinEl = document.createElement('span');
     pinyinEl.className = 'dict-dialog_pinyin';
@@ -422,7 +423,7 @@ export class DictionaryView {
    * @param {string} chinese - the Chinese text
    * @param {HTMLDivElement} containerEl - to display the parts in
    */
-  addPartsToDialog(chinese: string, containerEl: HTMLDivElement) {
+  private addPartsToDialog(chinese: string, containerEl: HTMLDivElement) {
     console.log(`addPartsToDialog enter ${chinese}`);
     const partsEl = document.createElement('div');
     const partsTitleEl = document.createElement('h5');
@@ -457,7 +458,7 @@ export class DictionaryView {
    * @param {string} dialog_id - A DOM id used to find the dialog
    * @param {string} highlight - Which terms to highlight: all | proper | ''
    */
-  decorate_segments_(elem: Element,
+  private decorate_segments_(elem: Element,
                      terms: Array<Term>,
                      dialog_id: string,
                      highlight: 'all' | 'proper' | '') {
@@ -538,6 +539,13 @@ export class DictionaryView {
   }
 
   /**
+   * Whether the dictionary sources have been loaded
+   */
+  isLoaded(): boolean {
+    return this.dictionaries.isLoaded();
+  }
+
+  /**
    * Look up a term in the matching the given Chinese
    */
   lookup(chinese: string): Term {
@@ -551,7 +559,7 @@ export class DictionaryView {
    * @param {string} text - The text string to be segmented
    * @return {Array.<Term>} The segmented text as an array of terms
    */
-  segment_text_(text: string): Array<Term> {
+  private segment_text_(text: string): Array<Term> {
     const parser = new TextParser(this.dictionaries);
     return parser.segmentText(text);
   }
@@ -654,7 +662,7 @@ interface JSONDictEntry {
  */
 export class PlainJSBuilder implements DictionaryBuilder {
   private sources: Array<DictionarySource>;
-  private dict: DictionaryView;
+  private view: DictionaryView;
 
   /**
    * Create an empty PlainJSBuilder instance
@@ -670,7 +678,7 @@ export class PlainJSBuilder implements DictionaryBuilder {
               highlight: 'all' | 'proper') {
     console.log('PlainJSBuilder constructor');
     this.sources = sources;
-    this.dict = new DictionaryView(selector, dialog_id, highlight);
+    this.view = new DictionaryView(selector, dialog_id, highlight);
   }
 
   /**
@@ -679,11 +687,12 @@ export class PlainJSBuilder implements DictionaryBuilder {
    * 'all' then all words with dictionary entries will be highlighted. If
    * highlight is set to 'proper' then event listeners will be added for all
    * terms but only those that are proper nouns (names, places, etc) will be
-   * highlighted.
+   * highlighted. Subscribe to the Observable and get the DictionaryView when
+   * it is complete.
    */
-  buildDictionary(): DictionaryView {
+  buildDictionary() {
     console.log('buildDictionary enter');
-    const thisDict = this.dict;
+    const view = this.view;
     const loader = new DictionaryLoader(this.sources);
     const observable = loader.loadDictionaries();
     observable.subscribe({
@@ -691,14 +700,13 @@ export class PlainJSBuilder implements DictionaryBuilder {
       error(err) { console.error('buildDictionary error: ' + err); },
       complete() { 
         console.log('buildDictionary done');
-        thisDict.setDictionaryCollection(loader.getDictionaryCollection());
-        thisDict.highlightWords();
-        thisDict.setupDialog();
+        view.setDictionaryCollection(loader.getDictionaryCollection());
+        view.highlightWords();
+        view.setupDialog();
        }
     });
-    return thisDict;
+    return view;
   }
-
 }
 
 
@@ -749,7 +757,6 @@ export class Term {
   getEntries(): Array<DictionaryEntry> {
     return this.entries;
   }
-
 }
 
 
@@ -848,7 +855,7 @@ export class TextParser {
 /**
  * Class encapsulating the sense of a Chinese word
  */
-class WordSense {
+export class WordSense {
   private simplified: string;
   private traditional: string;
   private pinyin: string;

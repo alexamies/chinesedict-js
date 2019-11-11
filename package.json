@@ -1,6 +1,6 @@
 {
   "name": "@alexamies/chinesedict-js",
-  "version": "0.1.11",
+  "version": "0.1.12",
   "description": "A JavaScript browser module for a Chinese-English dictionary",
   "license": "Apache-2.0",
   "repository": "alexamies/chinesedict-js",
@@ -9,6 +9,7 @@
   "types": "./index.d.ts",
   "author": "alexamies",
   "files": [
+    "index.d.ts",
     "umd/chinesedict.js"
   ],
   "scripts": {
@@ -29,12 +30,10 @@
     "@babel/preset-env": "^7.7.1",
     "autoprefixer": "^9.7.1",
     "babel-loader": "^8.0.6",
-    "chai": "^4.2.0",
     "css-loader": "^3.2.0",
-    "csv-parse": "^4.0.1",
+    "csv-parse": "^4.4.6",
     "extract-loader": "^3.1.0",
     "file-loader": "^4.2.0",
-    "mocha": "^6.2.2",
     "node-sass": "^4.13.0",
     "postcss-loader": "^3.0.0",
     "repl": "^0.1.3",

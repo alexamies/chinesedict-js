@@ -67,6 +67,7 @@ export class DictionaryCollection {
      */
     setHeadwords(headwords) {
         this.headwords = headwords;
+        this.loaded = true;
     }
 }
 /**
@@ -442,6 +443,12 @@ export class DictionaryView {
         }
     }
     /**
+     * Whether the dictionary sources have been loaded
+     */
+    isLoaded() {
+        return this.dictionaries.isLoaded();
+    }
+    /**
      * Look up a term in the matching the given Chinese
      */
     lookup(chinese) {
@@ -551,7 +558,7 @@ export class PlainJSBuilder {
     constructor(sources, selector, dialog_id, highlight) {
         console.log('PlainJSBuilder constructor');
         this.sources = sources;
-        this.dict = new DictionaryView(selector, dialog_id, highlight);
+        this.view = new DictionaryView(selector, dialog_id, highlight);
     }
     /**
      * Creates and initializes a DictionaryView, load the dictionary, and scan DOM
@@ -559,11 +566,12 @@ export class PlainJSBuilder {
      * 'all' then all words with dictionary entries will be highlighted. If
      * highlight is set to 'proper' then event listeners will be added for all
      * terms but only those that are proper nouns (names, places, etc) will be
-     * highlighted.
+     * highlighted. Subscribe to the Observable and get the DictionaryView when
+     * it is complete.
      */
     buildDictionary() {
         console.log('buildDictionary enter');
-        const thisDict = this.dict;
+        const view = this.view;
         const loader = new DictionaryLoader(this.sources);
         const observable = loader.loadDictionaries();
         observable.subscribe({
@@ -571,12 +579,12 @@ export class PlainJSBuilder {
             error(err) { console.error('buildDictionary error: ' + err); },
             complete() {
                 console.log('buildDictionary done');
-                thisDict.setDictionaryCollection(loader.getDictionaryCollection());
-                thisDict.highlightWords();
-                thisDict.setupDialog();
+                view.setDictionaryCollection(loader.getDictionaryCollection());
+                view.highlightWords();
+                view.setupDialog();
             }
         });
-        return thisDict;
+        return view;
     }
 }
 /**
@@ -711,7 +719,7 @@ export class TextParser {
 /**
  * Class encapsulating the sense of a Chinese word
  */
-class WordSense {
+export class WordSense {
     /**
      * Create a WordSense object
      * @param {!string} simplified - Simplified Chinese

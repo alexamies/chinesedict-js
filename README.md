@@ -111,9 +111,15 @@ const builder = new PlainJSBuilder([source],
 	                               'dict-dialog',
 	                               'all');
 const dictView = builder.buildDictionary(); 
-// Matching terms will be highlighted
-// If the user clicks on a word then a dialog will be shown
-// You can also look a word up directly
+```
+
+Matching terms will be highlighted. The dictionary will be loaded
+asynchronously.
+
+After the dictionary is loaded it can respond to user clicks on a word with a
+dialog. Words can also looked up directly:
+
+```javascript
 const term = dictView.lookup('力'); // Example term
 const entry = term.getEntries()[0]; // Get the entry
 console.log(`English: ${ entry.getEnglish() }`);
@@ -280,11 +286,9 @@ dependencies. The load the dictionary data only first import `DictionaryLoader`
 and `DictionarySource`.
 
 ```JavaScript
-import { DictionaryCollection } from '@alexamies/chinesedict-js';
-import { DictionaryLoader } from '@alexamies/chinesedict-js';
-import { DictionarySource } from '@alexamies/chinesedict-js';
-import { Term } from '@alexamies/chinesedict-js';
-import { TextParser } from '@alexamies/chinesedict-js';
+import { DictionaryLoader,
+         DictionarySource,
+         TextParser } from '@alexamies/chinesedict-js';
 ````
 
 Load the dictionary with code like

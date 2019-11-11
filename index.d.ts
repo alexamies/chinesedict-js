@@ -158,7 +158,7 @@ export declare class DictionaryLoader {
      *
      * @param {!Array<object>} dictData - An array of dictionary term objects
      */
-    load_dictionary_(source: DictionarySource, dictData: Array<JSONDictEntry>): void;
+    private load_dictionary_;
 }
 /**
  * The source of a dictionary, including where to load it from, its name,
@@ -205,14 +205,14 @@ export declare class DictionaryView {
      * @param {string} chinese - the Chinese text
      * @param {DictionaryEntry} entry - the word data to add to the dialog
      */
-    addDictEntryToDialog(chinese: string, entry: DictionaryEntry): void;
+    private addDictEntryToDialog;
     /**
      * Add parts of a Chinese string to the dialog
      *
      * @param {string} chinese - the Chinese text
      * @param {HTMLDivElement} containerEl - to display the parts in
      */
-    addPartsToDialog(chinese: string, containerEl: HTMLDivElement): void;
+    private addPartsToDialog;
     /**
      * Decorate the segments of text
      *
@@ -222,7 +222,7 @@ export declare class DictionaryView {
      * @param {string} dialog_id - A DOM id used to find the dialog
      * @param {string} highlight - Which terms to highlight: all | proper | ''
      */
-    decorate_segments_(elem: Element, terms: Array<Term>, dialog_id: string, highlight: 'all' | 'proper' | ''): void;
+    private decorate_segments_;
     /**
      * Respond to a mouse over event for a dictionary term. Expected to be called
      * in response to a user event.
@@ -239,6 +239,10 @@ export declare class DictionaryView {
      */
     highlightWords(): void;
     /**
+     * Whether the dictionary sources have been loaded
+     */
+    isLoaded(): boolean;
+    /**
      * Look up a term in the matching the given Chinese
      */
     lookup(chinese: string): Term;
@@ -249,7 +253,7 @@ export declare class DictionaryView {
      * @param {string} text - The text string to be segmented
      * @return {Array.<Term>} The segmented text as an array of terms
      */
-    segment_text_(text: string): Array<Term>;
+    private segment_text_;
     /**
      * Sets the collection of dictionaries to use in the dictionary view.
      *
@@ -272,15 +276,6 @@ export declare class DictionaryView {
      */
     showDialog(event: MouseEvent, term: Term, dialog_id: string): void;
 }
-interface JSONDictEntry {
-    s: string;
-    t: string;
-    p: string;
-    e: string;
-    g: string;
-    n: string;
-    h: string;
-}
 /**
  * An implementation of the DictionaryBuilder interface for building and
  * initializing DictionaryView objects for browser apps that do not use an
@@ -288,7 +283,7 @@ interface JSONDictEntry {
  */
 export declare class PlainJSBuilder implements DictionaryBuilder {
     private sources;
-    private dict;
+    private view;
     /**
      * Create an empty PlainJSBuilder instance
      *
@@ -304,7 +299,8 @@ export declare class PlainJSBuilder implements DictionaryBuilder {
      * 'all' then all words with dictionary entries will be highlighted. If
      * highlight is set to 'proper' then event listeners will be added for all
      * terms but only those that are proper nouns (names, places, etc) will be
-     * highlighted.
+     * highlighted. Subscribe to the Observable and get the DictionaryView when
+     * it is complete.
      */
     buildDictionary(): DictionaryView;
 }
@@ -367,7 +363,7 @@ export declare class TextParser {
 /**
  * Class encapsulating the sense of a Chinese word
  */
-declare class WordSense {
+export declare class WordSense {
     private simplified;
     private traditional;
     private pinyin;
@@ -415,4 +411,3 @@ declare class WordSense {
      */
     getTraditional(): string;
 }
-export {};

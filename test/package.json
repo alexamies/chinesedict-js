@@ -1,0 +1,30 @@
+{
+  "name": "unittest",
+  "version": "1.0.0",
+  "description": "Chinese Dict unit tests",
+  "main": "private",
+  "author": "alexamies",
+  "license": "ISC",
+  "scripts": {
+    "build": "webpack"
+  },
+  "dependencies": {
+    "@alexamies/chinesedict-js": "0.1.12"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.6.4",
+    "autoprefixer": "^9.7.1",
+    "babel-loader": "^8.0.6",
+    "chai": "^4.2.0",
+    "css-loader": "^3.2.0",
+    "extract-loader": "^3.1.0",
+    "file-loader": "^4.2.0",
+    "mocha": "^6.2.2",
+    "node-sass": "^4.13.0",
+    "postcss-loader": "^3.0.0",
+    "sass-loader": "^8.0.0",
+    "typescript": "^3.7.2",
+    "webpack": "^4.41.2",
+    "webpack-cli": "^3.3.10"
+  }
+}
