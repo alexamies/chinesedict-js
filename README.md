@@ -89,7 +89,8 @@ elements. You can import the module into your web pages with a JavaScript
 statement:
 
 ```javascript
-import { DictionarySource, PlainJSBuilder } from '@alexamies/chinesedict-js';
+import { DictionarySource,
+         PlainJSBuilder } from '@alexamies/chinesedict-js';
 ```
 
 Make sure that you reference your own JavaScript code in your HTML page using a
@@ -167,10 +168,6 @@ statement:
 ```css
 @import '/assets/dialog-polyfill.css';
 ```
-
-## More Complex Demo
-A more complex example is given in [demo](demo/README.md). See this at
-[chinesedictdemo.appspot.com](https://chinesedictdemo.appspot.com).
 
 ## Customize the Dictionary
 A very small demo dict is provided with some examples.
@@ -392,6 +389,11 @@ not yet been designed for an optimal experience.
 Bundling and minification with WebPack or Babel may help but their current ES6
 module support lags behind browsers. Use of common JS modules does not perform
 adequately, except for very small dictionaries and text sizes.
+
+## App Engine
+An example of deploying to App Engine is given in [demo](demo/README.md).
+See this at
+[chinesedictdemo.appspot.com](https://chinesedictdemo.appspot.com).
 
 ### Angular
 A preliminary prototype for Angular integration is given at

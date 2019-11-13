@@ -16,11 +16,11 @@
 import { fromEvent } from 'rxjs';
 import { MDCDialog } from "@material/dialog";
 import {MDCList} from '@material/list';
-import { DictionaryCollection } from '@alexamies/chinesedict-js';
-import { DictionaryLoader } from '@alexamies/chinesedict-js';
-import { DictionarySource } from '@alexamies/chinesedict-js';
-import { Term } from '@alexamies/chinesedict-js';
-import { TextParser } from '@alexamies/chinesedict-js';
+import { DictionaryCollection,
+         DictionaryLoader,
+         DictionarySource,
+         Term,
+         TextParser } from '@alexamies/chinesedict-js';
 
 /**
  * A demo client app that uses the Chinese-English dictionary module with
@@ -87,6 +87,15 @@ class DemoApp {
     return tList;
   }
 
+  // Clears the results of a term lookup to clean up for displaying the next
+  // result
+  clearLookupResults() {
+    this.document_text.style.display = "none";
+    this.cSpan.innerHTML = "";
+    this.pSpan.innerHTML = "";
+    this.eSpan.innerHTML = "";
+  }
+
 
   // Combine and crop the list of English equivalents and notes to a limited
   // number of characters.
@@ -139,25 +148,24 @@ class DemoApp {
     // Respond to a button click
     fromEvent(this.button, 'click')
       .subscribe(() => {
-        this.document_text.style.display = "none";
+        this.clearLookupResults();
+        this.cSpan.innerHTML = this.tf.value;
         const term = this.dictionaries.lookup(this.tf.value);
         if (term) {
           console.log(`Value: ${ this.tf.value }`);
           const entry = term.getEntries()[0];
-          this.cSpan.innerHTML = this.tf.value;
           this.pSpan.innerHTML = entry.getPinyin();
           this.eSpan.innerHTML = entry.getEnglish();
         } else {
-          console.log(`Value not found ${ this.tf.value }`);
+          this.eSpan.innerHTML = `Value not found ${ this.tf.value }`;
         }
     });
 
-    const thisApp = this;
     const vocabElements = document.querySelectorAll(".vocabulary");
     vocabElements!.forEach((elem) => {
-      elem.addEventListener("click", function(evt) {
+      elem.addEventListener("click",(evt) => {
         evt.preventDefault();
-        thisApp.showVocabDialog(<HTMLElement>elem);
+        this.showVocabDialog(<HTMLElement>elem);
         return false;
       });
     });
@@ -165,21 +173,23 @@ class DemoApp {
 
   // Load the dictionary
   load() {
-    const thisApp = this;
     const source = new DictionarySource('ntireader.json',
                                         'NTI Reader Dictionary',
                                         'Nan Tien Institute Reader dictionary');
     const loader = new DictionaryLoader([source]);
     const observable = loader.loadDictionaries();
-    observable.subscribe({
-      error(err) { console.error(`load error:  + ${ err }`); },
-      complete() { 
-        console.log('loading dictionary done');
-        thisApp.dictionaries = loader.getDictionaryCollection();
-        const loadingStatus = thisApp.querySelectorNonNull("#loadingStatus")
-        loadingStatus.innerHTML = "Dictionary loading status: loaded";
+    observable.subscribe(
+      val => console.log(`DemoApp.load next:  + ${ val }`),
+      err => { console.error(`DemoApp.load error:  + ${ err }`); },
+      () => { 
+        console.log('DemoApp.load complete');
+        this.dictionaries = loader.getDictionaryCollection();
+        const loadingStatus = document.querySelector("#loadingStatus");
+        if (loadingStatus) {
+          loadingStatus.innerHTML = "Dictionary loading status: loaded";
+        }
       }
-    });
+    );
   }
 
   // Looks up an element checking for null

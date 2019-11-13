@@ -464,11 +464,11 @@ export class DictionaryView {
                      highlight: 'all' | 'proper' | '') {
     console.log(`decorate_segments_ dialog_id: ${dialog_id}, ${highlight}`);
   	elem.innerHTML = "";
-    const thisObject = this;
   	for (let term of terms) {
       const entry = term.getEntries()[0];
   	  const chinese = term.getChinese();
-  	  if (entry && entry.getHeadwordId()) {
+  	  if (entry && entry.getEnglish()) {
+        //console.log(`decorate_segments_ chinese: ${chinese}`);
         const grammar = entry.getGrammar();
         if ((highlight !== 'proper') || (grammar === 'proper noun')) {
           const link: HTMLAnchorElement = document.createElement('a');
@@ -476,18 +476,18 @@ export class DictionaryView {
           link.href = '#';
           link.className = 'highlight';
           link.addEventListener('click', (event) => {
-            thisObject.showDialog(event, term, dialog_id)});
+            this.showDialog(event, term, dialog_id)});
           link.addEventListener('mouseover', (event) => {
-            thisObject.doMouseover(event, term)});
+            this.doMouseover(event, term)});
           elem.appendChild(link);
         } else {
           const span: HTMLSpanElement = document.createElement('span');
           span.className = 'nohighlight';
           span.textContent = chinese;
           span.addEventListener('click', (event) => {
-            thisObject.showDialog(event, term, dialog_id)});
+            this.showDialog(event, term, dialog_id)});
           span.addEventListener('mouseover', (event) => {
-            thisObject.doMouseover(event, term)});
+            this.doMouseover(event, term)});
           elem.appendChild(span);
         }
   	  } else {
@@ -527,15 +527,17 @@ export class DictionaryView {
       console.log(`findwords: no elements matching ${this.selector}`);
       return;
     }
-    console.log(`findwords num elems: ${ elems.length }`);
-    for (let i = 0; i < elems.length; i++) {
-      const el = elems[i];
+    console.log(`highlightWords: ${ elems.length } elems`);
+    elems.forEach((el) => {
       const text = el.textContent;
+      //console.log(`highlightWords: ${ text }`);
       if (text) {
         const terms = this.segment_text_(text);
         this.decorate_segments_(el, terms, this.dialog_id, this.highlight);
+      } else {
+        console.log(`highlightWords: text is empty or null`);
       }
-    }
+    });
   }
 
   /**
@@ -582,7 +584,7 @@ export class DictionaryView {
   	const dialogOkId = this.dialog_id + '_ok';
   	let dialogOk = document.getElementById(dialogOkId);
     if (!this.dialog) {
-      console.log(`setupDialog ${ this.dialog_id } not found`);
+      console.log(`setupDialog ${ this.dialog_id } not found, creating`);
       this.dialog = document.createElement('dialog');
       this.headwordEl = document.createElement('p');
       this.dialog.appendChild(this.headwordEl);

@@ -9,7 +9,7 @@
     "build": "webpack"
   },
   "dependencies": {
-    "@alexamies/chinesedict-js": "0.1.12"
+    "@alexamies/chinesedict-js": "0.1.13"
   },
   "devDependencies": {
     "@babel/core": "^7.6.4",
