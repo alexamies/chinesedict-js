@@ -29,19 +29,97 @@ import { DictionaryEntry,
 
 console.log('Running unit tests');
 
+const source = new DictionarySource('../assets/words.json',
+                                     'Test dictionary',
+                                     'For testing purposes');
+const traditional = '他';
+const hwid = '518';
+const pinyin = 'tā';
+const english = 'other, another, some other';
+const grammar = 'noun';
+const notes = '';
+const ws = new WordSense(traditional,
+                         traditional,
+                         pinyin,
+                         english,
+                         grammar,
+                         notes);
+const simplified1 = '长';
+const traditional1 = '長';
+const pinyin1 = 'zhǎng';
+const english1 = 'chief';
+const grammar1 = 'noun';
+const ws1 = new WordSense(simplified1,
+                          traditional1,
+                          pinyin1,
+                          english1,
+                          grammar1,
+                          notes);
+const pinyin2 = 'cháng';
+const english2 = 'long';
+const grammar2 = 'adjective';
+const ws2 = new WordSense(simplified1,
+                          traditional1,
+                          pinyin2,
+                          english2,
+                          grammar2,
+                          notes);
+const simplified3 = '台';
+const traditional3 = '台';
+const pinyin3 = 'tái';
+const english3 = 'platform';
+const grammar3 = 'noun';
+const ws3 = new WordSense(simplified3,
+                          traditional3,
+                          pinyin3,
+                          english3,
+                          grammar3,
+                          notes);
+const simplified4 = '台';
+const traditional4 = '臺';
+const pinyin4 = 'tái';
+const english4 = 'platform';
+const grammar4 = 'noun';
+const ws4 = new WordSense(simplified4,
+                          traditional4,
+                          pinyin4,
+                          english4,
+                          grammar4,
+                          notes);
+const simplified5 = '台';
+const traditional5 = '檯';
+const pinyin5 = 'tái';
+const english5 = 'platform';
+const grammar5 = 'noun';
+const ws5 = new WordSense(simplified5,
+                          traditional5,
+                          pinyin5,
+                          english5,
+                          grammar5,
+                          notes);
+const simplified6 = '台';
+const traditional6 = '颱';
+const pinyin6 = 'tái';
+const english6 = 'typhoon';
+const grammar6 = 'noun';
+const ws6 = new WordSense(simplified6,
+                          traditional6,
+                          pinyin6,
+                          english6,
+                          grammar6,
+                          notes);
+
+
 describe('DictionaryCollection', function() {
   describe('#has', function() {
     it('Small dictionary has term 夫家', function(done) {
-      const source = new DictionarySource('../assets/words.json',
-                                        'Test dictionary',
-                                        'For testing purposes');
       const loader = new DictionaryLoader([source]);
       const observable = loader.loadDictionaries();
       observable.subscribe({
         error(err) { done(err); },
         complete() {
       	  const dictionaries = loader.getDictionaryCollection();
-          assert.equal(dictionaries.has('夫家'), true);
+          assert(dictionaries.has('夫家'));
           done();
         }
       });
@@ -49,16 +127,13 @@ describe('DictionaryCollection', function() {
   });
   describe('#isLoaded', function() {
     it('Small dictionary has correct loaded status', function(done) {
-      const source = new DictionarySource('../assets/words.json',
-                                        'Test dictionary',
-                                        'For testing purposes');
       const loader = new DictionaryLoader([source]);
       const observable = loader.loadDictionaries();
       observable.subscribe({
         error(err) { done(err); },
         complete() {
       	  const dictionaries = loader.getDictionaryCollection();
-          assert.equal(dictionaries.isLoaded(), true);
+          assert(dictionaries.isLoaded());
           done();
         }
       });
@@ -66,9 +141,6 @@ describe('DictionaryCollection', function() {
   });
   describe('#lookup', function() {
     it('Term 夫家 can be looked up in small dictionary', function(done) {
-      const source = new DictionarySource('../assets/words.json',
-                                        'Test dictionary',
-                                        'For testing purposes');
       const loader = new DictionaryLoader([source]);
       const observable = loader.loadDictionaries();
       observable.subscribe({
@@ -88,25 +160,86 @@ describe('DictionaryCollection', function() {
 describe('DictionaryEntry', function() {
   describe('#addWordSense', function() {
     it('Add a word sense to headword 他', function() {
-      const source = new DictionarySource('../assets/words.json',
-                                        'Test dictionary',
-                                        'For testing purposes');
-      const traditional = '他';
-      const hwid = '518';
-      const pinyin = 'tā';
-      const english = 'other / another / some other';
-      const grammar = 'noun';
-      const notes = '';
       const entry = new DictionaryEntry(traditional, source, [], hwid);
-      const ws = new WordSense(traditional,
-                               traditional,
-                               pinyin,
-                               english,
-                               grammar,
-                               notes);
       entry.addWordSense(ws);
       const senses = entry.getSenses();
       assert.equal(senses.length, 1);
+    });
+  });
+  describe('#getChinese1', function() {
+    it('Get the Chinese when the simplified and trad are the same', function() {
+      const entry = new DictionaryEntry(traditional, source, [ws], hwid);
+      assert.equal(entry.getChinese(), ws.getSimplified());
+    });
+  });
+  describe('#getChinese2', function() {
+    it('Get the Chinese when there are variants', function() {
+      const hwid = '821';
+      const entry = new DictionaryEntry(traditional, source, [ws3, ws4, ws5, ws6], hwid);
+      const expected = '台（台、臺、檯、颱）';
+      assert.equal(entry.getChinese(), expected);
+    });
+  });
+  describe('#getEnglish1', function() {
+    it('Get the English equivalent when there is one sense', function() {
+      const entry = new DictionaryEntry(traditional, source, [ws], hwid);
+      assert.equal(entry.getEnglish(), english);
+    });
+  });
+  describe('#getEnglish2', function() {
+    it('Get the English equivalent when there are two senses', function() {
+      const hwid = '1322';
+      const entry = new DictionaryEntry(traditional, source, [ws1, ws2], hwid);
+      const expected = 'chief; long';
+      assert.equal(entry.getEnglish(), expected);
+    });
+  });
+  describe('#getPinyin1', function() {
+    it('Get the pinyin when there is one pronunciation', function() {
+      const hwid = '1322';
+      const entry = new DictionaryEntry(traditional, source, [ws], hwid);
+      assert.equal(entry.getPinyin(), pinyin);
+    });
+  });
+  describe('#getPinyin2', function() {
+    it('Get the pinyin when there are two pronunciations', function() {
+      const hwid = '1322';
+      const entry = new DictionaryEntry(traditional, source, [ws1, ws2], hwid);
+      const expected = 'zhǎng, cháng';
+      assert.equal(entry.getPinyin(), expected);
+    });
+  });
+  describe('#getSimplified1', function() {
+    it('Get the simplfied Chinese when there is only one variant', function() {
+      const hwid = '1322';
+      const entry = new DictionaryEntry(traditional, source, [ws], hwid);
+      const expected = ws.getSimplified();
+      assert.equal(entry.getSimplified(), expected);
+    });
+  });
+  describe('#getSimplified2', function() {
+    it('Get the simplfied Chinese when there are trad variants', function() {
+      const hwid = '821';
+      const entry = new DictionaryEntry(traditional, source, [ws3, ws4, ws5, ws6], hwid);
+      //const expected = '台、臺、檯、颱';
+      const expected = '台';
+      assert.equal(entry.getSimplified(), expected);
+    });
+  });
+  describe('#getTraditional1', function() {
+    it('Get the traditional Chinese when there is only one variant', function() {
+      const hwid = '1322';
+      const entry = new DictionaryEntry(traditional, source, [ws], hwid);
+      const expected = ws.getTraditional();
+      assert.equal(entry.getTraditional(), expected);
+    });
+  });
+  describe('#getTraditional2', function() {
+    it('Get the traditional Chinese when there are two variants', function() {
+      const hwid = '821';
+      const entry = new DictionaryEntry(traditional, source, [ws3, ws4, ws5, ws6], hwid);
+      const expected = '台、臺、檯、颱';
+      assert.equal(entry.getTraditional(), expected);
     });
   });
 });
@@ -114,16 +247,13 @@ describe('DictionaryEntry', function() {
 describe('DictionaryLoader', function() {
   describe('#has', function() {
     it('Small dictionary is loaded and includes 力', function(done) {
-      const source = new DictionarySource('../assets/words.json',
-                                        'Test dictionary',
-                                        'For testing purposes');
       const loader = new DictionaryLoader([source]);
       const observable = loader.loadDictionaries();
       observable.subscribe({
         error(err) { done(err); },
         complete() {
       	  const dictionaries = loader.getDictionaryCollection();
-          assert.equal(dictionaries.has('力'), true);
+          assert(dictionaries.has('力'));
           done();
         }
       });
@@ -143,8 +273,8 @@ describe('DictionaryLoader', function() {
         error(err) { done(err); },
         complete() {
       	  const dictionaries = loader.getDictionaryCollection();
-          assert.equal(dictionaries.has('四面'), true);
-          assert.equal(dictionaries.has('力'), true);
+          assert(dictionaries.has('四面'));
+          assert(dictionaries.has('力'));
           done();
         }
       });
@@ -165,9 +295,6 @@ describe('DictionarySource', function() {
 describe('DictionaryView', function() {
   describe('#lookup', function() {
     it('Can lookup a term in the test dictionary if loaded', function() {
-      const source = new DictionarySource('../assets/words.json',
-                                      'Test dictionary',
-                                      'For testing purposes');
       const builder = new PlainJSBuilder([source],
                                    '.textbody',
                                    'dict-dialog',
@@ -188,9 +315,6 @@ describe('DictionaryView', function() {
 describe('PlainJSBuilder', function() {
   describe('#buildDictionary', function() {
     it('Should execute without errors', function() {
-      const source = new DictionarySource('../assets/words.json',
-                                      'Test dictionary',
-                                      'For testing purposes');
       const builder = new PlainJSBuilder([source],
                                    '.textbody',
                                    'dict-dialog',
@@ -203,9 +327,6 @@ describe('PlainJSBuilder', function() {
 describe('Term', function() {
   describe('#getEntries', function() {
     it('filename should be set properly', function() {
-      const source = new DictionarySource('../assets/words.json',
-                                      'Test dictionary',
-                                      'For testing purposes');
       const traditional = '他';
       const hwid = '518';
       const pinyin = 'tā';
@@ -222,9 +343,6 @@ describe('Term', function() {
 describe('TextParser', function() {
   describe('#segmentExludeWhole', function() {
     it('Parse text 他力 into two terms', function(done) {
-      const source = new DictionarySource('../assets/words.json',
-                                        'Test dictionary',
-                                        'For testing purposes');
       const loader = new DictionaryLoader([source]);
       const observable = loader.loadDictionaries();
       observable.subscribe({
@@ -241,9 +359,6 @@ describe('TextParser', function() {
   });
   describe('#segmentText', function() {
     it('Parse text 他力 into one term', function(done) {
-      const source = new DictionarySource('../assets/words.json',
-                                        'Test dictionary',
-                                        'For testing purposes');
       const loader = new DictionaryLoader([source]);
       const observable = loader.loadDictionaries();
       observable.subscribe({

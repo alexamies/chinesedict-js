@@ -122,18 +122,27 @@ class DemoApp {
         // Respond to a button click
         fromEvent(this.button, 'click')
             .subscribe(() => {
+            console.log(`Value: ${this.tf.value}`);
             this.clearLookupResults();
-            this.cSpan.innerHTML = this.tf.value;
+            let chinese = this.tf.value;
             const term = this.dictionaries.lookup(this.tf.value);
-            if (term) {
-                console.log(`Value: ${this.tf.value}`);
+            let pinyin = "";
+            let english = "Not found";
+            if (term && term.getEntries()) {
                 const entry = term.getEntries()[0];
-                this.pSpan.innerHTML = entry.getPinyin();
-                this.eSpan.innerHTML = entry.getEnglish();
+                if (entry && entry.getChinese()) {
+                    chinese = entry.getChinese();
+                }
+                if (entry && entry.getPinyin()) {
+                    pinyin = entry.getPinyin();
+                }
+                if (entry && entry.getEnglish()) {
+                    english = entry.getEnglish();
+                }
             }
-            else {
-                this.eSpan.innerHTML = `Value not found ${this.tf.value}`;
-            }
+            this.cSpan.innerHTML = chinese;
+            this.pSpan.innerHTML = pinyin;
+            this.eSpan.innerHTML = english;
         });
         const vocabElements = document.querySelectorAll(".vocabulary");
         vocabElements.forEach((elem) => {

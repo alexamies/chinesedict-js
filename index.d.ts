@@ -97,6 +97,12 @@ export declare class DictionaryEntry {
      */
     addWordSense(ws: WordSense): void;
     /**
+     * Get the Chinese, including the traditional form in Chinese brackets （）
+     * after the simplified, if it differs.
+     * @return {string} The Chinese text for teh headword
+     */
+    getChinese(): string;
+    /**
      * A convenience method that flattens the English equivalents for the term
      * into a single string with a ';' delimiter
      * @return {string} English equivalents for the term
@@ -115,21 +121,33 @@ export declare class DictionaryEntry {
      */
     getHeadwordId(): string;
     /**
-     * A convenience method that flattens the part of pinyin for the term. Gives
+     * A convenience method that flattens the pinyin for the term. Gives
      * a comma delimited list of unique values
      * @return {string} Mandarin pronunciation
      */
     getPinyin(): string;
+    /**
+     * Gets the word senses
+     * @return {Array<WordSense>} an array of WordSense objects
+     */
+    getSenses(): WordSense[];
+    /**
+     * A convenience method that flattens the simplified Chinese for the term.
+     * Gives a Chinese comma (、) delimited list of unique values
+     * @return {string} Simplified Chinese
+     */
+    getSimplified(): string;
     /**
      * Gets the dictionary source
      * @return {DictionarySource} the source of the dictionary
      */
     getSource(): DictionarySource;
     /**
-     * Gets the word senses
-     * @return {Array<WordSense>} an array of WordSense objects
+     * A convenience method that flattens the traditional Chinese for the term.
+     * Gives a Chinese comma (、) delimited list of unique values
+     * @return {string} Traditional Chinese
      */
-    getSenses(): WordSense[];
+    getTraditional(): string;
 }
 /**
  * Loads the dictionaries from source files.

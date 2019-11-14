@@ -152,6 +152,21 @@ export class DictionaryEntry {
   }
 
   /**
+   * Get the Chinese, including the traditional form in Chinese brackets （）
+   * after the simplified, if it differs.
+   * @return {string} The Chinese text for teh headword
+   */
+  getChinese() {
+    const s = this.getSimplified();
+    const t = this.getTraditional();
+    let chinese = s;
+    if (s != t) {
+      chinese = `${ s }（${ t }）`;
+    }
+    return chinese;
+  }
+
+  /**
    * A convenience method that flattens the English equivalents for the term
    * into a single string with a ';' delimiter
    * @return {string} English equivalents for the term
@@ -191,7 +206,7 @@ export class DictionaryEntry {
   }
 
   /**
-   * A convenience method that flattens the part of pinyin for the term. Gives
+   * A convenience method that flattens the pinyin for the term. Gives
    * a comma delimited list of unique values
    * @return {string} Mandarin pronunciation
    */
@@ -201,11 +216,38 @@ export class DictionaryEntry {
       const pinyin = sense.getPinyin();
       values.add(pinyin);
     }
-    let p: string = '';
+    let p = '';
     for (let val of values.values()) {
       p += val + ', ';
     }
     const re = new RegExp(', $');  // remove trailing comma
+    return p.replace(re, '');
+  }
+
+  /**
+   * Gets the word senses
+   * @return {Array<WordSense>} an array of WordSense objects
+   */
+  getSenses() {
+    return this.senses;
+  }
+
+  /**
+   * A convenience method that flattens the simplified Chinese for the term.
+   * Gives a Chinese comma (、) delimited list of unique values
+   * @return {string} Simplified Chinese
+   */
+  getSimplified() {
+    const values: Set<string> = new Set<string>();
+    for (let sense of this.senses) {
+      const simplified = sense.getSimplified();
+      values.add(simplified);
+    }
+    let p = '';
+    for (let val of values.values()) {
+      p += val + '、';
+    }
+    const re = new RegExp('、$');  // remove trailing comma
     return p.replace(re, '');
   }
 
@@ -218,11 +260,22 @@ export class DictionaryEntry {
   }
 
   /**
-   * Gets the word senses
-   * @return {Array<WordSense>} an array of WordSense objects
+   * A convenience method that flattens the traditional Chinese for the term.
+   * Gives a Chinese comma (、) delimited list of unique values
+   * @return {string} Traditional Chinese
    */
-  getSenses() {
-    return this.senses;
+  getTraditional() {
+    const values: Set<string> = new Set<string>();
+    for (let sense of this.senses) {
+      const trad = sense.getTraditional();
+      values.add(trad);
+    }
+    let p = '';
+    for (let val of values.values()) {
+      p += val + '、';
+    }
+    const re = new RegExp('、$');  // remove trailing comma
+    return p.replace(re, '');
   }
 }
 
