@@ -116,12 +116,14 @@ export class DictionaryEntry {
      * @return {string} English equivalents for the term
      */
     getEnglish() {
+        const r1 = new RegExp(' / ', 'g');
+        const r2 = new RegExp('/', 'g');
         let english = "";
         for (let sense of this.senses) {
             let eng = sense.getEnglish();
             //console.log(`getEnglish before ${ eng }`);
-            const r = new RegExp(' / ', 'g');
-            eng = eng.replace(r, ', ');
+            eng = eng.replace(r1, ', ');
+            eng = eng.replace(r2, ', ');
             english += eng + '; ';
         }
         const re = new RegExp('; $'); // remove trailing semicolon

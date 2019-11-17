@@ -10,7 +10,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@alexamies/chinesedict-js": "0.1.11",
+    "@alexamies/chinesedict-js": "0.1.14",
     "rxjs": "^6.5.3"
   },
   "devDependencies": {

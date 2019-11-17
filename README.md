@@ -139,10 +139,10 @@ application framework. The parameters to the constructor of PlainJSBuilder are
 
 where 'div_id' is select for the HTML elements containing the Chinese text.
 
-Also, in your CSS file import the stylesheet:
+Also, in your SCSS or CSS file import the stylesheet:
 
 ```css
-@import '@alexamies/chinesedict-js/chinesedict.css';
+@import '@alexamies/chinesedict-js/chinesedict';
 ```
 
 The [dialog-polyfill](https://github.com/GoogleChrome/dialog-polyfill) can be used

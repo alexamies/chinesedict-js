@@ -1,3 +1,42 @@
+/* Dialog and contained elements */
+dialog {
+  min-width: 300px;
+  max-width: 600px;
+  min-height: 300px; }
+
+/* Different color and underlining for proper nouns */
+a.highlight {
+  text-decoration: underline;
+  color: blue; }
+
+/* No underlining for regular terms but change on hover */
+span.nohighlight:hover {
+  text-decoration: underline;
+  color: blue; }
+
+#dict-dialog_headword {
+  font-size: 200%; }
+
+.dict-dialog_pinyin {
+  font-style: italic;
+  font-size: 120%;
+  display: block;
+  padding: 5px; }
+
+.dict-dialog_english {
+  font-size: 120%;
+  font-weight: bold;
+  display: block;
+  padding: 5px; }
+
+.dict-dialog_headword_id {
+  font-size: 80%;
+  display: block;
+  padding: 5px; }
+
+.dialog_ok {
+  float: right; }
+
 /* Lookup styling */
 span.dict-entry_input {
   display: block; }
