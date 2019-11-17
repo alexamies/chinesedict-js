@@ -15,6 +15,40 @@
 import { Observable, of } from 'rxjs';
 import { ajax } from 'rxjs/ajax';
 /**
+ * An implementation of the DictionaryBuilder interface for building and
+ * initializing a basic DictionaryView object with a textfield input to read
+ * values and a list for displaying matching terms.
+ */
+export class BasicDictionaryBuilder {
+    /**
+     * Create an empty BasicDictionaryBuilder instance with given sources and
+     * configuration.
+     *
+     * @param {!Array<DictionarySource>} source - Name of the dictionary file
+     * @param {!DictionaryViewConfig} config - Configuration of the view to build
+     */
+    constructor(sources, config) {
+        console.log('BasicDictionaryBuilder constructor');
+        this.sources = sources;
+        this.config = config;
+        this.view = new DictionaryView("", "", "", config);
+    }
+    /**
+     * Creates and initializes a DictionaryView, load the dictionary, and
+     * initialize the DictionaryView.
+     */
+    buildDictionary() {
+        console.log('BasicDictionaryBuilder.buildDictionary enter');
+        const loader = new DictionaryLoader(this.sources);
+        const observable = loader.loadDictionaries();
+        observable.subscribe(val => { console.log('buildDictionary next ' + val); }, err => { console.error('buildDictionary error: ' + err); }, () => {
+            console.log('buildDictionary done');
+            this.view.setDictionaryCollection(loader.getDictionaryCollection());
+        });
+        return this.view;
+    }
+}
+/**
  * A dictionary collection represents one or more dictionary sources, indexed by
  * a set of headwords and loaded from a set of JSON files. The set of headwords
  * is empty until the dictionary is loaded.
@@ -330,8 +364,9 @@ export class DictionaryView {
      * @param {string} selector - A DOM selector used to find the page elements
      * @param {string} dialog_id - A DOM id used to find the dialog
      * @param {string} highlight - Which terms to highlight: all | proper | ''
+     * @param {!DictionaryViewConfig} config - Configuration of the view to build
      */
-    constructor(selector, dialog_id, highlight) {
+    constructor(selector, dialog_id, highlight, config) {
         console.log('DictionaryView constructor');
         this.dictionaries = new DictionaryCollection();
         this.selector = selector;
@@ -342,6 +377,7 @@ export class DictionaryView {
         this.dialogContainerEl = document.getElementById(containerId);
         const headwordId = this.dialog_id + '_headword';
         this.headwordEl = document.getElementById(headwordId);
+        this.config = config;
     }
     /**
      * Add a dictionary entry to the dialog
@@ -496,6 +532,14 @@ export class DictionaryView {
         });
     }
     /**
+     * Initialize the view to listen for events
+     */
+    init() {
+        if (this.config.isWithLookupInput()) {
+            const viewLookup = new DictionaryViewLookup(this.config);
+        }
+    }
+    /**
      * Whether the dictionary sources have been loaded
      */
     isLoaded() {
@@ -595,9 +639,93 @@ export class DictionaryView {
     }
 }
 /**
+ * A class for configuring the DictionaryView, intended as input to a
+ * DictionaryBuilder factory.
+ */
+export class DictionaryViewConfig {
+    /**
+     * Creates a DictionaryViewConfig object with default values:
+     * lookupInputFormId: 'lookup_input_form', lookupInputTFId: 'lookup_input',
+     * withLookupInput: true.
+     */
+    constructor() {
+        this.lookupInputFormId = "lookup_input_form";
+        this.lookupInputTFId = "lookup_input";
+        this.withLookupInput = true;
+    }
+    /**
+     * This value will be used as the DOM element ID for a HTML
+     * form to contain the input textfield.
+     *
+     * @return {!string} - The ID of the DOM element lookupInputFormId
+     */
+    getlookupInputFormId() {
+        return this.lookupInputFormId;
+    }
+    /**
+     * This value will be used as the DOM element ID for a textfield
+     * input to read from for lookup for words.
+     *
+     * @return {!string} - The ID of the DOM element lookupInputTFId
+     */
+    getTextfieldId() {
+        return this.lookupInputTFId;
+    }
+    /**
+     * If withLookupInput is true then the DictionaryView will listen for events
+     * on the given HTML form and lookup and display dictionary terms in response.
+     *
+     * @return {!boolean} Whether to use a textfield for looking up terms
+     */
+    isWithLookupInput() {
+        return this.withLookupInput;
+    }
+    /**
+     * If withLookupInput is true then the DictionaryView will listen for events
+     * on the given HTML form and lookup and display dictionary terms in response.
+     *
+     * @param {!boolean} withLookupInput - Whether to use a textfield for looking
+     *                                     up terms
+     * @return {DictionaryViewConfig} this object so that calls can be chained
+     */
+    setWithLookupInput(withLookupInput) {
+        this.withLookupInput = withLookupInput;
+        return this;
+    }
+}
+/**
+ * A class for encapsulating view elements for looking up and displaying
+ * dictionary terms.
+ */
+class DictionaryViewLookup {
+    /**
+     * Creates a DictionaryViewLookup object with given config values.
+     *
+     * @param {!DictionaryViewConfig} config - Configuration values
+     */
+    constructor(config) {
+        this.config = config;
+    }
+    /**
+     * Initialize the input form to listen for submit events
+     */
+    init() {
+        const selector = "#" + this.config.getlookupInputFormId();
+        const form = document.querySelector(selector);
+        if (form) {
+            form.addEventListener("submit", (evt) => {
+                evt.preventDefault();
+                console.log("DictionaryViewLookup form submit");
+                return false;
+            });
+        }
+    }
+}
+/**
  * An implementation of the DictionaryBuilder interface for building and
  * initializing DictionaryView objects for browser apps that do not use an
- * application framework.
+ * application framework. The DictionaryView created will scan designated text
+ * and set up events to show a dialog for all vocabulary discovered.
  */
 export class PlainJSBuilder {
     /**
@@ -611,7 +739,8 @@ export class PlainJSBuilder {
     constructor(sources, selector, dialog_id, highlight) {
         console.log('PlainJSBuilder constructor');
         this.sources = sources;
-        this.view = new DictionaryView(selector, dialog_id, highlight);
+        const config = new DictionaryViewConfig().setWithLookupInput(false);
+        this.view = new DictionaryView(selector, dialog_id, highlight, config);
     }
     /**
      * Creates and initializes a DictionaryView, load the dictionary, and scan DOM
@@ -624,20 +753,15 @@ export class PlainJSBuilder {
      */
     buildDictionary() {
         console.log('buildDictionary enter');
-        const view = this.view;
         const loader = new DictionaryLoader(this.sources);
         const observable = loader.loadDictionaries();
-        observable.subscribe({
-            next(x) { console.log('buildDictionary next ' + x); },
-            error(err) { console.error('buildDictionary error: ' + err); },
-            complete() {
-                console.log('buildDictionary done');
-                view.setDictionaryCollection(loader.getDictionaryCollection());
-                view.highlightWords();
-                view.setupDialog();
-            }
+        observable.subscribe(val => { console.log('buildDictionary next ' + val); }, err => { console.error('buildDictionary error: ' + err); }, () => {
+            console.log('buildDictionary done');
+            this.view.setDictionaryCollection(loader.getDictionaryCollection());
+            this.view.highlightWords();
+            this.view.setupDialog();
         });
-        return view;
+        return this.view;
     }
 }
 /**
@@ -669,6 +793,7 @@ export class Term {
     }
     /**
      * Gets the Chinese text that the term is stored and looked up by
+     *
      * @return {!string} Either simplified or traditional
      */
     getChinese() {

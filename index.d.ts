@@ -25,8 +25,31 @@ declare global {
     }
 }
 /**
- * An interface for building and initializing DictionaryView objects for different
- * web application framework or no framework.
+ * An implementation of the DictionaryBuilder interface for building and
+ * initializing a basic DictionaryView object with a textfield input to read
+ * values and a list for displaying matching terms.
+ */
+export declare class BasicDictionaryBuilder implements DictionaryBuilder {
+    private sources;
+    private config;
+    private view;
+    /**
+     * Create an empty BasicDictionaryBuilder instance with given sources and
+     * configuration.
+     *
+     * @param {!Array<DictionarySource>} source - Name of the dictionary file
+     * @param {!DictionaryViewConfig} config - Configuration of the view to build
+     */
+    constructor(sources: Array<DictionarySource>, config: DictionaryViewConfig);
+    /**
+     * Creates and initializes a DictionaryView, load the dictionary, and
+     * initialize the DictionaryView.
+     */
+    buildDictionary(): DictionaryView;
+}
+/**
+ * An interface for building and initializing DictionaryView objects for
+ * different presentations.
  */
 export interface DictionaryBuilder {
     /**
@@ -208,6 +231,7 @@ export declare class DictionaryView {
     private dialog;
     private dialogContainerEl;
     private headwordEl;
+    private config;
     /**
      * Use a DictionaryBuilder implementation rather than calling the constructor
      * directly.
@@ -215,8 +239,9 @@ export declare class DictionaryView {
      * @param {string} selector - A DOM selector used to find the page elements
      * @param {string} dialog_id - A DOM id used to find the dialog
      * @param {string} highlight - Which terms to highlight: all | proper | ''
+     * @param {!DictionaryViewConfig} config - Configuration of the view to build
      */
-    constructor(selector: string, dialog_id: string, highlight: 'all' | 'proper' | '');
+    constructor(selector: string, dialog_id: string, highlight: 'all' | 'proper' | '', config: DictionaryViewConfig);
     /**
      * Add a dictionary entry to the dialog
      *
@@ -257,6 +282,10 @@ export declare class DictionaryView {
      */
     highlightWords(): void;
     /**
+     * Initialize the view to listen for events
+     */
+    init(): void;
+    /**
      * Whether the dictionary sources have been loaded
      */
     isLoaded(): boolean;
@@ -295,9 +324,55 @@ export declare class DictionaryView {
     showDialog(event: MouseEvent, term: Term, dialog_id: string): void;
 }
 /**
+ * A class for configuring the DictionaryView, intended as input to a
+ * DictionaryBuilder factory.
+ */
+export declare class DictionaryViewConfig {
+    private lookupInputFormId;
+    private lookupInputTFId;
+    private withLookupInput;
+    /**
+     * Creates a DictionaryViewConfig object with default values:
+     * lookupInputFormId: 'lookup_input_form', lookupInputTFId: 'lookup_input',
+     * withLookupInput: true.
+     */
+    constructor();
+    /**
+     * This value will be used as the DOM element ID for a HTML
+     * form to contain the input textfield.
+     *
+     * @return {!string} - The ID of the DOM element lookupInputFormId
+     */
+    getlookupInputFormId(): string;
+    /**
+     * This value will be used as the DOM element ID for a textfield
+     * input to read from for lookup for words.
+     *
+     * @return {!string} - The ID of the DOM element lookupInputTFId
+     */
+    getTextfieldId(): string;
+    /**
+     * If withLookupInput is true then the DictionaryView will listen for events
+     * on the given HTML form and lookup and display dictionary terms in response.
+     *
+     * @return {!boolean} Whether to use a textfield for looking up terms
+     */
+    isWithLookupInput(): boolean;
+    /**
+     * If withLookupInput is true then the DictionaryView will listen for events
+     * on the given HTML form and lookup and display dictionary terms in response.
+     *
+     * @param {!boolean} withLookupInput - Whether to use a textfield for looking
+     *                                     up terms
+     * @return {DictionaryViewConfig} this object so that calls can be chained
+     */
+    setWithLookupInput(withLookupInput: boolean): DictionaryViewConfig;
+}
+/**
  * An implementation of the DictionaryBuilder interface for building and
  * initializing DictionaryView objects for browser apps that do not use an
- * application framework.
+ * application framework. The DictionaryView created will scan designated text
+ * and set up events to show a dialog for all vocabulary discovered.
  */
 export declare class PlainJSBuilder implements DictionaryBuilder {
     private sources;
@@ -342,6 +417,7 @@ export declare class Term {
     addDictionaryEntry(ws: WordSense, entry: DictionaryEntry): void;
     /**
      * Gets the Chinese text that the term is stored and looked up by
+     *
      * @return {!string} Either simplified or traditional
      */
     getChinese(): string;

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link rel="shortcut icon" href="/assets/favicon.png">
+    <meta name="description" 
+          content="Chinese-English Dictionary Extend Demo">
+    <title>Chinese-English Dictionary Extend Demo</title>
+    <link rel="stylesheet" type="text/css" href="dist/bundle.css"/>
+    <!--<link rel="stylesheet" type="text/css" href="dist/dialog-polyfill.css"/>-->
+  </head>
+  <body>
+    <h1>Chinese-English Dictionary Extend Demo</h1>
+    <main>
+      <p>
+        <span class='dict-entry_input'>
+          <form id='lookup_input_form'>
+            <input type='textfield' id='lookup_input'/>
+            <button id='lookup_button'>Lookup</button>
+          </form>
+        </span>
+        <span id='pinyin_span' class='dict-entry_pinyin'></span>
+        <span id='english_span' class='dict-entry_english'></span>
+      </p>
+    </main>
+    <script src="dist/bundle.js" type="module"></script>
+  </body>
+</html>

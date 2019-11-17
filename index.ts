@@ -39,8 +39,54 @@ declare global {
 
 
 /** 
- * An interface for building and initializing DictionaryView objects for different
- * web application framework or no framework.
+ * An implementation of the DictionaryBuilder interface for building and
+ * initializing a basic DictionaryView object with a textfield input to read
+ * values and a list for displaying matching terms.
+ */
+export class BasicDictionaryBuilder implements DictionaryBuilder {
+  private sources: Array<DictionarySource>;
+  private config: DictionaryViewConfig;
+  private view: DictionaryView;
+
+  /**
+   * Create an empty BasicDictionaryBuilder instance with given sources and
+   * configuration.
+   *
+   * @param {!Array<DictionarySource>} source - Name of the dictionary file
+   * @param {!DictionaryViewConfig} config - Configuration of the view to build
+   */
+  constructor(sources: Array<DictionarySource>,
+              config: DictionaryViewConfig) {
+    console.log('BasicDictionaryBuilder constructor');
+    this.sources = sources;
+    this.config = config;
+    this.view = new DictionaryView("", "", "", config);
+  }
+
+  /**
+   * Creates and initializes a DictionaryView, load the dictionary, and
+   * initialize the DictionaryView.
+   */
+  buildDictionary() {
+    console.log('BasicDictionaryBuilder.buildDictionary enter');
+    const loader = new DictionaryLoader(this.sources);
+    const observable = loader.loadDictionaries();
+    observable.subscribe(
+      val => { console.log('BasicDictionaryBuilder.buildDictionary ' + val); },
+      err => { console.error('BasicDictionaryBuilder.buildDictionary ' + err); },
+      () => { 
+        console.log('BasicDictionaryBuilder.buildDictionary done');
+        this.view.setDictionaryCollection(loader.getDictionaryCollection());
+       }
+    );
+    return this.view;
+  }
+}
+
+
+/** 
+ * An interface for building and initializing DictionaryView objects for
+ * different presentations.
  */
 export interface DictionaryBuilder {
 
@@ -416,6 +462,7 @@ export class DictionaryView {
   private dialog: HTMLDialogElement | null;
   private dialogContainerEl: Element | null;
   private headwordEl: Element | null;
+  private config: DictionaryViewConfig;
 
   /**
    * Use a DictionaryBuilder implementation rather than calling the constructor
@@ -424,10 +471,12 @@ export class DictionaryView {
    * @param {string} selector - A DOM selector used to find the page elements
    * @param {string} dialog_id - A DOM id used to find the dialog
    * @param {string} highlight - Which terms to highlight: all | proper | ''
+   * @param {!DictionaryViewConfig} config - Configuration of the view to build
    */
   constructor(selector: string,
               dialog_id: string,
-              highlight: 'all' | 'proper' | '') {
+              highlight: 'all' | 'proper' | '',
+              config: DictionaryViewConfig) {
     console.log('DictionaryView constructor');
   	this.dictionaries = new DictionaryCollection();
     this.selector = selector;
@@ -438,6 +487,7 @@ export class DictionaryView {
     this.dialogContainerEl = <Element | null>document.getElementById(containerId);
     const headwordId= this.dialog_id +'_headword';
     this.headwordEl = <Element | null>document.getElementById(headwordId);
+    this.config = config;
   }
 
   /**
@@ -594,6 +644,15 @@ export class DictionaryView {
   }
 
   /**
+   * Initialize the view to listen for events
+   */
+  init() {
+    if (this.config.isWithLookupInput()) {
+      const viewLookup = new DictionaryViewLookup(this.config);
+    }
+  }
+
+  /**
    * Whether the dictionary sources have been loaded
    */
   isLoaded(): boolean {
@@ -698,6 +757,105 @@ export class DictionaryView {
 }
 
 
+/** 
+ * A class for configuring the DictionaryView, intended as input to a
+ * DictionaryBuilder factory.
+ */
+export class DictionaryViewConfig {
+  private lookupInputFormId: string;
+  private lookupInputTFId: string;
+  private withLookupInput: boolean;
+
+  /**
+   * Creates a DictionaryViewConfig object with default values: 
+   * lookupInputFormId: 'lookup_input_form', lookupInputTFId: 'lookup_input',
+   * withLookupInput: true.
+   */
+  constructor() {
+    this.lookupInputFormId = "lookup_input_form";
+    this.lookupInputTFId = "lookup_input";
+    this.withLookupInput = true;
+  }
+
+  /**
+   * This value will be used as the DOM element ID for a HTML
+   * form to contain the input textfield.
+   *
+   * @return {!string} - The ID of the DOM element lookupInputFormId
+   */
+  getlookupInputFormId(): string {
+    return this.lookupInputFormId;
+  }
+
+  /**
+   * This value will be used as the DOM element ID for a textfield
+   * input to read from for lookup for words.
+   *
+   * @return {!string} - The ID of the DOM element lookupInputTFId
+   */
+  getTextfieldId(): string {
+    return this.lookupInputTFId;
+  }
+
+  /**
+   * If withLookupInput is true then the DictionaryView will listen for events
+   * on the given HTML form and lookup and display dictionary terms in response.
+   *
+   * @return {!boolean} Whether to use a textfield for looking up terms
+   */
+  isWithLookupInput(): boolean {
+    return this.withLookupInput;
+  }
+
+  /**
+   * If withLookupInput is true then the DictionaryView will listen for events
+   * on the given HTML form and lookup and display dictionary terms in response.
+   *
+   * @param {!boolean} withLookupInput - Whether to use a textfield for looking
+   *                                     up terms
+   * @return {DictionaryViewConfig} this object so that calls can be chained
+   */
+  setWithLookupInput(withLookupInput: boolean): DictionaryViewConfig {
+    this.withLookupInput = withLookupInput;
+    return this;
+  }
+
+}
+
+
+/** 
+ * A class for encapsulating view elements for looking up and displaying
+ * dictionary terms.
+ */
+class DictionaryViewLookup {
+  private config: DictionaryViewConfig;
+
+  /**
+   * Creates a DictionaryViewLookup object with given config values.
+   *
+   * @param {!DictionaryViewConfig} config - Configuration values
+   */
+  constructor(config: DictionaryViewConfig) {
+    this.config = config;
+  }
+
+  /**
+   * Initialize the input form to listen for submit events
+   */
+  init() {
+    const selector = "#" + this.config.getlookupInputFormId();
+    const form = document.querySelector(selector);
+    if (form) {
+      form.addEventListener("submit", (evt) => {
+        evt.preventDefault();
+        console.log("DictionaryViewLookup form submit");
+        return false;
+      });
+    }
+  }
+}
+
+
 // Interface for JSON data loaded into dictionary
 interface JSONDictEntry {
   s: string // simplified
@@ -713,7 +871,8 @@ interface JSONDictEntry {
 /** 
  * An implementation of the DictionaryBuilder interface for building and
  * initializing DictionaryView objects for browser apps that do not use an
- * application framework.
+ * application framework. The DictionaryView created will scan designated text
+ * and set up events to show a dialog for all vocabulary discovered.
  */
 export class PlainJSBuilder implements DictionaryBuilder {
   private sources: Array<DictionarySource>;
@@ -733,7 +892,8 @@ export class PlainJSBuilder implements DictionaryBuilder {
               highlight: 'all' | 'proper') {
     console.log('PlainJSBuilder constructor');
     this.sources = sources;
-    this.view = new DictionaryView(selector, dialog_id, highlight);
+    const config = new DictionaryViewConfig().setWithLookupInput(false);
+    this.view = new DictionaryView(selector, dialog_id, highlight, config);
   }
 
   /**
@@ -747,20 +907,19 @@ export class PlainJSBuilder implements DictionaryBuilder {
    */
   buildDictionary() {
     console.log('buildDictionary enter');
-    const view = this.view;
     const loader = new DictionaryLoader(this.sources);
     const observable = loader.loadDictionaries();
-    observable.subscribe({
-      next(x) { console.log('buildDictionary next ' + x); },
-      error(err) { console.error('buildDictionary error: ' + err); },
-      complete() { 
+    observable.subscribe(
+      val => { console.log('buildDictionary next ' + val); },
+      err => { console.error('buildDictionary error: ' + err); },
+      () => { 
         console.log('buildDictionary done');
-        view.setDictionaryCollection(loader.getDictionaryCollection());
-        view.highlightWords();
-        view.setupDialog();
+        this.view.setDictionaryCollection(loader.getDictionaryCollection());
+        this.view.highlightWords();
+        this.view.setupDialog();
        }
-    });
-    return view;
+    );
+    return this.view;
   }
 }
 
@@ -799,6 +958,7 @@ export class Term {
 
   /**
    * Gets the Chinese text that the term is stored and looked up by
+   * 
    * @return {!string} Either simplified or traditional
    */
   getChinese(): string {
