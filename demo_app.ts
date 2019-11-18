@@ -14,8 +14,8 @@
  */
 
 // Application JavaScript demonstrating use of the chinesedict module
-import { DictionarySource, PlainJSBuilder } from './index.js';
 
+import { DictionarySource, PlainJSBuilder } from './index.js';
 import { fromEvent } from 'rxjs';
 
 console.log('Loading demo_app');

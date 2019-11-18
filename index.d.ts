@@ -33,6 +33,7 @@ export declare class BasicDictionaryBuilder implements DictionaryBuilder {
     private sources;
     private config;
     private view;
+    private dictionaries;
     /**
      * Create an empty BasicDictionaryBuilder instance with given sources and
      * configuration.
@@ -178,16 +179,14 @@ export declare class DictionaryEntry {
 export declare class DictionaryLoader {
     private sources;
     private headwords;
+    private dictionaries;
     /**
      * Create an empty PlainJSBuilder instance
      *
      * @param {string} sources - Names of the dictionary files
+     * @param {DictionaryCollection} dictionaries - To load the data into
      */
-    constructor(sources: Array<DictionarySource>);
-    /**
-     * Returns a map of headwords, wait until after loading to call this
-     */
-    getDictionaryCollection(): DictionaryCollection;
+    constructor(sources: Array<DictionarySource>, dictionaries: DictionaryCollection);
     /**
      * Returns an Observable that will complete on loading all the dictionaries
      */
@@ -240,8 +239,9 @@ export declare class DictionaryView {
      * @param {string} dialog_id - A DOM id used to find the dialog
      * @param {string} highlight - Which terms to highlight: all | proper | ''
      * @param {!DictionaryViewConfig} config - Configuration of the view to build
+     * @return {!DictionaryCollection} dictionaries - As a holder before loading
      */
-    constructor(selector: string, dialog_id: string, highlight: 'all' | 'proper' | '', config: DictionaryViewConfig);
+    constructor(selector: string, dialog_id: string, highlight: 'all' | 'proper' | '', config: DictionaryViewConfig, dictionaries: DictionaryCollection);
     /**
      * Add a dictionary entry to the dialog
      *
@@ -282,10 +282,6 @@ export declare class DictionaryView {
      */
     highlightWords(): void;
     /**
-     * Initialize the view to listen for events
-     */
-    init(): void;
-    /**
      * Whether the dictionary sources have been loaded
      */
     isLoaded(): boolean;
@@ -322,15 +318,19 @@ export declare class DictionaryView {
      * @param {string} dialog_id - A DOM id used to find the dialog
      */
     showDialog(event: MouseEvent, term: Term, dialog_id: string): void;
+    /**
+     * Initializes the view to listen for events, wiring the HTML elements to
+     * the event subscribers.
+     */
+    wire(): void;
 }
 /**
  * A class for configuring the DictionaryView, intended as input to a
  * DictionaryBuilder factory.
  */
 export declare class DictionaryViewConfig {
-    private lookupInputFormId;
-    private lookupInputTFId;
     private withLookupInput;
+    private rSubscriber;
     /**
      * Creates a DictionaryViewConfig object with default values:
      * lookupInputFormId: 'lookup_input_form', lookupInputTFId: 'lookup_input',
@@ -338,19 +338,18 @@ export declare class DictionaryViewConfig {
      */
     constructor();
     /**
-     * This value will be used as the DOM element ID for a HTML
-     * form to contain the input textfield.
+     * Get the subscriber to push new query results to
      *
-     * @return {!string} - The ID of the DOM element lookupInputFormId
+     * @return {QueryResultsSubscriber} to push results to
      */
-    getlookupInputFormId(): string;
+    getQueryResultsSubscriber(): QueryResultsSubscriber;
     /**
-     * This value will be used as the DOM element ID for a textfield
-     * input to read from for lookup for words.
+     * Set the subscriber to push new query results to
      *
-     * @return {!string} - The ID of the DOM element lookupInputTFId
+     * @param {!QueryResultsSubscriber} rSubscriber - to push results to
+     * @return {DictionaryViewConfig} this object so that calls can be chained
      */
-    getTextfieldId(): string;
+    setQueryResultsSubscriber(rSubscriber: QueryResultsSubscriber): DictionaryViewConfig;
     /**
      * If withLookupInput is true then the DictionaryView will listen for events
      * on the given HTML form and lookup and display dictionary terms in response.
@@ -375,8 +374,8 @@ export declare class DictionaryViewConfig {
  * and set up events to show a dialog for all vocabulary discovered.
  */
 export declare class PlainJSBuilder implements DictionaryBuilder {
-    private sources;
     private view;
+    private loader;
     /**
      * Create an empty PlainJSBuilder instance
      *
@@ -396,6 +395,38 @@ export declare class PlainJSBuilder implements DictionaryBuilder {
      * it is complete.
      */
     buildDictionary(): DictionaryView;
+}
+/**
+ * Wraps results from a dictionary query.
+ */
+export declare class QueryResults {
+    query: string;
+    results: Array<Term>;
+    /**
+     * Construct a QueryResults object
+     *
+     * @param {!string} query - The query leading to the results
+     * @param {!Array<Term>} results - The results found
+     */
+    constructor(query: string, results: Array<Term>);
+}
+/**
+ * An interface for subscribing to query results that might consist of
+ * multiple terms.
+ */
+export interface QueryResultsSubscriber {
+    /**
+     * Respond to an error
+     *
+     * @param {!string} message - an error message
+     */
+    error(message: string): void;
+    /**
+     * Respond to newly available results
+     *
+     * @param {!QueryResults} dictionaries - holds the query results
+     */
+    next(results: QueryResults): void;
 }
 /**
  * Encapsulates a text segment with information about matching dictionary entry

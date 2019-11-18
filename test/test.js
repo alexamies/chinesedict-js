@@ -108,6 +108,17 @@ const ws6 = new WordSense(simplified6,
                           english6,
                           grammar6,
                           notes);
+const simplified7 = '四面八方';
+const traditional7 = '四面八方';
+const pinyin7 = 'sìmiànbāfāng';
+const english7 = 'in all directions, all around/far and near';
+const grammar7 = '';
+const ws7 = new WordSense(simplified7,
+                          traditional7,
+                          pinyin7,
+                          english7,
+                          grammar7,
+                          notes);
 
 
 describe('DictionaryCollection', function() {
@@ -187,10 +198,18 @@ describe('DictionaryEntry', function() {
     });
   });
   describe('#getEnglish2', function() {
-    it('Get the English equivalent when there are two senses', function() {
+    it('Get the English equivalent when there are multiple senses', function() {
       const hwid = '1322';
       const entry = new DictionaryEntry(traditional, source, [ws1, ws2], hwid);
       const expected = 'chief; long';
+      assert.equal(entry.getEnglish(), expected);
+    });
+  });
+  describe('#getEnglish3', function() {
+    it('Get the English equivalent when there are / delimiters', function() {
+      const hwid = '1322';
+      const entry = new DictionaryEntry(traditional, source, [ws7], hwid);
+      const expected = 'in all directions, all around, far and near';
       assert.equal(entry.getEnglish(), expected);
     });
   });

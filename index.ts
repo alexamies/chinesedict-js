@@ -13,7 +13,7 @@
  * under the License.
  */
 
-import { Observable, of } from 'rxjs';
+import { fromEvent, Observable, of } from 'rxjs';
 import { ajax } from 'rxjs/ajax';
 import { catchError, map } from 'rxjs/operators';
 
@@ -47,6 +47,7 @@ export class BasicDictionaryBuilder implements DictionaryBuilder {
   private sources: Array<DictionarySource>;
   private config: DictionaryViewConfig;
   private view: DictionaryView;
+  private dictionaries: DictionaryCollection;
 
   /**
    * Create an empty BasicDictionaryBuilder instance with given sources and
@@ -60,7 +61,8 @@ export class BasicDictionaryBuilder implements DictionaryBuilder {
     console.log('BasicDictionaryBuilder constructor');
     this.sources = sources;
     this.config = config;
-    this.view = new DictionaryView("", "", "", config);
+    this.dictionaries = new DictionaryCollection();
+    this.view = new DictionaryView("", "", "", config, this.dictionaries);
   }
 
   /**
@@ -69,14 +71,16 @@ export class BasicDictionaryBuilder implements DictionaryBuilder {
    */
   buildDictionary() {
     console.log('BasicDictionaryBuilder.buildDictionary enter');
-    const loader = new DictionaryLoader(this.sources);
+    this.view.wire();
+    const loader = new DictionaryLoader(this.sources, this.dictionaries);
     const observable = loader.loadDictionaries();
     observable.subscribe(
       val => { console.log('BasicDictionaryBuilder.buildDictionary ' + val); },
-      err => { console.error('BasicDictionaryBuilder.buildDictionary ' + err); },
+      err => {
+        console.error('BasicDictionaryBuilder.buildDictionary ' + err);
+      },
       () => { 
         console.log('BasicDictionaryBuilder.buildDictionary done');
-        this.view.setDictionaryCollection(loader.getDictionaryCollection());
        }
     );
     return this.view;
@@ -129,6 +133,7 @@ export class DictionaryCollection {
    * non-trivial terms after that.
    */
   isLoaded(): boolean {
+    console.log(`DictionaryCollection.isLoaded ${ this.loaded }`);
     return this.loaded;
   }   
 
@@ -156,6 +161,7 @@ export class DictionaryCollection {
    * @param {!Map<string, Term>} headwords - indexing the dictionary collection
    */
   setHeadwords(headwords: Map<string, Term>) {
+    console.log("DictionaryCollection.setHeadwords enter");
     this.headwords = headwords;
     this.loaded = true;
   } 
@@ -218,12 +224,14 @@ export class DictionaryEntry {
    * @return {string} English equivalents for the term
    */
   getEnglish() {
+    const r1 = new RegExp(' / ', 'g');
+    const r2 = new RegExp('/', 'g');
     let english = "";
     for (let sense of this.senses) {
       let eng = sense.getEnglish();
       //console.log(`getEnglish before ${ eng }`);
-      const r = new RegExp(' / ', 'g');
-      eng = eng.replace(r, ', ');
+      eng = eng.replace(r1, ', ');
+      eng = eng.replace(r2, ', ');
       english += eng + '; ';
     }
     const re = new RegExp('; $');  // remove trailing semicolon
@@ -332,25 +340,20 @@ export class DictionaryEntry {
 export class DictionaryLoader {
   private sources: Array<DictionarySource>;
   private headwords: Map<string, Term>;
+  private dictionaries: DictionaryCollection;
 
   /**
    * Create an empty PlainJSBuilder instance
    *
    * @param {string} sources - Names of the dictionary files
+   * @param {DictionaryCollection} dictionaries - To load the data into
    */
-  constructor(sources: Array<DictionarySource>) {
+  constructor(sources: Array<DictionarySource>,
+              dictionaries: DictionaryCollection) {
     console.log('DictionaryLoader constructor');
     this.sources = sources;
     this.headwords = new Map<string, Term>();
-  }
-
-  /**
-   * Returns a map of headwords, wait until after loading to call this
-   */
-  getDictionaryCollection() {
-    const dictionaries = new DictionaryCollection();
-    dictionaries.setHeadwords(this.headwords);
-    return dictionaries;
+    this.dictionaries = dictionaries;
   }
 
   /**
@@ -374,6 +377,7 @@ export class DictionaryLoader {
               subscriber.next(numLoaded);
               if (numLoaded >= sources.length) {
                 console.log(`loadDictionaries: ${ this.headwords.size } terms`);
+                this.dictionaries.setHeadwords(this.headwords);
                 subscriber.complete();
               }
             },
@@ -472,13 +476,15 @@ export class DictionaryView {
    * @param {string} dialog_id - A DOM id used to find the dialog
    * @param {string} highlight - Which terms to highlight: all | proper | ''
    * @param {!DictionaryViewConfig} config - Configuration of the view to build
+   * @return {!DictionaryCollection} dictionaries - As a holder before loading
    */
   constructor(selector: string,
               dialog_id: string,
               highlight: 'all' | 'proper' | '',
-              config: DictionaryViewConfig) {
+              config: DictionaryViewConfig,
+              dictionaries: DictionaryCollection) {
     console.log('DictionaryView constructor');
-  	this.dictionaries = new DictionaryCollection();
+  	this.dictionaries = dictionaries;
     this.selector = selector;
     this.dialog_id = dialog_id;
     this.highlight = highlight;
@@ -644,15 +650,6 @@ export class DictionaryView {
   }
 
   /**
-   * Initialize the view to listen for events
-   */
-  init() {
-    if (this.config.isWithLookupInput()) {
-      const viewLookup = new DictionaryViewLookup(this.config);
-    }
-  }
-
-  /**
    * Whether the dictionary sources have been loaded
    */
   isLoaded(): boolean {
@@ -684,6 +681,7 @@ export class DictionaryView {
    * @param {!DictionaryCollection} The collection of dictionaries
    */
   setDictionaryCollection(dictionaries: DictionaryCollection) {
+    console.log("setDictionaryCollection enter");
     this.dictionaries = dictionaries;
   }
 
@@ -754,6 +752,31 @@ export class DictionaryView {
       this.dialog.showModal();
     }
   }
+
+  /**
+   * Initializes the view to listen for events, wiring the HTML elements to
+   * the event subscribers.
+   */
+  wire() {
+    console.log('DictionaryView.init enter');
+    if (this.config.isWithLookupInput()) {
+      const viewLookup = new DictionaryViewLookup(this.config,
+                                                  this.dictionaries);
+      const resultsView = this.config.getQueryResultsSubscriber();
+      viewLookup.wire()
+      .subscribe(
+        value => {
+          const qResults = <QueryResults>value;
+          if (!qResults) {
+            resultsView.error("DictionaryView no results found");
+          } else {
+            resultsView.next(qResults);
+          }
+        },
+        err => { resultsView.error(`Initialization error: ${ err }`); }
+      );
+    }
+  }  
 }
 
 
@@ -762,9 +785,8 @@ export class DictionaryView {
  * DictionaryBuilder factory.
  */
 export class DictionaryViewConfig {
-  private lookupInputFormId: string;
-  private lookupInputTFId: string;
   private withLookupInput: boolean;
+  private rSubscriber: QueryResultsSubscriber;
 
   /**
    * Creates a DictionaryViewConfig object with default values: 
@@ -772,29 +794,28 @@ export class DictionaryViewConfig {
    * withLookupInput: true.
    */
   constructor() {
-    this.lookupInputFormId = "lookup_input_form";
-    this.lookupInputTFId = "lookup_input";
     this.withLookupInput = true;
+    this.rSubscriber = new QueryResultsView();
   }
 
   /**
-   * This value will be used as the DOM element ID for a HTML
-   * form to contain the input textfield.
+   * Get the subscriber to push new query results to
    *
-   * @return {!string} - The ID of the DOM element lookupInputFormId
+   * @return {QueryResultsSubscriber} to push results to
    */
-  getlookupInputFormId(): string {
-    return this.lookupInputFormId;
+  getQueryResultsSubscriber(): QueryResultsSubscriber {
+    return this.rSubscriber;
   }
 
   /**
-   * This value will be used as the DOM element ID for a textfield
-   * input to read from for lookup for words.
+   * Set the subscriber to push new query results to
    *
-   * @return {!string} - The ID of the DOM element lookupInputTFId
+   * @param {!QueryResultsSubscriber} rSubscriber - to push results to
+   * @return {DictionaryViewConfig} this object so that calls can be chained
    */
-  getTextfieldId(): string {
-    return this.lookupInputTFId;
+  setQueryResultsSubscriber(rSubscriber: QueryResultsSubscriber): DictionaryViewConfig {
+    this.rSubscriber = rSubscriber;
+    return this;
   }
 
   /**
@@ -824,34 +845,59 @@ export class DictionaryViewConfig {
 
 
 /** 
- * A class for encapsulating view elements for looking up and displaying
- * dictionary terms.
+ * A class for encapsulating view elements for looking up dictionary terms.
+ * Fixed values are used for field ids: 
+ * lookupInputFormId: 'lookup_input_form', lookupInputTFId: 'lookup_input'.
  */
 class DictionaryViewLookup {
+  private readonly lookupInputFormId = "lookup_input_form";
+  private readonly lookupInputTFId = "lookup_input";
   private config: DictionaryViewConfig;
+  private dictionaries: DictionaryCollection;
 
   /**
    * Creates a DictionaryViewLookup object with given config values.
    *
    * @param {!DictionaryViewConfig} config - Configuration values
+   * @param {!DictionaryCollection} dictionaries - holds the dictionary data
    */
-  constructor(config: DictionaryViewConfig) {
+  constructor(config: DictionaryViewConfig,
+              dictionaries: DictionaryCollection) {
     this.config = config;
+    this.dictionaries = dictionaries;
   }
 
   /**
    * Initialize the input form to listen for submit events
    */
-  init() {
-    const selector = "#" + this.config.getlookupInputFormId();
-    const form = document.querySelector(selector);
-    if (form) {
-      form.addEventListener("submit", (evt) => {
-        evt.preventDefault();
-        console.log("DictionaryViewLookup form submit");
-        return false;
-      });
-    }
+  wire() {
+    console.log("DictionaryViewLookup.init");
+    const formSelector = "#" + this.lookupInputFormId;
+    const form = document.querySelector(formSelector);
+    const inputSelector = "#" + this.lookupInputTFId;
+    const input = <HTMLInputElement>document.querySelector(inputSelector);
+    const observable = new Observable(subscriber => {
+      if (form) {
+        fromEvent(form, "submit")
+        .subscribe(evt => {
+          evt.preventDefault();
+          console.log("DictionaryViewLookup got a submit event");
+          if (!this.dictionaries.isLoaded()) {
+            subscriber.error("Dictionary is not loaded");
+          } else {
+            const parser = new TextParser(this.dictionaries);
+            const terms = parser.segmentText(input.value);
+            const qResults = new QueryResults(input.value, terms);
+            subscriber.next(qResults);
+          }
+          return false;
+        });
+      } else {
+        console.log("DictionaryViewLookup.init form not found");
+        subscriber.complete();
+      }
+    });
+    return observable;
   }
 }
 
@@ -875,8 +921,8 @@ interface JSONDictEntry {
  * and set up events to show a dialog for all vocabulary discovered.
  */
 export class PlainJSBuilder implements DictionaryBuilder {
-  private sources: Array<DictionarySource>;
   private view: DictionaryView;
+  private loader: DictionaryLoader;
 
   /**
    * Create an empty PlainJSBuilder instance
@@ -891,9 +937,14 @@ export class PlainJSBuilder implements DictionaryBuilder {
               dialog_id: string,
               highlight: 'all' | 'proper') {
     console.log('PlainJSBuilder constructor');
-    this.sources = sources;
+    const dictionaries = new DictionaryCollection();
+    this.loader = new DictionaryLoader(sources, dictionaries);
     const config = new DictionaryViewConfig().setWithLookupInput(false);
-    this.view = new DictionaryView(selector, dialog_id, highlight, config);
+    this.view = new DictionaryView(selector,
+                                   dialog_id,
+                                   highlight,
+                                   config,
+                                   dictionaries);
   }
 
   /**
@@ -907,19 +958,130 @@ export class PlainJSBuilder implements DictionaryBuilder {
    */
   buildDictionary() {
     console.log('buildDictionary enter');
-    const loader = new DictionaryLoader(this.sources);
-    const observable = loader.loadDictionaries();
+    const observable = this.loader.loadDictionaries();
     observable.subscribe(
       val => { console.log('buildDictionary next ' + val); },
       err => { console.error('buildDictionary error: ' + err); },
       () => { 
         console.log('buildDictionary done');
-        this.view.setDictionaryCollection(loader.getDictionaryCollection());
         this.view.highlightWords();
         this.view.setupDialog();
        }
     );
     return this.view;
+  }
+}
+
+
+
+/** 
+ * Wraps results from a dictionary query.
+ */
+export class QueryResults {
+  query: string;
+  results: Array<Term>;
+
+  /**
+   * Construct a QueryResults object
+   *
+   * @param {!string} query - The query leading to the results
+   * @param {!Array<Term>} results - The results found
+   */
+  constructor(query: string, results: Array<Term>) {
+    this.query = query;
+    this.results = results;
+  }
+}
+
+
+/** 
+ * An interface for subscribing to query results that might consist of
+ * multiple terms.
+ */
+export interface QueryResultsSubscriber {
+
+  /**
+   * Respond to an error
+   *
+   * @param {!string} message - an error message
+   */
+  error(message: string): void;
+
+  /**
+   * Respond to newly available results
+   *
+   * @param {!QueryResults} dictionaries - holds the query results
+   */
+  next(results: QueryResults): void;
+}
+
+
+/** 
+ * A class for displaying dictionary query results that might consist of
+ * multiple terms. Fixed values of field ids are used: 
+ * queryResultsDiv: 'query_results_div',
+ * queryResultsHeader: 'query_results_header', 
+ * queryMessageDiv: 'query_message_div'
+ * queryResultsList: 'query_results_list',
+ */
+class QueryResultsView implements QueryResultsSubscriber {
+  private queryResultsDiv: HTMLElement;
+  private queryResultsHeader: HTMLElement;
+  private queryMessageDiv: HTMLElement;
+  private queryResultsList: HTMLElement;
+
+  /**
+   * Create a QueryResultsView object
+   */
+  constructor() {
+    this.queryResultsDiv = <HTMLElement>document.getElementById("query_results_div");
+    this.queryResultsHeader = <HTMLElement>document.getElementById("query_results_header");
+    this.queryMessageDiv = <HTMLElement>document.getElementById("query_message_div");
+    this.queryResultsList = <HTMLElement>document.getElementById("query_results_list");
+  }
+
+  /**
+   * Respond to an error
+   *
+   * @param {!string} message - an error message
+   */
+  error(message: string) {
+    console.log("QueryResultsView.error enter");
+    this.queryResultsHeader.style.display = "none";
+    while (this.queryResultsList.firstChild) {
+      this.queryResultsList.removeChild(this.queryResultsList.firstChild);
+    }
+    this.queryMessageDiv.innerHTML = message;
+  }
+
+  /**
+   * Shows the results
+   *
+   * @param {!QueryResults} dictionaries - holds the query results
+   */
+  next(qResults: QueryResults) {
+    console.log("QueryResultsView.next enter");
+    this.queryResultsHeader.style.display = "block";
+    while (this.queryResultsList.firstChild) {
+      this.queryResultsList.removeChild(this.queryResultsList.firstChild);
+    }
+    const r = qResults.results;
+    const msg = `${ r.length } terms found for query ${ qResults.query }`;
+    this.queryMessageDiv.innerHTML = msg;
+
+    const tList = document.createElement("ul");
+    r.forEach( term => {
+      const entries = term.getEntries();
+      const cn = entries[0].getChinese();
+      const pinyin = entries[0].getPinyin();
+      const en = entries[0].getEnglish();
+      const li = document.createElement("li");
+      const txt = `${ cn } ${ pinyin } - ${ en }`;
+      const tNode = document.createTextNode(txt);
+      li.appendChild(tNode);
+      tList.appendChild(li);
+    });
+    this.queryResultsList.appendChild(tList);
   }
 }
 
