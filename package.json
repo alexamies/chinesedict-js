@@ -16,7 +16,7 @@
   "scripts": {
     "prepare": "node build/gen_dictionary.js",
     "cc-cedict": "node build/cccedict_generator.js ./cedict_ts.u8",
-    "lint": "./node_modules/.bin/tslint -c tslint.json 'src/**/*.ts'",
+    "lint": "./node_modules/.bin/tslint -c tslint.json '*.ts' -e index.d.ts --fix",
     "compile": "node_modules/typescript/bin/tsc",
     "build": "webpack",
     "start": "webpack-dev-server"

@@ -12,8 +12,8 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import { fromEvent, Observable, of } from 'rxjs';
-import { ajax } from 'rxjs/ajax';
+import { fromEvent, Observable, of } from "rxjs";
+import { ajax } from "rxjs/ajax";
 /**
  * An implementation of the DictionaryBuilder interface for building and
  * initializing a basic DictionaryView object with a textfield input to read
@@ -28,7 +28,7 @@ export class BasicDictionaryBuilder {
      * @param {!DictionaryViewConfig} config - Configuration of the view to build
      */
     constructor(sources, config) {
-        console.log('BasicDictionaryBuilder constructor');
+        console.log("BasicDictionaryBuilder constructor");
         this.sources = sources;
         this.config = config;
         this.dictionaries = new DictionaryCollection();
@@ -39,14 +39,14 @@ export class BasicDictionaryBuilder {
      * initialize the DictionaryView.
      */
     buildDictionary() {
-        console.log('BasicDictionaryBuilder.buildDictionary enter');
+        console.log("BasicDictionaryBuilder.buildDictionary enter");
         this.view.wire();
         const loader = new DictionaryLoader(this.sources, this.dictionaries);
         const observable = loader.loadDictionaries();
-        observable.subscribe(val => { console.log('BasicDictionaryBuilder.buildDictionary ' + val); }, err => {
-            console.error('BasicDictionaryBuilder.buildDictionary ' + err);
+        observable.subscribe((val) => { console.log("BasicDictionaryBuilder.buildDictionary " + val); }, (err) => {
+            console.error("BasicDictionaryBuilder.buildDictionary " + err);
         }, () => {
-            console.log('BasicDictionaryBuilder.buildDictionary done');
+            console.log("BasicDictionaryBuilder.buildDictionary done");
         });
         return this.view;
     }
@@ -121,7 +121,7 @@ export class DictionaryEntry {
      * @param {!Array<WordSense>} senses - An array of word senses
      */
     constructor(headword, source, senses, headwordId) {
-        //console.log(`DictionaryEntry ${ headword }`);
+        // console.log(`DictionaryEntry ${ headword }`);
         this.headword = headword;
         this.source = source;
         this.senses = senses;
@@ -144,7 +144,7 @@ export class DictionaryEntry {
         const s = this.getSimplified();
         const t = this.getTraditional();
         let chinese = s;
-        if (s != t) {
+        if (s !== t) {
             chinese = `${s}（${t}）`;
         }
         return chinese;
@@ -155,18 +155,18 @@ export class DictionaryEntry {
      * @return {string} English equivalents for the term
      */
     getEnglish() {
-        const r1 = new RegExp(' / ', 'g');
-        const r2 = new RegExp('/', 'g');
+        const r1 = new RegExp(" / ", "g");
+        const r2 = new RegExp("/", "g");
         let english = "";
-        for (let sense of this.senses) {
+        for (const sense of this.senses) {
             let eng = sense.getEnglish();
-            //console.log(`getEnglish before ${ eng }`);
-            eng = eng.replace(r1, ', ');
-            eng = eng.replace(r2, ', ');
-            english += eng + '; ';
+            // console.log(`getEnglish before ${ eng }`);
+            eng = eng.replace(r1, ", ");
+            eng = eng.replace(r2, ", ");
+            english += eng + "; ";
         }
-        const re = new RegExp('; $'); // remove trailing semicolon
-        return english.replace(re, '');
+        const re = new RegExp("; $"); // remove trailing semicolon
+        return english.replace(re, "");
     }
     /**
      * A convenience method that flattens the part of speech for the term. If
@@ -178,7 +178,7 @@ export class DictionaryEntry {
         if (this.senses.length === 1) {
             return this.senses[0].getGrammar();
         }
-        return '';
+        return "";
     }
     /**
      * Gets the headword_id for the term
@@ -194,16 +194,16 @@ export class DictionaryEntry {
      */
     getPinyin() {
         const values = new Set();
-        for (let sense of this.senses) {
+        for (const sense of this.senses) {
             const pinyin = sense.getPinyin();
             values.add(pinyin);
         }
-        let p = '';
-        for (let val of values.values()) {
-            p += val + ', ';
+        let p = "";
+        for (const val of values.values()) {
+            p += val + ", ";
         }
-        const re = new RegExp(', $'); // remove trailing comma
-        return p.replace(re, '');
+        const re = new RegExp(", $"); // remove trailing comma
+        return p.replace(re, "");
     }
     /**
      * Gets the word senses
@@ -219,16 +219,16 @@ export class DictionaryEntry {
      */
     getSimplified() {
         const values = new Set();
-        for (let sense of this.senses) {
+        for (const sense of this.senses) {
             const simplified = sense.getSimplified();
             values.add(simplified);
         }
-        let p = '';
-        for (let val of values.values()) {
-            p += val + '、';
+        let p = "";
+        for (const val of values.values()) {
+            p += val + "、";
         }
-        const re = new RegExp('、$'); // remove trailing comma
-        return p.replace(re, '');
+        const re = new RegExp("、$"); // remove trailing comma
+        return p.replace(re, "");
     }
     /**
      * Gets the dictionary source
@@ -244,16 +244,16 @@ export class DictionaryEntry {
      */
     getTraditional() {
         const values = new Set();
-        for (let sense of this.senses) {
+        for (const sense of this.senses) {
             const trad = sense.getTraditional();
             values.add(trad);
         }
-        let p = '';
-        for (let val of values.values()) {
-            p += val + '、';
+        let p = "";
+        for (const val of values.values()) {
+            p += val + "、";
         }
-        const re = new RegExp('、$'); // remove trailing comma
-        return p.replace(re, '');
+        const re = new RegExp("、$"); // remove trailing comma
+        return p.replace(re, "");
     }
 }
 /**
@@ -267,7 +267,7 @@ export class DictionaryLoader {
      * @param {DictionaryCollection} dictionaries - To load the data into
      */
     constructor(sources, dictionaries) {
-        console.log('DictionaryLoader constructor');
+        console.log("DictionaryLoader constructor");
         this.sources = sources;
         this.headwords = new Map();
         this.dictionaries = dictionaries;
@@ -276,8 +276,8 @@ export class DictionaryLoader {
      * Returns an Observable that will complete on loading all the dictionaries
      */
     loadDictionaries() {
-        console.log('loadDictionaries enter');
-        const observable = new Observable(subscriber => {
+        console.log("loadDictionaries enter");
+        const observable = new Observable((subscriber) => {
             const sources = this.sources;
             let numLoaded = 0;
             for (const source of sources) {
@@ -285,7 +285,7 @@ export class DictionaryLoader {
                 console.log(`loadDictionaries loading ${filename}`);
                 if (filename) {
                     const reqObs = ajax.getJSON(filename);
-                    const subscribe = reqObs.subscribe(res => {
+                    const subscribe = reqObs.subscribe((res) => {
                         console.log(`loadDictionaries: for ${filename}`);
                         this.load_dictionary_(source, res);
                         numLoaded++;
@@ -295,14 +295,14 @@ export class DictionaryLoader {
                             this.dictionaries.setHeadwords(this.headwords);
                             subscriber.complete();
                         }
-                    }, error => {
+                    }, (error) => {
                         console.log(`Error fetching dictionary: ${error}`);
                         subscriber.next(error);
                         return of(error);
                     });
                 }
                 else {
-                    subscriber.next('Error no filename provided');
+                    subscriber.next("Error no filename provided");
                 }
             }
         });
@@ -318,9 +318,9 @@ export class DictionaryLoader {
     load_dictionary_(source, dictData) {
         console.log(`load_dictionary_ terms from ${source.title}`);
         for (const entry of dictData) {
-            const traditional = entry["t"];
-            const sense = new WordSense(entry["s"], entry["t"], entry["p"], entry["e"], entry["g"], entry["n"]);
-            const dictEntry = new DictionaryEntry(traditional, source, [sense], entry["h"]);
+            const traditional = entry.t;
+            const sense = new WordSense(entry.s, entry.t, entry.p, entry.e, entry.g, entry.n);
+            const dictEntry = new DictionaryEntry(traditional, source, [sense], entry.h);
             if (!this.headwords.has(traditional)) {
                 // console.log(`Loading ${ traditional } from ${ source.title } `);
                 const term = new Term(traditional, [dictEntry]);
@@ -364,133 +364,23 @@ export class DictionaryView {
      * directly.
      *
      * @param {string} selector - A DOM selector used to find the page elements
-     * @param {string} dialog_id - A DOM id used to find the dialog
+     * @param {string} dialogId - A DOM id used to find the dialog
      * @param {string} highlight - Which terms to highlight: all | proper | ''
      * @param {!DictionaryViewConfig} config - Configuration of the view to build
      * @return {!DictionaryCollection} dictionaries - As a holder before loading
      */
-    constructor(selector, dialog_id, highlight, config, dictionaries) {
-        console.log('DictionaryView constructor');
+    constructor(selector, dialogId, highlight, config, dictionaries) {
+        console.log("DictionaryView constructor");
         this.dictionaries = dictionaries;
         this.selector = selector;
-        this.dialog_id = dialog_id;
+        this.dialogId = dialogId;
         this.highlight = highlight;
-        this.dialog = document.getElementById(this.dialog_id);
-        const containerId = this.dialog_id + '_container';
+        this.dialog = document.getElementById(this.dialogId);
+        const containerId = this.dialogId + "_container";
         this.dialogContainerEl = document.getElementById(containerId);
-        const headwordId = this.dialog_id + '_headword';
+        const headwordId = this.dialogId + "_headword";
         this.headwordEl = document.getElementById(headwordId);
         this.config = config;
-    }
-    /**
-     * Add a dictionary entry to the dialog
-     *
-     * @param {string} chinese - the Chinese text
-     * @param {DictionaryEntry} entry - the word data to add to the dialog
-     */
-    addDictEntryToDialog(chinese, entry) {
-        const containerEl = document.createElement('div');
-        const pinyinEl = document.createElement('span');
-        pinyinEl.className = 'dict-dialog_pinyin';
-        pinyinEl.innerHTML = entry.getPinyin();
-        containerEl.appendChild(pinyinEl);
-        const englishEl = document.createElement('span');
-        englishEl.className = 'dict-dialog_english';
-        englishEl.innerHTML = entry.getEnglish();
-        containerEl.appendChild(englishEl);
-        if (entry.getHeadwordId()) {
-            const headwordIdEl = document.createElement('span');
-            headwordIdEl.className = 'dict-dialog_headword_id';
-            headwordIdEl.innerHTML = entry.getHeadwordId();
-            containerEl.appendChild(headwordIdEl);
-        }
-        const sourceEl = document.createElement('span');
-        sourceEl.innerHTML = `Source: ${entry.getSource().title} <br/>
-      ${entry.getSource().description}`;
-        containerEl.appendChild(sourceEl);
-        this.addPartsToDialog(chinese, containerEl);
-        this.dialogContainerEl.appendChild(containerEl);
-    }
-    /**
-     * Add parts of a Chinese string to the dialog
-     *
-     * @param {string} chinese - the Chinese text
-     * @param {HTMLDivElement} containerEl - to display the parts in
-     */
-    addPartsToDialog(chinese, containerEl) {
-        console.log(`addPartsToDialog enter ${chinese}`);
-        const partsEl = document.createElement('div');
-        const partsTitleEl = document.createElement('h5');
-        partsTitleEl.innerHTML = `Characters`;
-        partsEl.appendChild(partsTitleEl);
-        let numAdded = 0;
-        for (let i = 0; i < chinese.length; i++) {
-            const cPart = chinese[i];
-            if (this.dictionaries.has(cPart)) {
-                numAdded++;
-                const partTerm = this.dictionaries.lookup(chinese[i]);
-                let eng = "";
-                for (const entry of partTerm.getEntries()) {
-                    eng += entry.getEnglish() + " ";
-                }
-                const partsBodyEl = document.createElement('div');
-                partsBodyEl.innerHTML = `${cPart}: ${eng}`;
-                partsEl.appendChild(partsBodyEl);
-            }
-        }
-        if (numAdded > 0) {
-            containerEl.appendChild(partsEl);
-        }
-    }
-    /**
-     * Decorate the segments of text
-     *
-     * @private
-     * @param {!HTMLElement} elem - The DOM element to add the segments to
-     * @param {!Array.<Term>} terms - The segmented text array of terms
-     * @param {string} dialog_id - A DOM id used to find the dialog
-     * @param {string} highlight - Which terms to highlight: all | proper | ''
-     */
-    decorate_segments_(elem, terms, dialog_id, highlight) {
-        console.log(`decorate_segments_ dialog_id: ${dialog_id}, ${highlight}`);
-        elem.innerHTML = "";
-        for (let term of terms) {
-            const entry = term.getEntries()[0];
-            const chinese = term.getChinese();
-            if (entry && entry.getEnglish()) {
-                //console.log(`decorate_segments_ chinese: ${chinese}`);
-                const grammar = entry.getGrammar();
-                if ((highlight !== 'proper') || (grammar === 'proper noun')) {
-                    const link = document.createElement('a');
-                    link.textContent = chinese;
-                    link.href = '#';
-                    link.className = 'highlight';
-                    link.addEventListener('click', (event) => {
-                        this.showDialog(event, term, dialog_id);
-                    });
-                    link.addEventListener('mouseover', (event) => {
-                        this.doMouseover(event, term);
-                    });
-                    elem.appendChild(link);
-                }
-                else {
-                    const span = document.createElement('span');
-                    span.className = 'nohighlight';
-                    span.textContent = chinese;
-                    span.addEventListener('click', (event) => {
-                        this.showDialog(event, term, dialog_id);
-                    });
-                    span.addEventListener('mouseover', (event) => {
-                        this.doMouseover(event, term);
-                    });
-                    elem.appendChild(span);
-                }
-            }
-            else {
-                var text = document.createTextNode(chinese);
-                elem.appendChild(text);
-            }
-        }
     }
     /**
      * Respond to a mouse over event for a dictionary term. Expected to be called
@@ -511,12 +401,12 @@ export class DictionaryView {
      * initializing the dictionary.
      */
     highlightWords() {
-        console.log('highlightWords: enter');
+        console.log("highlightWords: enter");
         if (!this.selector) {
-            console.log('highlightWords: selector empty');
+            console.log("highlightWords: selector empty");
             return;
         }
-        let elems = document.querySelectorAll(this.selector);
+        const elems = document.querySelectorAll(this.selector);
         if (!elems) {
             console.log(`findwords: no elements matching ${this.selector}`);
             return;
@@ -524,10 +414,10 @@ export class DictionaryView {
         console.log(`highlightWords: ${elems.length} elems`);
         elems.forEach((el) => {
             const text = el.textContent;
-            //console.log(`highlightWords: ${ text }`);
+            // console.log(`highlightWords: ${ text }`);
             if (text) {
                 const terms = this.segment_text_(text);
-                this.decorate_segments_(el, terms, this.dialog_id, this.highlight);
+                this.decorate_segments_(el, terms, this.dialogId, this.highlight);
             }
             else {
                 console.log(`highlightWords: text is empty or null`);
@@ -547,17 +437,6 @@ export class DictionaryView {
         return this.dictionaries.lookup(chinese);
     }
     /**
-     * Segments the text into an array of individual words
-     *
-     * @private
-     * @param {string} text - The text string to be segmented
-     * @return {Array.<Term>} The segmented text as an array of terms
-     */
-    segment_text_(text) {
-        const parser = new TextParser(this.dictionaries);
-        return parser.segmentText(text);
-    }
-    /**
      * Sets the collection of dictionaries to use in the dictionary view.
      *
      * @param {!DictionaryCollection} The collection of dictionaries
@@ -572,30 +451,30 @@ export class DictionaryView {
      * initializing the dictionary.
      */
     setupDialog() {
-        const dialogOkId = this.dialog_id + '_ok';
+        const dialogOkId = this.dialogId + "_ok";
         let dialogOk = document.getElementById(dialogOkId);
         if (!this.dialog) {
-            console.log(`setupDialog ${this.dialog_id} not found, creating`);
-            this.dialog = document.createElement('dialog');
-            this.headwordEl = document.createElement('p');
+            console.log(`setupDialog ${this.dialogId} not found, creating`);
+            this.dialog = document.createElement("dialog");
+            this.headwordEl = document.createElement("p");
             this.dialog.appendChild(this.headwordEl);
-            this.dialogContainerEl = document.createElement('div');
+            this.dialogContainerEl = document.createElement("div");
             this.dialog.appendChild(this.dialogContainerEl);
-            dialogOk = document.createElement('button');
-            dialogOk.innerText = 'OK';
-            dialogOk.className = 'dialog_ok';
+            dialogOk = document.createElement("button");
+            dialogOk.innerText = "OK";
+            dialogOk.className = "dialog_ok";
             this.dialog.appendChild(dialogOk);
             document.body.appendChild(this.dialog);
         }
         if (this.dialog instanceof HTMLDialogElement) {
-            if (typeof dialogPolyfill !== 'undefined') {
+            if (typeof dialogPolyfill !== "undefined") {
                 dialogPolyfill.registerDialog(this.dialog);
             }
         }
         else {
             console.log(`dialog is typeof ${typeof this.dialog}`);
         }
-        dialogOk.addEventListener('click', () => {
+        dialogOk.addEventListener("click", () => {
             if (this.dialog instanceof HTMLDialogElement) {
                 this.dialog.close();
             }
@@ -607,9 +486,9 @@ export class DictionaryView {
      *
      * @param {MouseEvent} event - An event triggered by a user
      * @param {Term} term - Encapsulates the Chinese and the English equivalent
-     * @param {string} dialog_id - A DOM id used to find the dialog
+     * @param {string} dialogId - A DOM id used to find the dialog
      */
-    showDialog(event, term, dialog_id) {
+    showDialog(event, term, dialogId) {
         const target = event.target;
         const chinese = target.textContent;
         if (term.getEntries().length === 0) {
@@ -623,7 +502,7 @@ export class DictionaryView {
                 this.dialogContainerEl.removeChild(this.dialogContainerEl.firstChild);
             }
         }
-        //console.log(`showDialog got: ${ term.getEntries().length } entries`);
+        // console.log(`showDialog got: ${ term.getEntries().length } entries`);
         if (chinese) {
             for (const entry of term.getEntries()) {
                 this.addDictEntryToDialog(chinese, entry);
@@ -638,12 +517,12 @@ export class DictionaryView {
      * the event subscribers.
      */
     wire() {
-        console.log('DictionaryView.init enter');
+        console.log("DictionaryView.init enter");
         if (this.config.isWithLookupInput()) {
             const viewLookup = new DictionaryViewLookup(this.config, this.dictionaries);
             const resultsView = this.config.getQueryResultsSubscriber();
             viewLookup.wire()
-                .subscribe(value => {
+                .subscribe((value) => {
                 const qResults = value;
                 if (!qResults) {
                     resultsView.error("DictionaryView no results found");
@@ -651,8 +530,127 @@ export class DictionaryView {
                 else {
                     resultsView.next(qResults);
                 }
-            }, err => { resultsView.error(`Initialization error: ${err}`); });
+            }, (err) => { resultsView.error(`Initialization error: ${err}`); });
         }
+    }
+    /**
+     * Add a dictionary entry to the dialog
+     *
+     * @param {string} chinese - the Chinese text
+     * @param {DictionaryEntry} entry - the word data to add to the dialog
+     */
+    addDictEntryToDialog(chinese, entry) {
+        const containerEl = document.createElement("div");
+        const pinyinEl = document.createElement("span");
+        pinyinEl.className = "dict-dialog_pinyin";
+        pinyinEl.innerHTML = entry.getPinyin();
+        containerEl.appendChild(pinyinEl);
+        const englishEl = document.createElement("span");
+        englishEl.className = "dict-dialog_english";
+        englishEl.innerHTML = entry.getEnglish();
+        containerEl.appendChild(englishEl);
+        if (entry.getHeadwordId()) {
+            const headwordIdEl = document.createElement("span");
+            headwordIdEl.className = "dict-dialog_headword_id";
+            headwordIdEl.innerHTML = entry.getHeadwordId();
+            containerEl.appendChild(headwordIdEl);
+        }
+        const sourceEl = document.createElement("span");
+        sourceEl.innerHTML = `Source: ${entry.getSource().title} <br/>
+      ${entry.getSource().description}`;
+        containerEl.appendChild(sourceEl);
+        this.addPartsToDialog(chinese, containerEl);
+        this.dialogContainerEl.appendChild(containerEl);
+    }
+    /**
+     * Add parts of a Chinese string to the dialog
+     *
+     * @param {string} chinese - the Chinese text
+     * @param {HTMLDivElement} containerEl - to display the parts in
+     */
+    addPartsToDialog(chinese, containerEl) {
+        console.log(`addPartsToDialog enter ${chinese}`);
+        const partsEl = document.createElement("div");
+        const partsTitleEl = document.createElement("h5");
+        partsTitleEl.innerHTML = `Characters`;
+        partsEl.appendChild(partsTitleEl);
+        let numAdded = 0;
+        const parser = new TextParser(this.dictionaries);
+        const terms = parser.segmentExludeWhole(chinese);
+        terms.forEach((t) => {
+            numAdded++;
+            let eng = "";
+            for (const entry of t.getEntries()) {
+                eng += entry.getEnglish() + " ";
+            }
+            const partsBodyEl = document.createElement("div");
+            partsBodyEl.innerHTML = `${t.getChinese()}: ${eng}`;
+            partsEl.appendChild(partsBodyEl);
+        });
+        if (numAdded > 0) {
+            containerEl.appendChild(partsEl);
+        }
+    }
+    /**
+     * Decorate the segments of text
+     *
+     * @private
+     * @param {!HTMLElement} elem - The DOM element to add the segments to
+     * @param {!Array.<Term>} terms - The segmented text array of terms
+     * @param {string} dialogId - A DOM id used to find the dialog
+     * @param {string} highlight - Which terms to highlight: all | proper | ''
+     */
+    decorate_segments_(elem, terms, dialogId, highlight) {
+        console.log(`decorate_segments_ dialogId: ${dialogId}, ${highlight}`);
+        elem.innerHTML = "";
+        for (const term of terms) {
+            const entry = term.getEntries()[0];
+            const chinese = term.getChinese();
+            if (entry && entry.getEnglish()) {
+                // console.log(`decorate_segments_ chinese: ${chinese}`);
+                const grammar = entry.getGrammar();
+                if ((highlight !== "proper") || (grammar === "proper noun")) {
+                    const link = document.createElement("a");
+                    link.textContent = chinese;
+                    link.href = "#";
+                    link.className = "highlight";
+                    link.addEventListener("click", (event) => {
+                        this.showDialog(event, term, dialogId);
+                    });
+                    link.addEventListener("mouseover", (event) => {
+                        this.doMouseover(event, term);
+                    });
+                    elem.appendChild(link);
+                }
+                else {
+                    const span = document.createElement("span");
+                    span.className = "nohighlight";
+                    span.textContent = chinese;
+                    span.addEventListener("click", (event) => {
+                        this.showDialog(event, term, dialogId);
+                    });
+                    span.addEventListener("mouseover", (event) => {
+                        this.doMouseover(event, term);
+                    });
+                    elem.appendChild(span);
+                }
+            }
+            else {
+                const text = document.createTextNode(chinese);
+                elem.appendChild(text);
+            }
+        }
+    }
+    /**
+     * Segments the text into an array of individual words
+     *
+     * @private
+     * @param {string} text - The text string to be segmented
+     * @return {Array.<Term>} The segmented text as an array of terms
+     */
+    segment_text_(text) {
+        const parser = new TextParser(this.dictionaries);
+        return parser.segmentText(text);
     }
 }
 /**
@@ -736,10 +734,10 @@ class DictionaryViewLookup {
         const form = document.querySelector(formSelector);
         const inputSelector = "#" + this.lookupInputTFId;
         const input = document.querySelector(inputSelector);
-        const observable = new Observable(subscriber => {
+        const observable = new Observable((subscriber) => {
             if (form) {
                 fromEvent(form, "submit")
-                    .subscribe(evt => {
+                    .subscribe((evt) => {
                     evt.preventDefault();
                     console.log("DictionaryViewLookup got a submit event");
                     if (!this.dictionaries.isLoaded()) {
@@ -774,15 +772,15 @@ export class PlainJSBuilder {
      *
      * @param {string} source - Name of the dictionary file
      * @param {string} selector - A DOM selector used to find the page elements
-     * @param {string} dialog_id - A DOM id used to find the dialog
+     * @param {string} dialogId - A DOM id used to find the dialog
      * @param {string} highlight - Which terms to highlight: all | proper
      */
-    constructor(sources, selector, dialog_id, highlight) {
-        console.log('PlainJSBuilder constructor');
+    constructor(sources, selector, dialogId, highlight) {
+        console.log("PlainJSBuilder constructor");
         const dictionaries = new DictionaryCollection();
         this.loader = new DictionaryLoader(sources, dictionaries);
         const config = new DictionaryViewConfig().setWithLookupInput(false);
-        this.view = new DictionaryView(selector, dialog_id, highlight, config, dictionaries);
+        this.view = new DictionaryView(selector, dialogId, highlight, config, dictionaries);
     }
     /**
      * Creates and initializes a DictionaryView, load the dictionary, and scan DOM
@@ -794,10 +792,10 @@ export class PlainJSBuilder {
      * it is complete.
      */
     buildDictionary() {
-        console.log('buildDictionary enter');
+        console.log("buildDictionary enter");
         const observable = this.loader.loadDictionaries();
-        observable.subscribe(val => { console.log('buildDictionary next ' + val); }, err => { console.error('buildDictionary error: ' + err); }, () => {
-            console.log('buildDictionary done');
+        observable.subscribe((val) => { console.log("buildDictionary next " + val); }, (err) => { console.error("buildDictionary error: " + err); }, () => {
+            console.log("buildDictionary done");
             this.view.highlightWords();
             this.view.setupDialog();
         });
@@ -865,7 +863,7 @@ class QueryResultsView {
         const msg = `${r.length} terms found for query ${qResults.query}`;
         this.queryMessageDiv.innerHTML = msg;
         const tList = document.createElement("ul");
-        r.forEach(term => {
+        r.forEach((term) => {
             const entries = term.getEntries();
             const cn = entries[0].getChinese();
             const pinyin = entries[0].getPinyin();
@@ -943,7 +941,7 @@ export class TextParser {
      */
     segmentExludeWhole(text) {
         if (!text) {
-            console.log('segmentExludeWhole empty text');
+            console.log("segmentExludeWhole empty text");
             return [];
         }
         const segments = [];
@@ -952,15 +950,15 @@ export class TextParser {
             let k = text.length - j;
             while (k > 0) {
                 const chars = text.substring(j, j + k);
-                //console.log(`segmentExludeWhole checking: ${chars} for j ${j}, k ${k}`);
+                // console.log(`segmentExludeWhole checking: ${chars} for j ${j}, k ${k}`);
                 if (chars.length < text.length && this.dictionaries.has(chars)) {
-                    //console.log(`segmentExludeWhole found: ${chars} for j ${j}, k ${k}`);
+                    // console.log(`segmentExludeWhole found: ${chars} for j ${j}, k ${k}`);
                     const term = this.dictionaries.lookup(chars);
                     segments.push(term);
                     j += chars.length;
                     break;
                 }
-                if (chars.length == 1) {
+                if (chars.length === 1) {
                     if (this.dictionaries.has(chars)) {
                         const t = this.dictionaries.lookup(chars);
                         segments.push(t);
@@ -983,7 +981,7 @@ export class TextParser {
      */
     segmentText(text) {
         if (!text) {
-            console.log('segment_text_ empty text');
+            console.log("segment_text_ empty text");
             return [];
         }
         const segments = [];
@@ -993,13 +991,13 @@ export class TextParser {
             while (k > 0) {
                 const chars = text.substring(j, j + k);
                 if (this.dictionaries.has(chars)) {
-                    //console.log(`findwords found: ${chars} for j ${j}, k ${k}`);
+                    // console.log(`findwords found: ${chars} for j ${j}, k ${k}`);
                     const term = this.dictionaries.lookup(chars);
                     segments.push(term);
                     j += chars.length;
                     break;
                 }
-                if (chars.length == 1) {
+                if (chars.length === 1) {
                     segments.push(new Term(chars, []));
                     j++;
                 }

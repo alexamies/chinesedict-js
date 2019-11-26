@@ -15,33 +15,33 @@
 
 // Application JavaScript demonstrating use of the chinesedict module
 
-import { DictionarySource, PlainJSBuilder } from './index.js';
-import { fromEvent } from 'rxjs';
+import { fromEvent } from "rxjs";
+import { DictionarySource, PlainJSBuilder } from "./index.js";
 
-console.log('Loading demo_app');
+console.log("Loading demo_app");
 
 // Build and initialize the dictionary
-const source = new DictionarySource('/assets/words.json',
-    'Demo Dictionary',
-	'Just for a demo, see instrucitons for building a full dictionary')
+const source = new DictionarySource("/assets/words.json",
+    "Demo Dictionary",
+    "Just for a demo, see instrucitons for building a full dictionary");
 const builder = new PlainJSBuilder([source],
-                                   '.textbody',
-                                   'dict-dialog',
-                                   'all');
+                                   ".textbody",
+                                   "dict-dialog",
+                                   "all");
 const dictView = builder.buildDictionary();
 
 // Add some HTML elements that use the dictionary API to look up terms
-const button = <HTMLElement>document.querySelector('#lookup_button');
-const tf = <HTMLInputElement>document.querySelector('#lookup_input');
-const pSpan = <HTMLElement>document.querySelector('#pinyin_span');
-const eSpan = <HTMLElement>document.querySelector('#english_span');
+const button = document.querySelector("#lookup_button") as HTMLElement;
+const tf = document.querySelector("#lookup_input") as HTMLInputElement;
+const pSpan = document.querySelector("#pinyin_span") as HTMLElement;
+const eSpan = document.querySelector("#english_span") as HTMLElement;
 
 // Lookup a value in the dictionary
-fromEvent(button, 'click')
+fromEvent(button, "click")
   .subscribe(() => {
-  	const term = dictView.lookup(tf.value);
-  	console.log(`Value: ${ tf.value }`);
+    const term = dictView.lookup(tf.value);
+    console.log(`Value: ${ tf.value }`);
     const entry = term.getEntries()[0];
-  	pSpan.innerHTML = entry.getPinyin();
-  	eSpan.innerHTML = entry.getEnglish();
+    pSpan.innerHTML = entry.getPinyin();
+    eSpan.innerHTML = entry.getEnglish();
   });

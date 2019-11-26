@@ -12,7 +12,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import { Observable } from 'rxjs';
+import { Observable } from "rxjs";
 declare global {
     interface DialogPolyfill {
         registerDialog(dialog: HTMLDialogElement): void;
@@ -41,7 +41,7 @@ export declare class BasicDictionaryBuilder implements DictionaryBuilder {
      * @param {!Array<DictionarySource>} source - Name of the dictionary file
      * @param {!DictionaryViewConfig} config - Configuration of the view to build
      */
-    constructor(sources: Array<DictionarySource>, config: DictionaryViewConfig);
+    constructor(sources: DictionarySource[], config: DictionaryViewConfig);
     /**
      * Creates and initializes a DictionaryView, load the dictionary, and
      * initialize the DictionaryView.
@@ -113,7 +113,7 @@ export declare class DictionaryEntry {
      * @param {!DictionarySource} source - The dictionary containing the entry
      * @param {!Array<WordSense>} senses - An array of word senses
      */
-    constructor(headword: string, source: DictionarySource, senses: Array<WordSense>, headwordId: string);
+    constructor(headword: string, source: DictionarySource, senses: WordSense[], headwordId: string);
     /**
      * A convenience method that flattens the English equivalents for the term
      * into a single string with a ';' delimiter
@@ -186,7 +186,7 @@ export declare class DictionaryLoader {
      * @param {string} sources - Names of the dictionary files
      * @param {DictionaryCollection} dictionaries - To load the data into
      */
-    constructor(sources: Array<DictionarySource>, dictionaries: DictionaryCollection);
+    constructor(sources: DictionarySource[], dictionaries: DictionaryCollection);
     /**
      * Returns an Observable that will complete on loading all the dictionaries
      */
@@ -225,7 +225,7 @@ export declare class DictionarySource {
 export declare class DictionaryView {
     private dictionaries;
     private selector;
-    private dialog_id;
+    private dialogId;
     private highlight;
     private dialog;
     private dialogContainerEl;
@@ -236,36 +236,12 @@ export declare class DictionaryView {
      * directly.
      *
      * @param {string} selector - A DOM selector used to find the page elements
-     * @param {string} dialog_id - A DOM id used to find the dialog
+     * @param {string} dialogId - A DOM id used to find the dialog
      * @param {string} highlight - Which terms to highlight: all | proper | ''
      * @param {!DictionaryViewConfig} config - Configuration of the view to build
      * @return {!DictionaryCollection} dictionaries - As a holder before loading
      */
-    constructor(selector: string, dialog_id: string, highlight: 'all' | 'proper' | '', config: DictionaryViewConfig, dictionaries: DictionaryCollection);
-    /**
-     * Add a dictionary entry to the dialog
-     *
-     * @param {string} chinese - the Chinese text
-     * @param {DictionaryEntry} entry - the word data to add to the dialog
-     */
-    private addDictEntryToDialog;
-    /**
-     * Add parts of a Chinese string to the dialog
-     *
-     * @param {string} chinese - the Chinese text
-     * @param {HTMLDivElement} containerEl - to display the parts in
-     */
-    private addPartsToDialog;
-    /**
-     * Decorate the segments of text
-     *
-     * @private
-     * @param {!HTMLElement} elem - The DOM element to add the segments to
-     * @param {!Array.<Term>} terms - The segmented text array of terms
-     * @param {string} dialog_id - A DOM id used to find the dialog
-     * @param {string} highlight - Which terms to highlight: all | proper | ''
-     */
-    private decorate_segments_;
+    constructor(selector: string, dialogId: string, highlight: "all" | "proper" | "", config: DictionaryViewConfig, dictionaries: DictionaryCollection);
     /**
      * Respond to a mouse over event for a dictionary term. Expected to be called
      * in response to a user event.
@@ -290,14 +266,6 @@ export declare class DictionaryView {
      */
     lookup(chinese: string): Term;
     /**
-     * Segments the text into an array of individual words
-     *
-     * @private
-     * @param {string} text - The text string to be segmented
-     * @return {Array.<Term>} The segmented text as an array of terms
-     */
-    private segment_text_;
-    /**
      * Sets the collection of dictionaries to use in the dictionary view.
      *
      * @param {!DictionaryCollection} The collection of dictionaries
@@ -315,14 +283,46 @@ export declare class DictionaryView {
      *
      * @param {MouseEvent} event - An event triggered by a user
      * @param {Term} term - Encapsulates the Chinese and the English equivalent
-     * @param {string} dialog_id - A DOM id used to find the dialog
+     * @param {string} dialogId - A DOM id used to find the dialog
      */
-    showDialog(event: MouseEvent, term: Term, dialog_id: string): void;
+    showDialog(event: MouseEvent, term: Term, dialogId: string): void;
     /**
      * Initializes the view to listen for events, wiring the HTML elements to
      * the event subscribers.
      */
     wire(): void;
+    /**
+     * Add a dictionary entry to the dialog
+     *
+     * @param {string} chinese - the Chinese text
+     * @param {DictionaryEntry} entry - the word data to add to the dialog
+     */
+    private addDictEntryToDialog;
+    /**
+     * Add parts of a Chinese string to the dialog
+     *
+     * @param {string} chinese - the Chinese text
+     * @param {HTMLDivElement} containerEl - to display the parts in
+     */
+    private addPartsToDialog;
+    /**
+     * Decorate the segments of text
+     *
+     * @private
+     * @param {!HTMLElement} elem - The DOM element to add the segments to
+     * @param {!Array.<Term>} terms - The segmented text array of terms
+     * @param {string} dialogId - A DOM id used to find the dialog
+     * @param {string} highlight - Which terms to highlight: all | proper | ''
+     */
+    private decorate_segments_;
+    /**
+     * Segments the text into an array of individual words
+     *
+     * @private
+     * @param {string} text - The text string to be segmented
+     * @return {Array.<Term>} The segmented text as an array of terms
+     */
+    private segment_text_;
 }
 /**
  * A class for configuring the DictionaryView, intended as input to a
@@ -381,10 +381,10 @@ export declare class PlainJSBuilder implements DictionaryBuilder {
      *
      * @param {string} source - Name of the dictionary file
      * @param {string} selector - A DOM selector used to find the page elements
-     * @param {string} dialog_id - A DOM id used to find the dialog
+     * @param {string} dialogId - A DOM id used to find the dialog
      * @param {string} highlight - Which terms to highlight: all | proper
      */
-    constructor(sources: Array<DictionarySource>, selector: string, dialog_id: string, highlight: 'all' | 'proper');
+    constructor(sources: DictionarySource[], selector: string, dialogId: string, highlight: "all" | "proper");
     /**
      * Creates and initializes a DictionaryView, load the dictionary, and scan DOM
      * elements matching the selector. If the highlight is empty or has value
@@ -401,14 +401,14 @@ export declare class PlainJSBuilder implements DictionaryBuilder {
  */
 export declare class QueryResults {
     query: string;
-    results: Array<Term>;
+    results: Term[];
     /**
      * Construct a QueryResults object
      *
      * @param {!string} query - The query leading to the results
      * @param {!Array<Term>} results - The results found
      */
-    constructor(query: string, results: Array<Term>);
+    constructor(query: string, results: Term[]);
 }
 /**
  * An interface for subscribing to query results that might consist of
@@ -441,7 +441,7 @@ export declare class Term {
      * @param {string} headword_id - The headword id
      * @param {DictionaryEntry} entries - An array of dictionary entries
      */
-    constructor(chinese: string, entries: Array<DictionaryEntry>);
+    constructor(chinese: string, entries: DictionaryEntry[]);
     /**
      * Adds a word sense
      */
@@ -456,7 +456,7 @@ export declare class Term {
      * Gets the dictionary entries for this term
      * @return {!Array<DictionaryEntry>} An array of entries
      */
-    getEntries(): Array<DictionaryEntry>;
+    getEntries(): DictionaryEntry[];
 }
 /**
  * Utility for segmenting text into individual terms.
@@ -476,14 +476,14 @@ export declare class TextParser {
      * @param {string} text - The text string to be segmented
      * @return {Array.<Term>} The segmented text as an array of terms
      */
-    segmentExludeWhole(text: string): Array<Term>;
+    segmentExludeWhole(text: string): Term[];
     /**
      * Segments the text into an array of individual words
      *
      * @param {string} text - The text string to be segmented
      * @return {Array.<Term>} The segmented text as an array of terms
      */
-    segmentText(text: string): Array<Term>;
+    segmentText(text: string): Term[];
 }
 /**
  * Class encapsulating the sense of a Chinese word

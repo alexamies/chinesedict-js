@@ -232,8 +232,8 @@ It is possible to add multiple dictionaries, as shown in the screenshot below.
 src='https://github.com/alexamies/chinesedict-js/blob/master/images/screenshot_two_dictionaries.png?raw=true'/>
 
 Example code for mulitple dictionaries is give in
-[test/test3.html](test/test3.html) with JavaScript file
-[test/demo_app.js](test/demo_app.js).
+[demo2/test3.html](demo2/test3.html) with JavaScript file
+[demo2/demo_app.js](demo2/demo_app.js).
 
 ## Integration
 The module JavaScript is generated from TypeScript, which can help provide
