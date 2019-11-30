@@ -1,0 +1,39 @@
+/**
+ * Licensed  under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+import { DictionaryCollection } from "./DictionaryCollection";
+import { DictionaryViewConfig } from "./DictionaryViewConfig";
+import { Observable } from "rxjs";
+/**
+ * A class for encapsulating view elements for looking up dictionary terms.
+ * Fixed values are used for field ids:
+ * lookupInputFormId: 'lookup_input_form', lookupInputTFId: 'lookup_input'.
+ */
+export declare class DictionaryViewLookup {
+    private readonly lookupInputFormId;
+    private readonly lookupInputTFId;
+    private config;
+    private dictionaries;
+    /**
+     * Creates a DictionaryViewLookup object with given config values.
+     *
+     * @param {!DictionaryViewConfig} config - Configuration values
+     * @param {!DictionaryCollection} dictionaries - holds the dictionary data
+     */
+    constructor(config: DictionaryViewConfig, dictionaries: DictionaryCollection);
+    /**
+     * Initialize the input form to listen for submit events
+     */
+    wire(): Observable<unknown>;
+}

@@ -4,14 +4,14 @@
   "description": "Chinese Dict Demo with Material Web",
   "main": "index.js",
   "scripts": {
-    "compile": "node_modules/typescript/bin/tsc",
+    "prebuild": "node_modules/typescript/bin/tsc",
     "build": "webpack",
     "start": "webpack-dev-server"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@alexamies/chinesedict-js": "0.1.14",
+    "@alexamies/chinesedict-js": "../",
     "material-components-web": "^4.0.0",
     "rxjs": "^6.5.3"
   },

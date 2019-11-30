@@ -295,16 +295,17 @@ const source = new DictionarySource(
                'ntireader.json',
                'NTI Reader Dictionary',
                'Nan Tien Institute Reader dictionary');
-const loader = new DictionaryLoader([source]);
+const dictionaries = new DictionaryCollection();
+const loader = new DictionaryLoader([source], dictionaries);
 const observable = loader.loadDictionaries();
-observable.subscribe({
-  error(err) { console.error(`load error:  + ${ err }`); },
-  complete() { 
+observable.subscribe(
+  () => { 
     thisApp.dictionaries = loader.getDictionaryCollection();
     const loadingStatus = thisApp.querySelectorNonNull("#loadingStatus")
     loadingStatus.innerHTML = "Dictionary loading status: loaded";
-  }
-});
+  },
+  (err) => { console.error(`load error:  + ${ err }`); },
+);
 ```
 
 The loadDictionaries() function returns an RxJS Observable. When that completes

@@ -18,7 +18,8 @@
  */
 
 import { assert } from 'chai';
-import { DictionaryEntry,
+import { DictionaryCollection,
+         DictionaryEntry,
 	       DictionaryLoader,
 	       DictionarySource,
 	       DictionaryView,
@@ -29,7 +30,7 @@ import { DictionaryEntry,
 
 console.log('Running unit tests');
 
-const source = new DictionarySource('../assets/words.json',
+const source = new DictionarySource('/assets/words.json',
                                      'Test dictionary',
                                      'For testing purposes');
 const traditional = '他';
@@ -124,46 +125,46 @@ const ws7 = new WordSense(simplified7,
 describe('DictionaryCollection', function() {
   describe('#has', function() {
     it('Small dictionary has term 夫家', function(done) {
-      const loader = new DictionaryLoader([source]);
+      const dictionaries = new DictionaryCollection();
+      const loader = new DictionaryLoader([source], dictionaries);
       const observable = loader.loadDictionaries();
-      observable.subscribe({
-        error(err) { done(err); },
-        complete() {
-      	  const dictionaries = loader.getDictionaryCollection();
+      observable.subscribe(
+        () => {
           assert(dictionaries.has('夫家'));
           done();
-        }
-      });
+        },
+        (err) => { done(err); },
+      );
     });
   });
   describe('#isLoaded', function() {
     it('Small dictionary has correct loaded status', function(done) {
-      const loader = new DictionaryLoader([source]);
+      const dictionaries = new DictionaryCollection();
+      const loader = new DictionaryLoader([source], dictionaries);
       const observable = loader.loadDictionaries();
-      observable.subscribe({
-        error(err) { done(err); },
-        complete() {
-      	  const dictionaries = loader.getDictionaryCollection();
+      observable.subscribe(
+        () => {
           assert(dictionaries.isLoaded());
           done();
-        }
-      });
+        },
+        (err) => { done(err); },
+      );
     });
   });
   describe('#lookup', function() {
     it('Term 夫家 can be looked up in small dictionary', function(done) {
-      const loader = new DictionaryLoader([source]);
+      const dictionaries = new DictionaryCollection();
+      const loader = new DictionaryLoader([source], dictionaries);
       const observable = loader.loadDictionaries();
-      observable.subscribe({
-        error(err) { done(err); },
-        complete() {
-      	  const dictionaries = loader.getDictionaryCollection();
+      observable.subscribe(
+        () => {
       	  const headword = '夫家';
       	  const term = dictionaries.lookup(headword);
           assert.equal(term.getChinese(), headword);
           done();
-        }
-      });
+        },
+        (err) => { done(err); },
+      );
     });
   });
 });
@@ -266,12 +267,12 @@ describe('DictionaryEntry', function() {
 describe('DictionaryLoader', function() {
   describe('#has', function() {
     it('Small dictionary is loaded and includes 力', function(done) {
-      const loader = new DictionaryLoader([source]);
+      const dictionaries = new DictionaryCollection();
+      const loader = new DictionaryLoader([source], dictionaries);
       const observable = loader.loadDictionaries();
       observable.subscribe({
         error(err) { done(err); },
         complete() {
-      	  const dictionaries = loader.getDictionaryCollection();
           assert(dictionaries.has('力'));
           done();
         }
@@ -286,17 +287,17 @@ describe('DictionaryLoader', function() {
       const s2 = new DictionarySource('../assets/words.json',
                                         'Test dictionary',
                                         'For testing purposes');
-      const loader = new DictionaryLoader([s1, s2]);
+      const dictionaries = new DictionaryCollection();
+      const loader = new DictionaryLoader([s1, s2], dictionaries);
       const observable = loader.loadDictionaries();
-      observable.subscribe({
-        error(err) { done(err); },
-        complete() {
-      	  const dictionaries = loader.getDictionaryCollection();
+      observable.subscribe(
+        () => {
           assert(dictionaries.has('四面'));
           assert(dictionaries.has('力'));
           done();
-        }
-      });
+        },
+        (err) => { done(err); },
+      );
     });
   });
 });
@@ -362,34 +363,34 @@ describe('Term', function() {
 describe('TextParser', function() {
   describe('#segmentExludeWhole', function() {
     it('Parse text 他力 into two terms', function(done) {
-      const loader = new DictionaryLoader([source]);
+      const dictionaries = new DictionaryCollection();
+      const loader = new DictionaryLoader([source], dictionaries);
       const observable = loader.loadDictionaries();
-      observable.subscribe({
-        error(err) { done(err); },
-        complete() {
-      	  const dictionaries = loader.getDictionaryCollection();
+      observable.subscribe(
+        () => {
           const parser = new TextParser(dictionaries);
           const terms = parser.segmentExludeWhole('他力');
           assert.equal(terms.length, 2);
           done();
-        }
-      });
+        },
+        (err) => { done(err); },
+      );
     });
   });
   describe('#segmentText', function() {
     it('Parse text 他力 into one term', function(done) {
-      const loader = new DictionaryLoader([source]);
+      const dictionaries = new DictionaryCollection();
+      const loader = new DictionaryLoader([source], dictionaries);
       const observable = loader.loadDictionaries();
-      observable.subscribe({
-        error(err) { done(err); },
-        complete() {
-      	  const dictionaries = loader.getDictionaryCollection();
+      observable.subscribe(
+        () => {
           const parser = new TextParser(dictionaries);
           const terms = parser.segmentText('他力');
           assert.equal(terms.length, 1);
           done();
-        }
-      });
+        },
+        (err) => { done(err); },
+      );
     });
   });
 });

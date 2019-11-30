@@ -11,6 +11,9 @@
     "target": "es2015",
     "removeComments": false
   },
+  "include": [
+    "src/**/*"
+  ],
   "files": [
   	"index.ts",
   	"demo_app.ts",

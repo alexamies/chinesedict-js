@@ -156,11 +156,11 @@ class DemoApp {
     // Load the dictionary
     load() {
         const source = new DictionarySource('ntireader.json', 'NTI Reader Dictionary', 'Nan Tien Institute Reader dictionary');
-        const loader = new DictionaryLoader([source]);
+        const dictionaries = new DictionaryCollection();
+        const loader = new DictionaryLoader([source], dictionaries);
         const observable = loader.loadDictionaries();
         observable.subscribe(val => console.log(`DemoApp.load next:  + ${val}`), err => { console.error(`DemoApp.load error:  + ${err}`); }, () => {
             console.log('DemoApp.load complete');
-            this.dictionaries = loader.getDictionaryCollection();
             const loadingStatus = document.querySelector("#loadingStatus");
             if (loadingStatus) {
                 loadingStatus.innerHTML = "Dictionary loading status: loaded";
