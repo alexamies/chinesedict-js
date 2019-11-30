@@ -289,10 +289,10 @@ export class DictionaryLoader {
                         console.log(`loadDictionaries: for ${filename}`);
                         this.load_dictionary_(source, res);
                         numLoaded++;
-                        subscriber.next(numLoaded);
                         if (numLoaded >= sources.length) {
                             console.log(`loadDictionaries: ${this.headwords.size} terms`);
                             this.dictionaries.setHeadwords(this.headwords);
+                            subscriber.next(numLoaded);
                             subscriber.complete();
                         }
                     }, (error) => {
@@ -794,11 +794,11 @@ export class PlainJSBuilder {
     buildDictionary() {
         console.log("buildDictionary enter");
         const observable = this.loader.loadDictionaries();
-        observable.subscribe((val) => { console.log("buildDictionary next " + val); }, (err) => { console.error("buildDictionary error: " + err); }, () => {
-            console.log("buildDictionary done");
+        observable.subscribe(() => {
+            console.log("buildDictionary subscriber");
             this.view.highlightWords();
             this.view.setupDialog();
-        });
+        }, (err) => { console.error("buildDictionary error: " + err); });
         return this.view;
     }
 }

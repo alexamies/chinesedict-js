@@ -205,7 +205,7 @@ dictionary use the command
 
 ```shell
 npm install
-node run prepare $CNREADER_HOME/data/words.txt
+node run generate_dict $CNREADER_HOME/data/words.txt
 ```
 
 To restrict the entries to a specific topic use the --topic argument. For
