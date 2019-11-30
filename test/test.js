@@ -371,6 +371,14 @@ describe('TextParser', function() {
           const parser = new TextParser(dictionaries);
           const terms = parser.segmentExludeWhole('他力');
           assert.equal(terms.length, 2);
+          terms.forEach((t) => {
+            const entries = t.getEntries();
+            assert(entries, "entries is defined");
+            assert(entries.length > 0, "entries has some elements");
+            entries.forEach((entry) => {
+              assert(entry.getPinyin(), "pinyin is not empty");
+            });
+          });
           done();
         },
         (err) => { done(err); },

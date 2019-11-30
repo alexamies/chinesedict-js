@@ -1,6 +1,6 @@
 {
   "name": "@alexamies/chinesedict-js",
-  "version": "0.1.17",
+  "version": "0.1.18",
   "description": "A JavaScript browser module for a Chinese-English dictionary",
   "license": "Apache-2.0",
   "repository": "alexamies/chinesedict-js",
@@ -9,6 +9,7 @@
   "types": "./index.d.ts",
   "author": "alexamies",
   "files": [
+    "src/*.*",
     "index.d.ts",
     "chinesedict.css",
     "umd/chinesedict.js"
