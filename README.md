@@ -172,19 +172,20 @@ statement:
 ## Customize the Dictionary
 A very small demo dict is provided with some examples.
 
-You can customize the module with your own dictionaries, HTML content and styles.
-The dictionary should be structured the same as the example words.json files
-provided. If you have not got your own dictionary then you can use the [NTI
-Buddhist Text Reader Project](https://github.com/alexamies/buddhist-dictionary),
-or [Chinese Notes](https://github.com/alexamies/chinesenotes.com)
-Chinese-English dictionary, which may be reused under the [Creative Commons
-Attribution-Share Alike 3.0 License -
-CCASE 3.0](https://creativecommons.org/licenses/by-sa/3.0/).
+You can customize the module with your own dictionaries, HTML content and
+styles. The dictionary should be structured the same as the example words.json
+files provided. If you have not got your own dictionary then you can use the
+[NTI Buddhist Text Reader Project](https://github.com/alexamies/buddhist-dictionary),
+or 
+[Chinese Notes](https://github.com/alexamies/chinesenotes.com)
+Chinese-English dictionary, which may be reused under the
+[Creative Commons Attribution-Share Alike 3.0 License-CCASE 3.0](https://creativecommons.org/licenses/by-sa/3.0/).
 
 The build/gen_dictionary.js file is Nodejs command line utility to generate
 the dictionary file. This utility assumes the tab separated variable format of
-the words.txt file in the [Chinese
-Notes](https://github.com/alexamies/chinesenotes.com) project. Basic usage is
+the words.txt file in the
+[Chinese Notes](https://github.com/alexamies/chinesenotes.com)
+project. Basic usage is
 
 ```shell
 node build/gen_dictionary.js
@@ -205,7 +206,7 @@ dictionary use the command
 
 ```shell
 npm install
-node run generate_dict $CNREADER_HOME/data/words.txt
+npm run generate_dict $CNREADER_HOME/data/words.txt
 ```
 
 To restrict the entries to a specific topic use the --topic argument. For
