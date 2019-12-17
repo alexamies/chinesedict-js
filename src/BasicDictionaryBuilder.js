@@ -42,7 +42,7 @@ export class BasicDictionaryBuilder {
     buildDictionary() {
         console.log("BasicDictionaryBuilder.buildDictionary enter");
         this.view.wire();
-        const loader = new DictionaryLoader(this.sources, this.dictionaries);
+        const loader = new DictionaryLoader(this.sources, this.dictionaries, this.config.isIndexSimplified());
         const observable = loader.loadDictionaries();
         observable.subscribe(() => { console.log("BasicDictionaryBuilder.buildDictionary next"); }, (err) => {
             console.error("BasicDictionaryBuilder.buildDictionary " + err);

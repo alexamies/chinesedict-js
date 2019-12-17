@@ -39,6 +39,7 @@ export class DictionaryLoader {
   private sources: DictionarySource[];
   private headwords: Map<string, Term>;
   private dictionaries: DictionaryCollection;
+  private indexSimplified: boolean;
 
   /**
    * Create an empty DictionaryLoader instance
@@ -47,11 +48,13 @@ export class DictionaryLoader {
    * @param {DictionaryCollection} dictionaries - To load the data into
    */
   constructor(sources: DictionarySource[],
-              dictionaries: DictionaryCollection) {
+              dictionaries: DictionaryCollection,
+              indexSimplified = false) {
     console.log("DictionaryLoader constructor");
     this.sources = sources;
     this.headwords = new Map<string, Term>();
     this.dictionaries = dictionaries;
+    this.indexSimplified = indexSimplified;
   }
 
   /**
@@ -120,6 +123,16 @@ export class DictionaryLoader {
         // console.log(`Adding ${ traditional } from ${ source.title } `);
         const term = this.headwords.get(traditional);
         term!.addDictionaryEntry(sense, dictEntry);
+      }
+      if (this.indexSimplified) {
+        if (traditional !== entry.s &&
+            !this.headwords.has(entry.s)) {
+          const term = new Term(entry.s, [dictEntry]);
+          this.headwords.set(entry.s, term);
+        } else {
+          const term = this.headwords.get(entry.s);
+          term!.addDictionaryEntry(sense, dictEntry);
+        }
       }
     }
   }

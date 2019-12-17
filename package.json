@@ -1,6 +1,6 @@
 {
   "name": "@alexamies/chinesedict-js",
-  "version": "0.1.18",
+  "version": "0.1.19",
   "description": "A JavaScript browser module for a Chinese-English dictionary",
   "license": "Apache-2.0",
   "repository": "alexamies/chinesedict-js",
@@ -15,12 +15,11 @@
     "umd/chinesedict.js"
   ],
   "scripts": {
-    "build": "npm run lint && webpack",
+    "build": "webpack",
     "cc-cedict": "node build/cccedict_generator.js ./cedict_ts.u8",
-    "compile": "node_modules/typescript/bin/tsc",
+    "prebuild": "npm run lint && node_modules/typescript/bin/tsc",
     "generate_dict": "node build/gen_dictionary.js",
     "lint": "./node_modules/.bin/tslint -c tslint.json '*.ts' -e index.d.ts --fix",
-    "prepare" : "npm run build",
     "start": "webpack-dev-server"
   },
   "engines": {

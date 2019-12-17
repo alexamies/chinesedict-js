@@ -137,6 +137,34 @@ describe('DictionaryCollection', function() {
       );
     });
   });
+  describe('#has', function() {
+    it('Simplified is not loaded by default', function(done) {
+      const dictionaries = new DictionaryCollection();
+      const loader = new DictionaryLoader([source], dictionaries);
+      const observable = loader.loadDictionaries();
+      observable.subscribe(
+        () => {
+          assert(!dictionaries.has('罗阅城'));
+          done();
+        },
+        (err) => { done(err); },
+      );
+    });
+  });
+  describe('#has', function() {
+    it('Can find by simplified term 罗阅城', function(done) {
+      const dictionaries = new DictionaryCollection();
+      const loader = new DictionaryLoader([source], dictionaries, true);
+      const observable = loader.loadDictionaries();
+      observable.subscribe(
+        () => {
+          assert(dictionaries.has('罗阅城'));
+          done();
+        },
+        (err) => { done(err); },
+      );
+    });
+  });
   describe('#isLoaded', function() {
     it('Small dictionary has correct loaded status', function(done) {
       const dictionaries = new DictionaryCollection();

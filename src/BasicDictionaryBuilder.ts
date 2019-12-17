@@ -54,7 +54,9 @@ export class BasicDictionaryBuilder implements DictionaryBuilder {
   public buildDictionary() {
     console.log("BasicDictionaryBuilder.buildDictionary enter");
     this.view.wire();
-    const loader = new DictionaryLoader(this.sources, this.dictionaries);
+    const loader = new DictionaryLoader(this.sources,
+                                        this.dictionaries,
+                                        this.config.isIndexSimplified());
     const observable = loader.loadDictionaries();
     observable.subscribe(
       () => { console.log("BasicDictionaryBuilder.buildDictionary next"); },

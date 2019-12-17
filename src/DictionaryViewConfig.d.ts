@@ -19,6 +19,7 @@ import { QueryResultsSubscriber } from "./QueryResultsSubscriber";
  */
 export declare class DictionaryViewConfig {
     private withLookupInput;
+    private indexSimplified;
     private rSubscriber;
     /**
      * Creates a DictionaryViewConfig object with default values:
@@ -39,6 +40,22 @@ export declare class DictionaryViewConfig {
      * @return {DictionaryViewConfig} this object so that calls can be chained
      */
     setQueryResultsSubscriber(rSubscriber: QueryResultsSubscriber): DictionaryViewConfig;
+    /**
+     * If indexSimplified is true then the DictionaryLoader will index by both
+     * simplified and tradtional characters variants. If false (default) it will
+     * only index by traditional.
+     *
+     * @return {!boolean} Whether to index by simplified variants (default: false)
+     */
+    isIndexSimplified(): boolean;
+    /**
+     * Set to true to index by both simplified and traditional characters.
+     *
+     * @param {!boolean} withLookupInput - Whether to use a textfield for looking
+     *                                     up terms
+     * @return {DictionaryViewConfig} this object so that calls can be chained
+     */
+    setIndexSimplified(indexSimplified: boolean): DictionaryViewConfig;
     /**
      * If withLookupInput is true then the DictionaryView will listen for events
      * on the given HTML form and lookup and display dictionary terms in response.

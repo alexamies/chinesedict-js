@@ -27,11 +27,12 @@ export class DictionaryLoader {
      * @param {string} sources - Names of the dictionary files
      * @param {DictionaryCollection} dictionaries - To load the data into
      */
-    constructor(sources, dictionaries) {
+    constructor(sources, dictionaries, indexSimplified = false) {
         console.log("DictionaryLoader constructor");
         this.sources = sources;
         this.headwords = new Map();
         this.dictionaries = dictionaries;
+        this.indexSimplified = indexSimplified;
     }
     /**
      * Returns an Observable that will complete on loading all the dictionaries
@@ -91,6 +92,17 @@ export class DictionaryLoader {
                 // console.log(`Adding ${ traditional } from ${ source.title } `);
                 const term = this.headwords.get(traditional);
                 term.addDictionaryEntry(sense, dictEntry);
+            }
+            if (this.indexSimplified) {
+                if (traditional !== entry.s &&
+                    !this.headwords.has(entry.s)) {
+                    const term = new Term(entry.s, [dictEntry]);
+                    this.headwords.set(entry.s, term);
+                }
+                else {
+                    const term = this.headwords.get(entry.s);
+                    term.addDictionaryEntry(sense, dictEntry);
+                }
             }
         }
     }

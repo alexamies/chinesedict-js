@@ -22,6 +22,7 @@ import { QueryResultsView } from "./QueryResultsView";
  */
 export class DictionaryViewConfig {
   private withLookupInput: boolean;
+  private indexSimplified: boolean;
   private rSubscriber: QueryResultsSubscriber;
 
   /**
@@ -31,6 +32,7 @@ export class DictionaryViewConfig {
    */
   constructor() {
     this.withLookupInput = true;
+    this.indexSimplified = false;
     this.rSubscriber = new QueryResultsView();
   }
 
@@ -51,6 +53,29 @@ export class DictionaryViewConfig {
    */
   public setQueryResultsSubscriber(rSubscriber: QueryResultsSubscriber): DictionaryViewConfig {
     this.rSubscriber = rSubscriber;
+    return this;
+  }
+
+  /**
+   * If indexSimplified is true then the DictionaryLoader will index by both
+   * simplified and tradtional characters variants. If false (default) it will
+   * only index by traditional.
+   *
+   * @return {!boolean} Whether to index by simplified variants (default: false)
+   */
+  public isIndexSimplified(): boolean {
+    return this.indexSimplified;
+  }
+
+  /**
+   * Set to true to index by both simplified and traditional characters.
+   *
+   * @param {!boolean} withLookupInput - Whether to use a textfield for looking
+   *                                     up terms
+   * @return {DictionaryViewConfig} this object so that calls can be chained
+   */
+  public setIndexSimplified(indexSimplified: boolean): DictionaryViewConfig {
+    this.indexSimplified = indexSimplified;
     return this;
   }
 

@@ -22,13 +22,14 @@ export declare class DictionaryLoader {
     private sources;
     private headwords;
     private dictionaries;
+    private indexSimplified;
     /**
      * Create an empty DictionaryLoader instance
      *
      * @param {string} sources - Names of the dictionary files
      * @param {DictionaryCollection} dictionaries - To load the data into
      */
-    constructor(sources: DictionarySource[], dictionaries: DictionaryCollection);
+    constructor(sources: DictionarySource[], dictionaries: DictionaryCollection, indexSimplified?: boolean);
     /**
      * Returns an Observable that will complete on loading all the dictionaries
      */

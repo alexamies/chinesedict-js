@@ -12,6 +12,10 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+/**
+ * A module that encapsulates a Chinese-English dictionary, including finding
+ * words in sections of Chinese text.
+ */
 export { BasicDictionaryBuilder } from "./src/BasicDictionaryBuilder";
 export { DictionaryBuilder } from "./src/DictionaryBuilder";
 export { DictionaryCollection } from "./src/DictionaryCollection";
