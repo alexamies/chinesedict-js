@@ -1,0 +1,485 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Code coverage report for src/DictionaryLoader.ts</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../prettify.css" />
+    <link rel="stylesheet" href="../base.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+<body>
+<div class='wrapper'>
+  <div class='pad1'>
+    <h1>
+      <a href="../index.html">all files</a> / <a href="index.html">src/</a> DictionaryLoader.ts
+    </h1>
+    <div class='clearfix'>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">28% </span>
+        <span class="quiet">Statements</span>
+        <span class='fraction'>14/50</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">0% </span>
+        <span class="quiet">Branches</span>
+        <span class='fraction'>0/12</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">66.67% </span>
+        <span class="quiet">Functions</span>
+        <span class='fraction'>2/3</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">28% </span>
+        <span class="quiet">Lines</span>
+        <span class='fraction'>14/50</span>
+      </div>
+    </div>
+  </div>
+  <div class='status-line low'></div>
+<pre><table class="coverage">
+<tr><td class="line-count quiet">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141</td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">/**
+ * Licensed  under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+&nbsp;
+import { DictionaryCollection } from "./DictionaryCollection";
+import { DictionaryEntry } from "./DictionaryEntry";
+import { DictionarySource } from "./DictionarySource";
+import { IDictionaryLoader } from "./IDictionaryLoader";
+import { Term } from "./Term";
+import { WordSense } from "./WordSense";
+import { Observable, of } from "rxjs";
+import { ajax } from "rxjs/ajax";
+&nbsp;
+// Interface for JSON data loaded into dictionary
+declare interface JSONDictEntry {
+  s: string; // simplified
+  t: string; // traditional
+  p: string; // Pinyin
+  e: string; // English
+  g: string; // grammar
+  n: string; // notes
+  h: string; // headword id
+}
+&nbsp;
+/**
+ * Loads the dictionaries from source files.
+ */
+export class DictionaryLoader implements IDictionaryLoader {
+  private sources: DictionarySource[];
+  private headwords: Map&lt;string, Term&gt;;
+  private dictionaries: DictionaryCollection;
+  private indexSimplified: boolean;
+&nbsp;
+  /**
+   * Create an empty DictionaryLoader instance
+   *
+   * @param {string} sources - Names of the dictionary files
+   * @param {DictionaryCollection} dictionaries - To load the data into
+   */
+  constructor(sources: DictionarySource[],
+              dictionaries: DictionaryCollection,
+              indexSimplified = false) {
+    console.log("DictionaryLoader constructor");
+    this.sources = sources;
+    this.headwords = new Map&lt;string, Term&gt;();
+    this.dictionaries = dictionaries;
+    this.indexSimplified = indexSimplified;
+  }
+&nbsp;
+  /**
+   * Returns an Observable that will complete on loading all the dictionaries
+   */
+  public loadDictionaries() {
+    console.log("loadDictionaries enter");
+    const observable = new Observable((subscriber) =&gt; {
+<span class="cstat-no" title="statement not covered" >      const sources = this.sources;</span>
+<span class="cstat-no" title="statement not covered" >      let numLoaded = 0;</span>
+<span class="cstat-no" title="statement not covered" >      for (const source of sources) {</span>
+<span class="cstat-no" title="statement not covered" >        const filename = source.filename;</span>
+<span class="cstat-no" title="statement not covered" >        console.log(`loadDictionaries loading ${ filename }`);</span>
+<span class="cstat-no" title="statement not covered" >        if (filename) {</span>
+<span class="cstat-no" title="statement not covered" >          const reqObs = ajax.getJSON(filename);</span>
+<span class="cstat-no" title="statement not covered" >          const subscribe = reqObs.subscribe(</span>
+            (res) =&gt; {
+<span class="cstat-no" title="statement not covered" >              console.log(`loadDictionaries: for ${ filename }`);</span>
+<span class="cstat-no" title="statement not covered" >              this.load_dictionary_(source, res as JSONDictEntry[]);</span>
+<span class="cstat-no" title="statement not covered" >              numLoaded++;</span>
+<span class="cstat-no" title="statement not covered" >              if (numLoaded &gt;= sources.length) {</span>
+<span class="cstat-no" title="statement not covered" >                console.log(`loadDictionaries: ${ this.headwords.size } terms`);</span>
+<span class="cstat-no" title="statement not covered" >                this.dictionaries.setHeadwords(this.headwords);</span>
+<span class="cstat-no" title="statement not covered" >                subscriber.next(numLoaded);</span>
+<span class="cstat-no" title="statement not covered" >                subscriber.complete();</span>
+              }
+            },
+            (error) =&gt; {
+<span class="cstat-no" title="statement not covered" >              console.log(`Error fetching dictionary: ${ error }`);</span>
+<span class="cstat-no" title="statement not covered" >              subscriber.next(error);</span>
+<span class="cstat-no" title="statement not covered" >              return of(error);</span>
+            },
+          );
+        } else {
+<span class="cstat-no" title="statement not covered" >          subscriber.next("Error no filename provided");</span>
+        }
+      }
+    });
+    return observable;
+  }
+&nbsp;
+  /**
+   * @private
+   * Deserializes the dictionary from protobuf format. Expected to be called by
+   * a builder in initializing the dictionary.
+   *
+   * @param {!Array&lt;object&gt;} dictData - An array of dictionary term objects
+   */
+  private load_dictionary_<span class="fstat-no" title="function not covered" >(source: DictionarySource, dictData: JSONDictEntry[])</span> {
+<span class="cstat-no" title="statement not covered" >    console.log(`load_dictionary_ terms from ${ source.title }`);</span>
+<span class="cstat-no" title="statement not covered" >    for (const entry of dictData) {</span>
+<span class="cstat-no" title="statement not covered" >      const traditional = entry.t;</span>
+<span class="cstat-no" title="statement not covered" >      const sense = new WordSense(entry.s,</span>
+                                  entry.t,
+                                  entry.p,
+                                  entry.e,
+                                  entry.g,
+                                  entry.n);
+<span class="cstat-no" title="statement not covered" >      const dictEntry = new DictionaryEntry(traditional, source, [sense],</span>
+                                            entry.h);
+<span class="cstat-no" title="statement not covered" >      if (!this.headwords.has(traditional)) {</span>
+        // console.log(`Loading ${ traditional } from ${ source.title } `);
+<span class="cstat-no" title="statement not covered" >        const term = new Term(traditional, [dictEntry]);</span>
+<span class="cstat-no" title="statement not covered" >        this.headwords.set(traditional, term);</span>
+      } else {
+        // console.log(`Adding ${ traditional } from ${ source.title } `);
+<span class="cstat-no" title="statement not covered" >        const term = this.headwords.get(traditional);</span>
+<span class="cstat-no" title="statement not covered" >        term!.addDictionaryEntry(sense, dictEntry);</span>
+      }
+<span class="cstat-no" title="statement not covered" >      if (this.indexSimplified) {</span>
+<span class="cstat-no" title="statement not covered" >        if (traditional !== entry.s &amp;&amp;</span>
+            !this.headwords.has(entry.s)) {
+<span class="cstat-no" title="statement not covered" >          const term = new Term(entry.s, [dictEntry]);</span>
+<span class="cstat-no" title="statement not covered" >          this.headwords.set(entry.s, term);</span>
+        } else {
+<span class="cstat-no" title="statement not covered" >          const term = this.headwords.get(entry.s);</span>
+<span class="cstat-no" title="statement not covered" >          term!.addDictionaryEntry(sense, dictEntry);</span>
+        }
+      }
+    }
+  }
+}
+&nbsp;</pre></td></tr>
+</table></pre>
+<div class='push'></div><!-- for sticky footer -->
+</div><!-- /wrapper -->
+<div class='footer quiet pad2 space-top1 center small'>
+  Code coverage
+  generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Tue Dec 24 2019 09:05:15 GMT-0800 (Pacific Standard Time)
+</div>
+</div>
+<script src="../prettify.js"></script>
+<script>
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
+        }
+};
+</script>
+<script src="../sorter.js"></script>
+</body>
+</html>

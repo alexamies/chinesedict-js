@@ -12,11 +12,16 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-// Application JavaScript demonstrating extending the chinesedict module
-import { BasicDictionaryBuilder, DictionaryViewConfig, DictionarySource } from '@alexamies/chinesedict-js';
-console.log('Loading demo_extend_app');
-// Build and initialize the dictionary
-const source = new DictionarySource('/assets/ntireader.json', 'NTI Reader Dictionary', 'Creative Commons Attribution-Share Alike 3.0 License (CCASE 3.0).');
-const config = new DictionaryViewConfig();
-const builder = new BasicDictionaryBuilder([source], config);
-const dictView = builder.buildDictionary();
+
+import { Observable } from "rxjs";
+
+/**
+ * Loads the dictionaries from source files.
+ */
+export interface IDictionaryLoader {
+
+  /**
+   * Returns an Observable that will complete on loading all the dictionaries
+   */
+  loadDictionaries(): Observable<unknown>;
+}

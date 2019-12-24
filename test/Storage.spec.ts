@@ -1,4 +1,4 @@
-/**
+/*
  * Licensed  under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
@@ -12,4 +12,22 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-export {};
+
+ /**
+  * @fileoverview Unit tests for Storage
+  */
+
+import { Storage } from "../src/Storage";
+
+const data = "A test";
+
+describe("Storage", () => {
+  describe("#save", () => {
+    it("should be able to save data", () => {
+      const storage = new Storage();
+      storage.save(data);
+      const data1 = storage.read();
+      expect(data1).toEqual(data);
+    });
+  });
+});

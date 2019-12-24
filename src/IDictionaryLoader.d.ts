@@ -12,25 +12,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import { DictionaryCollection } from "./DictionaryCollection";
-import { DictionarySource } from "./DictionarySource";
-import { IDictionaryLoader } from "./IDictionaryLoader";
 import { Observable } from "rxjs";
 /**
  * Loads the dictionaries from source files.
  */
-export declare class DictionaryLoader implements IDictionaryLoader {
-    private sources;
-    private headwords;
-    private dictionaries;
-    private indexSimplified;
-    /**
-     * Create an empty DictionaryLoader instance
-     *
-     * @param {string} sources - Names of the dictionary files
-     * @param {DictionaryCollection} dictionaries - To load the data into
-     */
-    constructor(sources: DictionarySource[], dictionaries: DictionaryCollection, indexSimplified?: boolean);
+export interface IDictionaryLoader {
     /**
      * Returns an Observable that will complete on loading all the dictionaries
      */

@@ -14,28 +14,18 @@
  */
 
 import { DictionaryCollection } from "./DictionaryCollection";
-import { DictionaryEntry } from "./DictionaryEntry";
+import { DictionaryLoaderHelper } from "./DictionaryLoaderHelper";
+import { JSONDictEntry } from "./DictionaryLoaderHelper";
 import { DictionarySource } from "./DictionarySource";
+import { IDictionaryLoader } from "./IDictionaryLoader";
 import { Term } from "./Term";
-import { WordSense } from "./WordSense";
 import { Observable, of } from "rxjs";
 import { ajax } from "rxjs/ajax";
-
-// Interface for JSON data loaded into dictionary
-declare interface JSONDictEntry {
-  s: string; // simplified
-  t: string; // traditional
-  p: string; // Pinyin
-  e: string; // English
-  g: string; // grammar
-  n: string; // notes
-  h: string; // headword id
-}
 
 /**
  * Loads the dictionaries from source files.
  */
-export class DictionaryLoader {
+export class DictionaryLoader implements IDictionaryLoader {
   private sources: DictionarySource[];
   private headwords: Map<string, Term>;
   private dictionaries: DictionaryCollection;
@@ -73,7 +63,11 @@ export class DictionaryLoader {
           const subscribe = reqObs.subscribe(
             (res) => {
               console.log(`loadDictionaries: for ${ filename }`);
-              this.load_dictionary_(source, res as JSONDictEntry[]);
+              const helper = new DictionaryLoaderHelper();
+              helper.loadDictionary(source,
+                                    res as JSONDictEntry[],
+                                    this.headwords,
+                                    this.indexSimplified);
               numLoaded++;
               if (numLoaded >= sources.length) {
                 console.log(`loadDictionaries: ${ this.headwords.size } terms`);
@@ -94,46 +88,5 @@ export class DictionaryLoader {
       }
     });
     return observable;
-  }
-
-  /**
-   * @private
-   * Deserializes the dictionary from protobuf format. Expected to be called by
-   * a builder in initializing the dictionary.
-   *
-   * @param {!Array<object>} dictData - An array of dictionary term objects
-   */
-  private load_dictionary_(source: DictionarySource, dictData: JSONDictEntry[]) {
-    console.log(`load_dictionary_ terms from ${ source.title }`);
-    for (const entry of dictData) {
-      const traditional = entry.t;
-      const sense = new WordSense(entry.s,
-                                  entry.t,
-                                  entry.p,
-                                  entry.e,
-                                  entry.g,
-                                  entry.n);
-      const dictEntry = new DictionaryEntry(traditional, source, [sense],
-                                            entry.h);
-      if (!this.headwords.has(traditional)) {
-        // console.log(`Loading ${ traditional } from ${ source.title } `);
-        const term = new Term(traditional, [dictEntry]);
-        this.headwords.set(traditional, term);
-      } else {
-        // console.log(`Adding ${ traditional } from ${ source.title } `);
-        const term = this.headwords.get(traditional);
-        term!.addDictionaryEntry(sense, dictEntry);
-      }
-      if (this.indexSimplified) {
-        if (traditional !== entry.s &&
-            !this.headwords.has(entry.s)) {
-          const term = new Term(entry.s, [dictEntry]);
-          this.headwords.set(entry.s, term);
-        } else {
-          const term = this.headwords.get(entry.s);
-          term!.addDictionaryEntry(sense, dictEntry);
-        }
-      }
-    }
   }
 }
