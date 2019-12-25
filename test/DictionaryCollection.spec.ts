@@ -20,6 +20,7 @@
 import { DictionaryCollection } from "../src/DictionaryCollection";
 import { DictionarySource } from "../src/DictionarySource";
 import { MockDictionaryLoader } from "./MockDictionaryLoader";
+import {} from "jasmine";
 
 const source = new DictionarySource('/assets/words.json',
                                      'DictionaryCollection Test',
@@ -33,9 +34,9 @@ const jsonStr =
   "g":"noun",
   "h":"101676"}]`;
 
-describe('DictionaryCollection', function() {
+describe('DictionaryCollection', () => {
   describe('#has', () => {
-    it('Empty dictionary has no term 夫家', function(done) {
+    it('Empty dictionary has no term 夫家', (done) => {
       const dictionaries = new DictionaryCollection();
       const loader = new MockDictionaryLoader([source], dictionaries);
       const obs = loader.loadDictionaries();
@@ -45,7 +46,7 @@ describe('DictionaryCollection', function() {
       	done();
       });
     });
-    it('Mock dictionary has the term 夫家', function(done) {
+    it('Mock dictionary has the term 夫家', (done) => {
       const dictionaries = new DictionaryCollection();
       const loader = new MockDictionaryLoader([source], dictionaries, jsonStr);
       const obs = loader.loadDictionaries();
@@ -57,7 +58,7 @@ describe('DictionaryCollection', function() {
     });
   });
   describe('#isLoaded', function() {
-    it('Mock dictionary has correct loaded status', function(done) {
+    it('Mock dictionary has correct loaded status', (done) => {
       const dictionaries = new DictionaryCollection();
       const loader = new MockDictionaryLoader([source], dictionaries, jsonStr);
       const observable = loader.loadDictionaries();
@@ -74,7 +75,7 @@ describe('DictionaryCollection', function() {
     });
   });
   describe('#lookup', function() {
-    it('Term 夫家 can be looked up in the mock dictionary', function(done) {
+    it('Term 夫家 can be looked up in the mock dictionary', (done) => {
       const dictionaries = new DictionaryCollection();
       const loader = new MockDictionaryLoader([source], dictionaries, jsonStr);
       const observable = loader.loadDictionaries();

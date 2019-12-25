@@ -19,6 +19,7 @@ import { DictionaryLoader } from './DictionaryLoader';
 import { DictionarySource } from './DictionarySource';
 import { DictionaryView } from './DictionaryView';
 import { DictionaryViewConfig } from './DictionaryViewConfig';
+import { IDataLoader } from './IDataLoader';
 
 /**
  * An implementation of the DictionaryBuilder interface for building and
@@ -41,10 +42,15 @@ export class PlainJSBuilder implements DictionaryBuilder {
   constructor(sources: DictionarySource[],
               selector: string,
               dialogId: string,
-              highlight: "all" | "proper") {
+              highlight: "all" | "proper",
+              indexSimplified = false,
+              dataLoader: IDataLoader | null = null) {
     console.log("PlainJSBuilder constructor");
     const dictionaries = new DictionaryCollection();
-    this.loader = new DictionaryLoader(sources, dictionaries);
+    this.loader = new DictionaryLoader(sources,
+                                       dictionaries,
+                                       indexSimplified,
+                                       dataLoader);
     const config = new DictionaryViewConfig().setWithLookupInput(false);
     this.view = new DictionaryView(selector,
                                    dialogId,

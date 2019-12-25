@@ -1,4 +1,4 @@
-/*
+/**
  * Licensed  under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
@@ -12,23 +12,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
- /**
-  * @fileoverview Unit tests for Storage
-  */
-
-import { Storage } from "../src/Storage";
-import {} from "jasmine";
-
-const data = "A test";
-
-describe("Storage", () => {
-  describe("#save", () => {
-    it("should be able to save data", () => {
-      const storage = new Storage();
-      storage.save(data);
-      const data1 = storage.read();
-      expect(data1).toEqual(data);
-    });
-  });
-});
+import { Observable } from "rxjs";
+/**
+ * A source for loading data, eg AJAX
+ */
+export interface IDataLoader {
+    /**
+     * Returns an Observable that will complete on loading of the data source
+     * @param {string} filename - File name of the source
+     * @return {Observable} will complete after loading
+     */
+    getObservable(filename: string): Observable<unknown>;
+}

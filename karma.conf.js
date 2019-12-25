@@ -5,28 +5,42 @@ module.exports = function(config) {
   config.set({
 
     // base path that will be used to resolve all patterns (eg. files, exclude)
-    basePath: '',
-
+    basePath: "",
 
     // frameworks to use
     // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
-    frameworks: ['jasmine', 'karma-typescript'],
-
+    frameworks: ["jasmine", "karma-typescript"],
 
     // list of files / patterns to load in the browser
     files: [
-      'src/DictionaryCollection.ts',
-      'src/DictionaryEntry.ts',
-      'src/IDictionaryLoader.ts',
-      'src/DictionaryLoaderHelper.ts',
-      'src/DictionarySource.ts',
-      'src/Storage.ts',
-      'src/Term.ts',
-      'src/WordSense.ts',
-      'test/DictionaryCollection.spec.ts',
-      'test/DictionaryLoaderHelper.spec.ts',
-      'test/MockDictionaryLoader.ts',
-      'test/Storage.spec.ts'
+      "src/AjaxDataLoader.ts",
+      "src/DictionaryCollection.ts",
+      "src/DictionaryEntry.ts",
+      "src/DictionaryLoader.ts",
+      "src/DictionaryLoaderHelper.ts",
+      "src/DictionarySource.ts",
+      "src/DictionaryView.ts",
+      "src/DictionaryViewConfig.ts",
+      "src/DictionaryViewLookup.ts",
+      "src/IDataLoader.ts",
+      "src/IDictionaryLoader.ts",
+      "src/PlainJSBuilder.ts",
+      "src/QueryResults.ts",
+      "src/QueryResultsView.ts",
+      "src/Storage.ts",
+      "src/TextParser.ts",
+      "src/Term.ts",
+      "src/WordSense.ts",
+      "test/DictionaryCollection.spec.ts",
+      "test/DictionaryEntry.spec.ts",
+      "test/DictionaryLoaderHelper.spec.ts",
+      "test/DictionaryLoader.spec.ts",
+      "test/DictionarySource.spec.ts",
+      "test/DictionaryView.spec.ts",
+      "test/MockDictionaryLoader.ts",
+      "test/MockDataLoader.ts",
+      "test/Storage.spec.ts",
+      "test/Term.spec.ts"
     ],
 
     karmaTypescriptConfig: {
@@ -52,32 +66,26 @@ module.exports = function(config) {
     },
 
     // test results reporter to use
-    // possible values: 'dots', 'progress'
+    // possible values: "dots", "progress"
     // available reporters: https://npmjs.org/browse/keyword/karma-reporter
     reporters: ["dots", "karma-typescript"],
-
 
     // web server port
     port: 9876,
 
-
     // enable / disable colors in the output (reporters and logs)
     colors: true,
-
 
     // level of logging
     // possible values: config.LOG_DISABLE || config.LOG_ERROR || config.LOG_WARN || config.LOG_INFO || config.LOG_DEBUG
     logLevel: config.LOG_INFO,
 
-
     // enable / disable watching file and executing tests whenever any file changes
     autoWatch: false,
 
-
     // start these browsers
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-    browsers: ['ChromeHeadless'],
-
+    browsers: ["ChromeHeadless"],
 
     // Continuous Integration mode
     // if true, Karma captures browsers, runs the tests and exits

@@ -14,6 +14,7 @@
  */
 import { DictionaryCollection } from "./DictionaryCollection";
 import { DictionarySource } from "./DictionarySource";
+import { IDataLoader } from "./IDataLoader";
 import { IDictionaryLoader } from "./IDictionaryLoader";
 import { Observable } from "rxjs";
 /**
@@ -24,15 +25,19 @@ export declare class DictionaryLoader implements IDictionaryLoader {
     private headwords;
     private dictionaries;
     private indexSimplified;
+    private dataLoader;
     /**
      * Create an empty DictionaryLoader instance
      *
      * @param {string} sources - Names of the dictionary files
      * @param {DictionaryCollection} dictionaries - To load the data into
+     * @param {boolean} indexSimplified - Whether to index by Simplified
+     * @param {IDataLoader} dataLoader - Where to load data from, default AJAX
      */
-    constructor(sources: DictionarySource[], dictionaries: DictionaryCollection, indexSimplified?: boolean);
+    constructor(sources: DictionarySource[], dictionaries: DictionaryCollection, indexSimplified?: boolean, dataLoader?: IDataLoader | null);
     /**
      * Returns an Observable that will complete on loading all the dictionaries
+     * @return {Observable} will complete after loading
      */
     loadDictionaries(): Observable<unknown>;
 }

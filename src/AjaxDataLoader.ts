@@ -1,4 +1,4 @@
-/*
+/**
  * Licensed  under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
@@ -13,22 +13,22 @@
  * under the License.
  */
 
- /**
-  * @fileoverview Unit tests for Storage
-  */
+import { IDataLoader } from "./IDataLoader";
+import { Observable } from "rxjs";
+import { ajax } from "rxjs/ajax";
 
-import { Storage } from "../src/Storage";
-import {} from "jasmine";
+/**
+ * Loads data from source files remotely with AJAX
+ */
+export class AjaxDataLoader implements IDataLoader {
 
-const data = "A test";
+  /**
+   * Returns an Observable that will complete on loading of the data source
+   * @param {string} filename - File name of the source
+   * @return {Observable} will complete after loading
+   */
+  getObservable(filename: string): Observable<unknown> {
+    return ajax.getJSON(filename);
+  }
 
-describe("Storage", () => {
-  describe("#save", () => {
-    it("should be able to save data", () => {
-      const storage = new Storage();
-      storage.save(data);
-      const data1 = storage.read();
-      expect(data1).toEqual(data);
-    });
-  });
-});
+}

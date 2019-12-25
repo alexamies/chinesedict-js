@@ -26,6 +26,8 @@ export { DictionaryLoader } from "./src/DictionaryLoader";
 export { DictionarySource } from "./src/DictionarySource";
 export { DictionaryView } from "./src/DictionaryView";
 export { DictionaryViewConfig } from "./src/DictionaryViewConfig";
+export { IDataLoader } from "./src/IDataLoader";
+export { IDictionaryLoader } from "./src/IDictionaryLoader";
 export { PlainJSBuilder } from "./src/PlainJSBuilder";
 export { Term } from "./src/Term";
 export { TextParser } from "./src/TextParser";

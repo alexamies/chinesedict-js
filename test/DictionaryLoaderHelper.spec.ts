@@ -21,6 +21,7 @@ import { DictionaryLoaderHelper } from "../src/DictionaryLoaderHelper";
 import { JSONDictEntry } from "../src/DictionaryLoaderHelper";
 import { DictionarySource } from "../src/DictionarySource";
 import { Term } from "../src/Term";
+import {} from "jasmine";
 
 const source = new DictionarySource('/assets/words.json',
                                      'DictionaryLoaderHelper Test',

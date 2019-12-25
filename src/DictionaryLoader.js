@@ -12,9 +12,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+import { AjaxDataLoader } from "./AjaxDataLoader";
 import { DictionaryLoaderHelper } from "./DictionaryLoaderHelper";
 import { Observable, of } from "rxjs";
-import { ajax } from "rxjs/ajax";
 /**
  * Loads the dictionaries from source files.
  */
@@ -24,16 +24,25 @@ export class DictionaryLoader {
      *
      * @param {string} sources - Names of the dictionary files
      * @param {DictionaryCollection} dictionaries - To load the data into
+     * @param {boolean} indexSimplified - Whether to index by Simplified
+     * @param {IDataLoader} dataLoader - Where to load data from, default AJAX
      */
-    constructor(sources, dictionaries, indexSimplified = false) {
+    constructor(sources, dictionaries, indexSimplified = false, dataLoader = null) {
         console.log("DictionaryLoader constructor");
         this.sources = sources;
         this.headwords = new Map();
         this.dictionaries = dictionaries;
         this.indexSimplified = indexSimplified;
+        if (dataLoader !== null) {
+            this.dataLoader = dataLoader;
+        }
+        else {
+            this.dataLoader = new AjaxDataLoader();
+        }
     }
     /**
      * Returns an Observable that will complete on loading all the dictionaries
+     * @return {Observable} will complete after loading
      */
     loadDictionaries() {
         console.log("loadDictionaries enter");
@@ -44,7 +53,7 @@ export class DictionaryLoader {
                 const filename = source.filename;
                 console.log(`loadDictionaries loading ${filename}`);
                 if (filename) {
-                    const reqObs = ajax.getJSON(filename);
+                    const reqObs = this.dataLoader.getObservable(filename);
                     const subscribe = reqObs.subscribe((res) => {
                         console.log(`loadDictionaries: for ${filename}`);
                         const helper = new DictionaryLoaderHelper();

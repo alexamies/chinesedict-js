@@ -17,18 +17,19 @@
   * @fileoverview Unit tests for Storage
   */
 
-import { Storage } from "../src/Storage";
+import { DictionarySource } from "../src/DictionarySource";
 import {} from "jasmine";
 
 const data = "A test";
 
-describe("Storage", () => {
+describe("DictionarySource", () => {
   describe("#save", () => {
-    it("should be able to save data", () => {
-      const storage = new Storage();
-      storage.save(data);
-      const data1 = storage.read();
-      expect(data1).toEqual(data);
+    it("filename should be set properly", () => {
+      const filename = "test.json";
+      const source = new DictionarySource(filename,
+                         "Test Dictionary",
+                         "A test dictionary");
+      expect(source.filename).toEqual(filename);
     });
   });
 });

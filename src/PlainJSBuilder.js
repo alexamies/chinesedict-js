@@ -31,10 +31,10 @@ export class PlainJSBuilder {
      * @param {string} dialogId - A DOM id used to find the dialog
      * @param {string} highlight - Which terms to highlight: all | proper
      */
-    constructor(sources, selector, dialogId, highlight) {
+    constructor(sources, selector, dialogId, highlight, indexSimplified = false, dataLoader = null) {
         console.log("PlainJSBuilder constructor");
         const dictionaries = new DictionaryCollection();
-        this.loader = new DictionaryLoader(sources, dictionaries);
+        this.loader = new DictionaryLoader(sources, dictionaries, indexSimplified, dataLoader);
         const config = new DictionaryViewConfig().setWithLookupInput(false);
         this.view = new DictionaryView(selector, dialogId, highlight, config, dictionaries);
     }
