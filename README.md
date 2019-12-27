@@ -61,7 +61,7 @@ src='https://github.com/alexamies/chinesedict-js/blob/master/images/screenshot_v
 ## Using the module in your own projects
 
 Follow the instructions here to use the chinesedict-js in your own module. Refer
-to the demo examples and tests if you get stuck.
+to the demo examples if you get stuck.
 
 ### Setup
 
@@ -402,10 +402,6 @@ adequately, except for very small dictionaries and text sizes.
 An example of deploying to App Engine is given in [demo](demo/README.md).
 See this at
 [chinesedictdemo.appspot.com](https://chinesedictdemo.appspot.com).
-
-### Angular
-A preliminary prototype for Angular integration is given at
-[angular/README.md](angular/README.md).
 
 ### Other Frameworks
 Develop an implementation of the TypeScript DictionaryBuilder interface or work

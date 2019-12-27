@@ -30,6 +30,7 @@ module.exports = function(config) {
       "src/Storage.ts",
       "src/TextParser.ts",
       "src/Term.ts",
+      "src/TextParser.ts",
       "src/WordSense.ts",
       "test/DictionaryCollection.spec.ts",
       "test/DictionaryEntry.spec.ts",
@@ -40,7 +41,8 @@ module.exports = function(config) {
       "test/MockDictionaryLoader.ts",
       "test/MockDataLoader.ts",
       "test/Storage.spec.ts",
-      "test/Term.spec.ts"
+      "test/Term.spec.ts",
+      "test/TextParser.spec.ts"
     ],
 
     karmaTypescriptConfig: {
