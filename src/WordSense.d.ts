@@ -36,22 +36,22 @@ export declare class WordSense {
      * Gets the English equivalent for the sense
      * @return {string} English equivalent for the sense
      */
-    getEnglish(): string;
+    getEnglish(): string | undefined;
     /**
      * Gets the part of speech for the sense
      * @return {string} part of speech for the sense
      */
-    getGrammar(): string;
+    getGrammar(): string | undefined;
     /**
      * Gets the Mandarin pronunciation for the sense
      * @return {string} Mandarin pronunciation
      */
-    getPinyin(): string;
+    getPinyin(): string | undefined;
     /**
      * Gets notes relating to the word sense
      * @return {string} freeform notes
      */
-    getNotes(): string;
+    getNotes(): string | undefined;
     /**
      * Gets the simplified Chinese text for the sense
      * @return {!string} The simplified Chinese text for the sense
@@ -61,5 +61,5 @@ export declare class WordSense {
      * Gets the traditional Chinese for the sense
      * @return {string} traditional Chinese
      */
-    getTraditional(): string;
+    getTraditional(): string | undefined;
 }

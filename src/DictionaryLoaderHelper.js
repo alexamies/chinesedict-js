@@ -29,7 +29,8 @@ export class DictionaryLoaderHelper {
      *                  to the index
      */
     loadDictionary(source, dictData, headwords, indexSimplified) {
-        console.log(`loadDictionary source ${source.title} ${indexSimplified}`);
+        const title = source.title;
+        console.log(`DictionaryLoaderHelper ${title}, ${indexSimplified}`);
         for (const entry of dictData) {
             const traditional = entry.t;
             const sense = new WordSense(entry.s, entry.t, entry.p, entry.e, entry.g, entry.n);

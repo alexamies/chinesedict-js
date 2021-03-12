@@ -187,11 +187,22 @@ or
 Chinese-English dictionary, which may be reused under the
 [Creative Commons Attribution-Share Alike 3.0 License-CCASE 3.0](https://creativecommons.org/licenses/by-sa/3.0/).
 
-The build/gen_dictionary.js file is Nodejs command line utility to generate
-the dictionary file. This utility assumes the tab separated variable format of
-the words.txt file in the
+You can use either the build/word2json.py or build/gen_dictionary.js file
+Nodejs command line utility to generate the dictionary file. Both utilities
+assumes the tab separated variable format of the words.txt file in the
 [Chinese Notes](https://github.com/alexamies/chinesenotes.com)
-project. Basic usage is
+project.
+
+Basic usage for the Python command line utility is
+
+```shell
+python3 words2json.py "file1.tsv,file2.tsv" words.json
+```
+
+The words2json.py script can accept a number of source files as the first
+argument. They should be enclosed in double quotes and separated by commas.
+
+Basic usage for the Node.js command line utility is
 
 ```shell
 node build/gen_dictionary.js

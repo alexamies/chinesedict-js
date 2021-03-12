@@ -79,9 +79,11 @@ export class DictionaryEntry {
     for (const sense of this.senses) {
       let eng = sense.getEnglish();
       // console.log(`getEnglish before ${ eng }`);
-      eng = eng.replace(r1, ", ");
-      eng = eng.replace(r2, ", ");
-      english += eng + "; ";
+      if(eng !== undefined) {
+        eng = eng.replace(r1, ", ");
+        eng = eng.replace(r2, ", ");
+        english += eng + "; ";
+      }
     }
     const re = new RegExp("; $");  // remove trailing semicolon
     return english.replace(re, "");
@@ -117,7 +119,9 @@ export class DictionaryEntry {
     const values: Set<string> = new Set<string>();
     for (const sense of this.senses) {
       const pinyin = sense.getPinyin();
-      values.add(pinyin);
+      if(pinyin !== undefined) {
+        values.add(pinyin);
+      }
     }
     let p = "";
     for (const val of values.values()) {
@@ -171,7 +175,9 @@ export class DictionaryEntry {
     const values: Set<string> = new Set<string>();
     for (const sense of this.senses) {
       const trad = sense.getTraditional();
-      values.add(trad);
+      if(trad !== undefined) {
+        values.add(trad);
+      }
     }
     let p = "";
     for (const val of values.values()) {

@@ -47,7 +47,8 @@ export class DictionaryLoaderHelper {
   	                     dictData: JSONDictEntry[],
   	                     headwords: Map<string, Term>,
   	                     indexSimplified: boolean) {
-    console.log(`loadDictionary source ${ source.title } ${ indexSimplified }`);
+    const title = source.title;
+    console.log(`DictionaryLoaderHelper ${ title }, ${ indexSimplified }`);
     for (const entry of dictData) {
       const traditional = entry.t;
       const sense = new WordSense(entry.s,

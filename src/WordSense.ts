@@ -18,11 +18,11 @@
  */
 export class WordSense {
   private simplified: string;
-  private traditional: string;
-  private pinyin: string;
-  private english: string;
-  private grammar: string;
-  private notes: string;
+  private traditional: string | undefined;
+  private pinyin: string | undefined;
+  private english: string | undefined;
+  private grammar: string | undefined;
+  private notes: string | undefined;
 
   /**
    * Create a WordSense object

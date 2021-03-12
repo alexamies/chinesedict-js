@@ -54,7 +54,7 @@ export declare class DictionaryEntry {
      * return an empty string.
      * @return {string} part of speech for the term
      */
-    getGrammar(): string;
+    getGrammar(): string | undefined;
     /**
      * Gets the headword_id for the term
      * @return {string} headword_id - The headword id
