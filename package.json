@@ -1,6 +1,6 @@
 {
   "name": "@alexamies/chinesedict-js",
-  "version": "0.1.22",
+  "version": "0.1.23",
   "description": "A JavaScript browser module for a Chinese-English dictionary",
   "license": "Apache-2.0",
   "repository": "alexamies/chinesedict-js",

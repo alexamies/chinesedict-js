@@ -52,6 +52,9 @@ export class WordSense {
    * @return {string} English equivalent for the sense
    */
   public getEnglish() {
+    if (this.english == '\\N') {
+      return '';
+    }
     return this.english;
   }
 
@@ -68,6 +71,9 @@ export class WordSense {
    * @return {string} Mandarin pronunciation
    */
   public getPinyin() {
+    if (this.pinyin == '\\N') {
+      return '';
+    }
     return this.pinyin;
   }
 
