@@ -3,6 +3,7 @@ dist/
 node_modules/
 umd/
 *.zip
-demo_app.d.ts
-cedict_ts.u8
 buddhdic-extracts/
+chinesedict-js.code-workspace
+cedict_ts.u8
+demo_app.d.ts
