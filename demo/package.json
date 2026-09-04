@@ -17,7 +17,7 @@
   },
   "dependencies": {
     "@alexamies/chinesedict-js": "0.1.16",
-    "express": "^4.16.4",
+    "express": "^5.2.1",
     "serve-static": "^2.1.0"
   }
 }
